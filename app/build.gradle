@@ -30,16 +30,14 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation deps.test.junit
     androidTestImplementation deps.test.runner
     androidTestImplementation deps.test.espresso
-
     //support
     implementation deps.support.design
     implementation deps.support.appcompat
     implementation deps.support.constraintlayout
-
-    implementation project(path: ':lib_base')
     api deps.zxing
+    implementation files('libs/HwPush_SDK_V2705.jar')
 }
