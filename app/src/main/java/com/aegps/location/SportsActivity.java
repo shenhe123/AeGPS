@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 import com.aegps.location.receiver.ScreenReceiverUtil;
 import com.aegps.location.service.DaemonService;
 import com.aegps.location.service.PlayerMusicService;

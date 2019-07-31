@@ -9,7 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 import com.aegps.location.utils.Contants;
 
 /**前台Service，使用startForeground

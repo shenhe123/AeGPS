@@ -28,7 +28,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 
 import java.io.Closeable;
 import java.io.IOException;

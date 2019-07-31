@@ -39,7 +39,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 import com.google.zxing.ResultPoint;
 
 import java.util.ArrayList;

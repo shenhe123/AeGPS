@@ -11,7 +11,7 @@ import android.os.Message;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 import com.aegps.location.zxing.camera.CameraManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;

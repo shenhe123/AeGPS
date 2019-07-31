@@ -9,7 +9,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 
 
 /** 移除前台Service通知栏标志，这个Service选择性使用

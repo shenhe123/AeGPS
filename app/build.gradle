@@ -34,10 +34,17 @@ dependencies {
     testImplementation deps.test.junit
     androidTestImplementation deps.test.runner
     androidTestImplementation deps.test.espresso
+
+    //libs
+    implementation files('libs/HwPush_SDK_V2705.jar')
+
     //support
     implementation deps.support.design
     implementation deps.support.appcompat
     implementation deps.support.constraintlayout
+    //Zxing
     api deps.zxing
-    implementation files('libs/HwPush_SDK_V2705.jar')
+    //Glide
+    api deps.glide
+
 }

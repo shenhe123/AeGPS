@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 import com.aegps.location.zxing.camera.CameraManager;
 
 

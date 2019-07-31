@@ -7,8 +7,6 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.aegps.location.aegps.R;
-
 /** 欢迎界面
  *
  * Created by shenhe on 2019/7/30.

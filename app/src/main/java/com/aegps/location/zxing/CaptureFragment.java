@@ -24,7 +24,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 import com.aegps.location.zxing.camera.CameraManager;
 
 /**

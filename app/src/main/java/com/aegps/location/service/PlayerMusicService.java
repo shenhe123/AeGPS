@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.aegps.location.aegps.R;
+import com.aegps.location.R;
 import com.aegps.location.utils.Contants;
 
 /**循环播放一段无声音频，以提升进程优先级

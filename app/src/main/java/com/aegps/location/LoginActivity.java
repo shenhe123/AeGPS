@@ -3,7 +3,6 @@ package com.aegps.location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.aegps.location.aegps.R;
 
 /**
  * A login screen that offers login via email/password.
