@@ -8,5 +8,5 @@ package com.aegps.location.utils;
 public class Contants {
     public static final boolean DEBUG = true;
 
-    public static final String PACKAGE_NAME = "com.jiangdg.keepappalive";
+    public static final String PACKAGE_NAME = "com.aegps.location";
 }

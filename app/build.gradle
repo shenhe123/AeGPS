@@ -34,10 +34,8 @@ dependencies {
     testImplementation deps.test.junit
     androidTestImplementation deps.test.runner
     androidTestImplementation deps.test.espresso
-
     //libs
     implementation files('libs/HwPush_SDK_V2705.jar')
-
     //support
     implementation deps.support.design
     implementation deps.support.appcompat
@@ -46,5 +44,9 @@ dependencies {
     api deps.zxing
     //Glide
     api deps.glide
-
+    //rxpermissions
+    api deps.rxpermissions
+    //引入rxandroid
+    api deps.rxandroid
+    implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
 }

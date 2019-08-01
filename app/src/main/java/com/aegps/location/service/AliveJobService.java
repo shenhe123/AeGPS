@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.aegps.location.MainActivity;
 import com.aegps.location.utils.Contants;
+import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SystemUtils;
 
 /**JobService，支持5.0以上forcestop依然有效
@@ -35,14 +36,12 @@ public class AliveJobService extends JobService {
         public boolean handleMessage(Message msg) {
             // 具体任务逻辑
             if(SystemUtils.isAPPALive(getApplicationContext(), Contants.PACKAGE_NAME)){
-                Toast.makeText(getApplicationContext(), "APP活着的", Toast.LENGTH_SHORT)
-                        .show();
+                LogUtil.d(TAG,"APP活着的");
             }else{
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                Toast.makeText(getApplicationContext(), "APP被杀死，重启...", Toast.LENGTH_SHORT)
-                        .show();
+                LogUtil.d(TAG,"APP被杀死，重启...");
             }
             // 通知系统任务执行结束
             jobFinished( (JobParameters) msg.obj, false );

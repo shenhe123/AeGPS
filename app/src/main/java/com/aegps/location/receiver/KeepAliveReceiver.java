@@ -7,7 +7,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Parcelable;
-import android.widget.Toast;
+import android.util.Log;
+
+import com.aegps.location.service.DaemonService;
+import com.aegps.location.service.PlayerMusicService;
+import com.aegps.location.utils.Contants;
+import com.aegps.location.utils.LogUtil;
+import com.aegps.location.utils.SystemUtils;
 
 /** 监听系统广播，复活进程
  *  (1) 网络变化广播
@@ -23,18 +29,20 @@ public class KeepAliveReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        String action = intent.getAction();
-//        if(Contants.DEBUG)
-//            Log.d(TAG,"AliveBroadcastReceiver---->接收到的系统广播："+action);
-//        getNetworkBroadcast(context,intent);
-//        if(SystemUtils.isAppAlive(context,Contants.PACKAGE_NAME)){
-//            Log.i(TAG,"AliveBroadcastReceiver---->APP还是活着的");
-//            return;
-//        }
+        String action = intent.getAction();
+        if(Contants.DEBUG)
+            Log.d(TAG,"AliveBroadcastReceiver---->接收到的系统广播："+action);
+        getNetworkBroadcast(context,intent);
+        if(SystemUtils.isAPPALive(context,Contants.PACKAGE_NAME)){
+            Log.i(TAG,"AliveBroadcastReceiver---->APP还是活着的");
+            return;
+        }
 //        Intent intentAlive = new Intent(context, MainActivity.class);
 //        intentAlive.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //        context.startActivity(intentAlive);
-//        Log.i(TAG,"AliveBroadcastReceiver---->复活进程(APP)");
+        startDaemonService(context);
+        startPlayMusicService(context);
+        Log.i(TAG,"AliveBroadcastReceiver---->复活进程(APP)");
     }
 
     private void getNetworkBroadcast(Context context, Intent intent){
@@ -44,10 +52,10 @@ public class KeepAliveReceiver extends BroadcastReceiver {
             int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,0);
             switch (wifiState){
                 case WifiManager.WIFI_STATE_DISABLED:
-                    Toast.makeText(context,"wifi关闭", Toast.LENGTH_SHORT).show();
+                    LogUtil.d(TAG, "wifi关闭");
                     break;
                 case WifiManager.WIFI_STATE_ENABLED:
-                    Toast.makeText(context,"wifi开启", Toast.LENGTH_SHORT).show();
+                    LogUtil.d(TAG, "wifi开启");
                     break;
                 default:
                     break;
@@ -61,7 +69,7 @@ public class KeepAliveReceiver extends BroadcastReceiver {
                 NetworkInfo.State state = networkInfo.getState();
                 boolean isConnected = state == NetworkInfo.State.CONNECTED;
                 if(isConnected){
-                    Toast.makeText(context,"设备连接到一个有效WIFI路由器", Toast.LENGTH_SHORT).show();
+                    LogUtil.d(TAG, "设备连接到一个有效WIFI路由器");
                 }
             }
         }
@@ -74,10 +82,22 @@ public class KeepAliveReceiver extends BroadcastReceiver {
             ConnectivityManager manager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo gprs = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             if(gprs.isConnected()){
-                Toast.makeText(context,"移动网络打开", Toast.LENGTH_SHORT).show();
+                LogUtil.d(TAG, "移动网络打开");
             }else {
-                Toast.makeText(context,"移动网络关闭", Toast.LENGTH_SHORT).show();
+                LogUtil.d(TAG, "移动网络关闭");
             }
         }
+    }
+
+
+
+    private void startPlayMusicService(Context context) {
+        Intent intent = new Intent(context,PlayerMusicService.class);
+        context.startService(intent);
+    }
+
+    private void startDaemonService(Context context) {
+        Intent intent = new Intent(context, DaemonService.class);
+        context.startService(intent);
     }
 }

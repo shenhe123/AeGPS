@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class LogUtil {
     private static boolean sIsDebug = true;
-    private static String STAG = "yuqing_log";
+    private static String STAG = "gps_log";
 
     public static final int LOG_MESSAGE_MAX_LENGTH = 100;
 
