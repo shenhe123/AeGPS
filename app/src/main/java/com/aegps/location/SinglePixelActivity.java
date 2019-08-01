@@ -43,7 +43,7 @@ public class SinglePixelActivity extends AppCompatActivity {
         if(Contants.DEBUG)
             Log.d(TAG,"onDestroy--->1像素保活被终止");
         if(! SystemUtils.isAPPALive(this,Contants.PACKAGE_NAME)){
-            Intent intentAlive = new Intent(this, SportsActivity.class);
+            Intent intentAlive = new Intent(this, MainActivity.class);
             intentAlive.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intentAlive);
             Log.i(TAG,"SinglePixelActivity---->APP被干掉了，我要重启它");

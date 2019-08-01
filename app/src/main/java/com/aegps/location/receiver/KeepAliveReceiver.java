@@ -31,7 +31,7 @@ public class KeepAliveReceiver extends BroadcastReceiver {
 //            Log.i(TAG,"AliveBroadcastReceiver---->APP还是活着的");
 //            return;
 //        }
-//        Intent intentAlive = new Intent(context, SportsActivity.class);
+//        Intent intentAlive = new Intent(context, MainActivity.class);
 //        intentAlive.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //        context.startActivity(intentAlive);
 //        Log.i(TAG,"AliveBroadcastReceiver---->复活进程(APP)");

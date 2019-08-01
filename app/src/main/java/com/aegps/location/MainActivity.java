@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aegps.location.R;
+import com.aegps.location.base.BaseActivity;
 import com.aegps.location.receiver.ScreenReceiverUtil;
 import com.aegps.location.service.DaemonService;
 import com.aegps.location.service.PlayerMusicService;
@@ -29,8 +29,8 @@ import java.util.TimerTask;
  * Created by shenhe on 2019/7/30.
  */
 
-public class SportsActivity extends AppCompatActivity {
-    private static final String TAG = "SportsActivity";
+public class MainActivity extends BaseActivity {
+    private static final String TAG = "MainActivity";
     private Toolbar mToolBar;
     private TextView mTvRunTime;
     private Button mBtnRun;
@@ -60,7 +60,7 @@ public class SportsActivity extends AppCompatActivity {
         public void onSreenOff() {
             // 接到锁屏广播，将SportsActivity切换到可见模式
             // "咕咚"、"乐动力"、"悦动圈"就是这么做滴
-//            Intent intent = new Intent(SportsActivity.this,SportsActivity.class);
+//            Intent intent = new Intent(MainActivity.this,MainActivity.class);
 //            startActivity(intent);
             // 如果你觉得，直接跳出SportActivity很不爽
             // 那么，我们就制造个"1像素"惨案
@@ -74,27 +74,31 @@ public class SportsActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sports);
+    public int getLayoutId() {
+        return R.layout.activity_sports;
+    }
+
+    @Override
+    public void initPresenter() {
+
+    }
+    @Override
+    public void initView() {
         if(Contants.DEBUG)
             Log.d(TAG,"--->onCreate");
         // 1. 注册锁屏广播监听器
-//        mScreenListener = new ScreenReceiverUtil(this);
-//        mScreenManager = ScreenManager.getScreenManagerInstance(this);
-//        mScreenListener.setScreenReceiverListener(mScreenListenerer);
+        mScreenListener = new ScreenReceiverUtil(this);
+        mScreenManager = ScreenManager.getScreenManagerInstance(this);
+        mScreenListener.setScreenReceiverListener(mScreenListenerer);
         // 2. 启动系统任务
         mJobManager = JobSchedulerManager.getJobSchedulerInstance(this);
         mJobManager.startJobScheduler();
         // 3. 华为推送保活，允许接收透传
-//        mHwPushManager = HwPushManager.getInstance(this);
-//        mHwPushManager.startRequestToken();
-//        mHwPushManager.isEnableReceiveNormalMsg(true);
-//        mHwPushManager.isEnableReceiverNotifyMsg(true);
-        initView();
-    }
+        mHwPushManager = HwPushManager.getInstance(this);
+        mHwPushManager.startRequestToken();
+        mHwPushManager.isEnableReceiveNormalMsg(true);
+        mHwPushManager.isEnableReceiverNotifyMsg(true);
 
-    private void initView() {
         mToolBar = (Toolbar)findViewById(R.id.toolbar_sports);
         mToolBar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         mToolBar.setTitle("跑步啦");
@@ -122,22 +126,22 @@ public class SportsActivity extends AppCompatActivity {
     }
 
     private void stopPlayMusicService() {
-        Intent intent = new Intent(SportsActivity.this, PlayerMusicService.class);
+        Intent intent = new Intent(MainActivity.this, PlayerMusicService.class);
         stopService(intent);
     }
 
     private void startPlayMusicService() {
-        Intent intent = new Intent(SportsActivity.this,PlayerMusicService.class);
+        Intent intent = new Intent(MainActivity.this,PlayerMusicService.class);
         startService(intent);
     }
 
     private void startDaemonService() {
-        Intent intent = new Intent(SportsActivity.this, DaemonService.class);
+        Intent intent = new Intent(MainActivity.this, DaemonService.class);
         startService(intent);
     }
 
     private void stopDaemonService() {
-        Intent intent = new Intent(SportsActivity.this, DaemonService.class);
+        Intent intent = new Intent(MainActivity.this, DaemonService.class);
         stopService(intent);
     }
 
@@ -146,7 +150,7 @@ public class SportsActivity extends AppCompatActivity {
         // 禁用返回键
         if(keyCode == KeyEvent.KEYCODE_BACK){
             if(isRunning){
-                Toast.makeText(SportsActivity.this,"正在跑步", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"正在跑步", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
