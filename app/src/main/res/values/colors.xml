@@ -12,7 +12,8 @@
     <color name="viewfinder_result_point_color">#C0FFBD21</color>
     <color name="viewfinder_text_color">#FFC0C0C0</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="color_BBBBBB">#BBBBBB</color>
+    <color name="color_bbbbbb">#BBBBBB</color>
     <color name="transparent">#00000000</color>
     <color name="color_5677FC">#5677FC</color>
+    <color name="color_333333">#333333</color>
 </resources>

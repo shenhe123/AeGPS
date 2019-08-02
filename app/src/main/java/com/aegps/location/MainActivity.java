@@ -1,9 +1,6 @@
 package com.aegps.location;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -75,7 +72,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_sports;
+        return R.layout.activity_main;
     }
 
     @Override
@@ -99,23 +96,19 @@ public class MainActivity extends BaseActivity {
         mHwPushManager.isEnableReceiveNormalMsg(true);
         mHwPushManager.isEnableReceiverNotifyMsg(true);
 
-        mToolBar = (Toolbar)findViewById(R.id.toolbar_sports);
-        mToolBar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
-        mToolBar.setTitle("跑步啦");
-        mTvRunTime = (TextView)findViewById(R.id.tv_run_time);
-        mBtnRun = (Button)findViewById(R.id.btn_run);
+
     }
 
     public void onRunningClick(View v){
         if(! isRunning){
-            mBtnRun.setText("停止跑步");
+//            mBtnRun.setText("停止跑步");
             startRunTimer();
             // 3. 启动前台Service
             startDaemonService();
             // 4. 启动播放音乐Service
             startPlayMusicService();
         }else{
-            mBtnRun.setText("开始跑步");
+//            mBtnRun.setText("开始跑步");
             stopRunTimer();
             //关闭前台Service
             stopDaemonService();
@@ -179,7 +172,7 @@ public class MainActivity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mTvRunTime.setText(timeHour+" : "+timeMin+" : "+timeSec);
+//                        mTvRunTime.setText(timeHour+" : "+timeMin+" : "+timeSec);
                     }
                 });
             }
