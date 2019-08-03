@@ -15,18 +15,16 @@
  */
 package com.aegps.location.zxing;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 import com.aegps.location.R;
+import com.aegps.location.base.BaseActivity;
+import com.aegps.location.utils.LogUtil;
 import com.aegps.location.zxing.camera.CameraManager;
 
 
-public class CaptureActivity extends Activity implements OnCaptureCallback{
+public class CaptureActivity extends BaseActivity implements OnCaptureCallback{
 
     public static final String KEY_RESULT = Intents.Scan.RESULT;
 
@@ -34,16 +32,6 @@ public class CaptureActivity extends Activity implements OnCaptureCallback{
     private ViewfinderView viewfinderView;
 
     private CaptureHelper mCaptureHelper;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        int layoutId = getLayoutId();
-        if(isContentView(layoutId)){
-            setContentView(layoutId);
-        }
-        initUI();
-    }
 
     /**
      * 初始化
@@ -57,20 +45,21 @@ public class CaptureActivity extends Activity implements OnCaptureCallback{
     }
 
     /**
-     * 返回true时会自动初始化{@link #setContentView(int)}，返回为false是需自己去初始化{@link #setContentView(int)}
-     * @param layoutId
-     * @return 默认返回true
-     */
-    public boolean isContentView(@LayoutRes int layoutId){
-        return true;
-    }
-
-    /**
      * 布局id
      * @return
      */
     public int getLayoutId(){
         return R.layout.zxl_capture;
+    }
+
+    @Override
+    public void initPresenter() {
+
+    }
+
+    @Override
+    public void initView() {
+        initUI();
     }
 
     /**
@@ -137,6 +126,7 @@ public class CaptureActivity extends Activity implements OnCaptureCallback{
      */
     @Override
     public boolean onResultCallback(String result) {
-        return false;
+        LogUtil.d("scan result = " + result);
+        return true;
     }
 }

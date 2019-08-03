@@ -8,6 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="OnClick">
+        <item name="android:clickable">true</item>
+        <item name="android:onClick">onClick</item>
+    </style>
+
     <!--页面切换动画-->
     <style name="Activity.Theme" mce_bogus="1" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowAnimationStyle">@style/anim_activity</item>

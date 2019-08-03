@@ -1,12 +1,11 @@
 package com.aegps.location;
 
 import android.content.Intent;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aegps.location.base.BaseActivity;
@@ -21,20 +20,15 @@ import com.aegps.location.utils.ScreenManager;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/** 运动界面，处理各种保活逻辑
- *
+/**
+ * 运动界面，处理各种保活逻辑
+ * <p>
  * Created by shenhe on 2019/7/30.
  */
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
-    private Toolbar mToolBar;
-    private TextView mTvRunTime;
-    private Button mBtnRun;
 
-    private int timeSec;
-    private int timeMin;
-    private int timeHour;
     private Timer mRunTimer;
     private boolean isRunning;
     // 动态注册锁屏等广播
@@ -69,6 +63,18 @@ public class MainActivity extends BaseActivity {
             // 解锁，暂不用，保留
         }
     };
+    /**
+     * 装载启动
+     */
+    private Button mBtnLoadingBegin;
+    /**
+     * 卸货签收
+     */
+    private Button mBtnUnloadReceipt;
+    /**
+     * 运输变更
+     */
+    private Button mBtnTransportChange;
 
     @Override
     public int getLayoutId() {
@@ -79,10 +85,11 @@ public class MainActivity extends BaseActivity {
     public void initPresenter() {
 
     }
+
     @Override
     public void initView() {
-        if(Contants.DEBUG)
-            Log.d(TAG,"--->onCreate");
+        if (Contants.DEBUG)
+            Log.d(TAG, "--->onCreate");
         // 1. 注册锁屏广播监听器
         mScreenListener = new ScreenReceiverUtil(this);
         mScreenManager = ScreenManager.getScreenManagerInstance(this);
@@ -97,17 +104,23 @@ public class MainActivity extends BaseActivity {
         mHwPushManager.isEnableReceiverNotifyMsg(true);
 
 
+        mBtnLoadingBegin = (Button) findViewById(R.id.btn_loading_begin);
+        mBtnLoadingBegin.setOnClickListener(this);
+        mBtnUnloadReceipt = (Button) findViewById(R.id.btn_unload_receipt);
+        mBtnUnloadReceipt.setOnClickListener(this);
+        mBtnTransportChange = (Button) findViewById(R.id.btn_transport_change);
+        mBtnTransportChange.setOnClickListener(this);
     }
 
-    public void onRunningClick(View v){
-        if(! isRunning){
+    public void onRunningClick(View v) {
+        if (!isRunning) {
 //            mBtnRun.setText("停止跑步");
             startRunTimer();
             // 3. 启动前台Service
             startDaemonService();
             // 4. 启动播放音乐Service
             startPlayMusicService();
-        }else{
+        } else {
 //            mBtnRun.setText("开始跑步");
             stopRunTimer();
             //关闭前台Service
@@ -124,7 +137,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void startPlayMusicService() {
-        Intent intent = new Intent(MainActivity.this,PlayerMusicService.class);
+        Intent intent = new Intent(MainActivity.this, PlayerMusicService.class);
         startService(intent);
     }
 
@@ -141,9 +154,9 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // 禁用返回键
-        if(keyCode == KeyEvent.KEYCODE_BACK){
-            if(isRunning){
-                Toast.makeText(MainActivity.this,"正在跑步", Toast.LENGTH_SHORT).show();
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (isRunning) {
+                Toast.makeText(MainActivity.this, "正在跑步", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
@@ -154,20 +167,6 @@ public class MainActivity extends BaseActivity {
         TimerTask mTask = new TimerTask() {
             @Override
             public void run() {
-                timeSec++;
-                if(timeSec == 60){
-                    timeSec = 0;
-                    timeMin++;
-                }
-                if(timeMin == 60){
-                    timeMin = 0;
-                    timeHour++;
-                }
-                if(timeHour == 24){
-                    timeSec = 0;
-                    timeMin = 0;
-                    timeHour = 0;
-                }
                 // 更新UI
                 runOnUiThread(new Runnable() {
                     @Override
@@ -179,26 +178,39 @@ public class MainActivity extends BaseActivity {
         };
         mRunTimer = new Timer();
         // 每隔1s更新一下时间
-        mRunTimer.schedule(mTask,1000,1000);
+        mRunTimer.schedule(mTask, 1000, 1000);
     }
 
-    private void stopRunTimer(){
-        if(mRunTimer != null){
+    private void stopRunTimer() {
+        if (mRunTimer != null) {
             mRunTimer.cancel();
             mRunTimer = null;
         }
-        timeSec = 0;
-        timeMin = 0;
-        timeHour = 0;
-        mTvRunTime.setText(timeHour+" : "+timeMin+" : "+timeSec);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(Contants.DEBUG)
-            Log.d(TAG,"--->onDestroy");
+        if (Contants.DEBUG)
+            Log.d(TAG, "--->onDestroy");
         stopRunTimer();
 //        mScreenListener.stopScreenReceiverListener();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            default:
+                break;
+            case R.id.btn_loading_begin:
+                EasyCaptureActivity.launch(this, mBtnLoadingBegin.getText().toString(), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
+                break;
+            case R.id.btn_unload_receipt:
+                EasyCaptureActivity.launch(this, mBtnUnloadReceipt.getText().toString(), EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE);
+                break;
+            case R.id.btn_transport_change:
+                EasyCaptureActivity.launch(this, mBtnTransportChange.getText().toString(), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
+                break;
+        }
     }
 }
