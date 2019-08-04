@@ -37,7 +37,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     @Override
-    public void initPresenter() {
+    public void initData() {
 
     }
 
@@ -48,29 +48,20 @@ public class SplashActivity extends BaseActivity {
 
     private void goHomeActivity() {
         Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
-        SplashActivity.this.startActivity(intent);
-        SplashActivity.this.finish();
+        startActivity(intent);
+        finish();
     }
 
     @SuppressLint("CheckResult")
     private void requestPermission() {
         //同时请求多个权限
         RxPermissions rxPermission = new RxPermissions(SplashActivity.this);
-        rxPermission.requestEach(Manifest.permission.ACCESS_COARSE_LOCATION,
+        rxPermission.request(Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.CAMERA)
-                .subscribe(permission -> {
-                    if (permission.granted) {
-                        // 用户已经同意该权限
-                        LogUtil.d(permission.name + " is granted.");
-                        // 延迟1.5s，启动主界面
+                .subscribe(granted -> {
+                    if (granted) {
                         mHandler.sendEmptyMessageDelayed(GO_HOME,1500);
-                    } else if (permission.shouldShowRequestPermissionRationale) {
-                        // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
-                        LogUtil.d(permission.name + " is denied. More info should be provided.");
-                    } else {
-                        // 用户拒绝了该权限，并且选中『不再询问』
-                        LogUtil.d(permission.name + " is denied.");
                     }
                 });
 

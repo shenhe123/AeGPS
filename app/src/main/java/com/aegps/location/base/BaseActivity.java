@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
@@ -32,8 +31,8 @@ public abstract class BaseActivity extends FragmentActivity {
         setContentView(getLayoutId());
         mContext = this;
 
-        this.initPresenter();
         this.initView();
+        this.initData();
     }
 
     /**
@@ -58,7 +57,7 @@ public abstract class BaseActivity extends FragmentActivity {
     public abstract int getLayoutId();
 
     //简单页面无需mvp就不用管此方法即可,完美兼容各种实际场景的变通
-    public abstract void initPresenter();
+    public abstract void initData();
 
     //初始化view
     public abstract void initView();

@@ -53,7 +53,7 @@ public class CaptureActivity extends BaseActivity implements OnCaptureCallback{
     }
 
     @Override
-    public void initPresenter() {
+    public void initData() {
 
     }
 

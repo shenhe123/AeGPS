@@ -54,7 +54,7 @@ public class EasyCaptureActivity extends CaptureActivity {
 
     @Override
     public boolean onResultCallback(String result) {
-        
+
         return super.onResultCallback(result);
     }
 }
