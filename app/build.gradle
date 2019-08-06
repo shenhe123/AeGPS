@@ -50,4 +50,5 @@ dependencies {
     //引入rxandroid
     api deps.rxandroid
     implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
+    implementation 'com.google.code.gson:gson:2.8.0'
 }
