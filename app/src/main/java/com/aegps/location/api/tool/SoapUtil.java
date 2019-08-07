@@ -1,18 +1,15 @@
 package com.aegps.location.api.tool;
 
-import com.aegps.location.api.module.SysDataTableList;
+import com.aegps.location.bean.SysDataTableList;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.network.SoapClient;
 import com.aegps.location.api.network.SoapRequest;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.ksoap2.SoapEnvelope;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by shenhe on 2017/3/6.

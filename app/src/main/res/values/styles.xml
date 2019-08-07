@@ -66,5 +66,10 @@
         <item name="android:windowExitAnimation">@anim/anim_bottom_dismiss</item>
     </style>
 
+    <style name="top_popupwindow" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/anim_top_show</item>
+        <item name="android:windowExitAnimation">@anim/anim_top_dismiss</item>
+    </style>
+
     <color name="color_cccccc">#CCCCCC</color>
 </resources>

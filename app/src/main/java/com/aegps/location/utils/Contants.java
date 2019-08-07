@@ -9,4 +9,5 @@ public class Contants {
     public static final boolean DEBUG = true;
 
     public static final String PACKAGE_NAME = "com.aegps.location";
+    public static final String SP_ACCOUNT_LIST = "sp_account_list";
 }

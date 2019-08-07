@@ -1,15 +1,18 @@
 package com.aegps.location.widget.popupwindow.account;
 
 import android.content.Context;
-import android.view.View;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.aegps.location.R;
+import com.aegps.location.adapter.AccountAdapter;
+import com.aegps.location.bean.ReturnTableResult;
+import com.aegps.location.utils.DensityUtil;
+import com.aegps.location.utils.DisplayUtil;
 import com.aegps.location.widget.popupwindow.BasePWControl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,8 +21,8 @@ import java.util.List;
 
 public abstract class AccountMenuWindow extends BasePWControl {
 
-    private TextView mMenuName;
-    private List<String> content;
+    private RecyclerView mRecyclerView;
+    private AccountAdapter adapter;
 
     public AccountMenuWindow(Context context, ViewGroup layoutParent) {
         super(context, layoutParent);
@@ -27,8 +30,14 @@ public abstract class AccountMenuWindow extends BasePWControl {
 
     @Override
     protected void initView() {
-        mMenuName = ((TextView) mView.findViewById(R.id.tv_menu_name));
-        mMenuName.setOnClickListener(v -> selectAccount(mMenuName.getText().toString()));
+        mRecyclerView = ((RecyclerView) mView.findViewById(R.id.recyclerView));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        adapter = new AccountAdapter(mContext);
+        adapter.setItemListener((data, position) -> {
+            selectAccount(data.getCountingRoomName());
+            cancel();
+        });
+        mRecyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -38,7 +47,7 @@ public abstract class AccountMenuWindow extends BasePWControl {
 
     @Override
     protected int injectAnimationStyle() {
-        return R.style.bottom_popupwindow;
+        return 0;
     }
 
 
@@ -49,12 +58,12 @@ public abstract class AccountMenuWindow extends BasePWControl {
 
     @Override
     public int injectParamsWight() {
-        return LinearLayout.LayoutParams.WRAP_CONTENT;
+        return DisplayUtil.getScreenWidth(mContext) - DensityUtil.dip2px(mContext, 90);
     }
 
     protected abstract void selectAccount(String accountName);
 
-    public void setContent(ArrayList<String> content) {
-        this.content = content;
+    public void setContent(List<ReturnTableResult.ReturnTableBean> content) {
+        adapter.setData(content);
     }
 }

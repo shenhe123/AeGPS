@@ -1,21 +1,26 @@
 package com.aegps.location;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import com.aegps.location.api.module.SysDataTableList;
+import com.aegps.location.bean.ReturnTableResult;
+import com.aegps.location.bean.SysDataTableList;
 import com.aegps.location.api.network.Callback;
-import com.aegps.location.api.tool.SoapEnvelopeUtil;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
+import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.LogUtil;
+import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.WindowStatusHelp;
 import com.aegps.location.widget.CircleImageView;
 import com.aegps.location.widget.popupwindow.account.AccountMenuWindow;
+import com.google.gson.Gson;
 
 import org.ksoap2.SoapEnvelope;
 
@@ -30,9 +35,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     // UI references.
     private CircleImageView mIvLogo;
-    private EditText mTvAccount;
+    private TextView mTvAccount;
     private AccountMenuWindow mAccountWindow;
     private LinearLayout mLayoutParent;
+    private List<ReturnTableResult.ReturnTableBean> returnTable = new ArrayList<>();
 
     @Override
     public int getLayoutId() {
@@ -49,7 +55,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLayoutParent = ((LinearLayout) findViewById(R.id.layout_parent));
         mIvLogo = ((CircleImageView) findViewById(R.id.iv_icon));
         mIvLogo.setImageResource(R.mipmap.ic_launcher);
-        mTvAccount = ((EditText) findViewById(R.id.tv_account));
+        mTvAccount = ((TextView) findViewById(R.id.tv_account));
         mTvAccount.setOnClickListener(this);
     }
 
@@ -77,8 +83,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if (mAccountWindow == null) {
             initCommentWindow();
         }
-        mAccountWindow.setContent(new ArrayList<String>());
-        mAccountWindow.showAtLocation(mLayoutParent, Gravity.BOTTOM, 0, 0);
+        mAccountWindow.setContent(returnTable);
+        mAccountWindow.showAsDropDown(mTvAccount, 0, 0);
         WindowStatusHelp.setWindowAlpha(this, 0.5f);
     }
 
@@ -96,7 +102,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
                 @Override
                 protected void selectAccount(String accountName) {
-
+                    mTvAccount.setText(accountName);
                 }
 
                 @Override
@@ -121,61 +127,28 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 "",
                 "",
                 "");
-        ThreadManager.getThreadPollProxy().execute(new Runnable() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getAccountData("GetJsonData", item, new Callback() {
             @Override
-            public void run() {
-                SoapUtil.getInstance().getAccountData("GetJsonData", item, new Callback() {
-                    @Override
-                    public void onResponse(SoapEnvelope envelope) {
-                        LogUtil.d("result:--->" + envelope.bodyIn.toString());
-                        String text = SoapEnvelopeUtil.getTextFromResponse(envelope);
-                        LogUtil.d("result-text:--->" + text);
-                    }
+            public void onResponse(SoapEnvelope envelope) {
+                LogUtil.d("result:--->" + envelope.bodyIn.toString());
+                if (TextUtils.isEmpty(envelope.bodyIn.toString())) return;
+                String[] bodyArray = envelope.bodyIn.toString().split(";");
+                if (bodyArray.length > 2) {
+                    String sJsonOutData = bodyArray[1];
+                    String returnJson = sJsonOutData.replaceFirst("sJsonOutData=", "");
+                    //保存账套信息
+                    SharedPrefUtils.saveString(Contants.SP_ACCOUNT_LIST, returnJson);
 
-                    @Override
-                    public void onFailure(Object o) {
-                        LogUtil.d("result failure:--->" + o.toString());
-                    }
-                });
+                    ReturnTableResult returnTableResult = new Gson().fromJson(returnJson, ReturnTableResult.class);
+                    returnTable = returnTableResult.getReturnTable();
+                }
             }
-        });
-//        ThreadManager.getThreadPollProxy().execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                String namesapce = "http://tempuri.org/";
-//                String soapAction = "http://tempuri.org/ITradingService/GetJsonData";
-//                String method = "GetJsonData";
-//                SoapObject request = new SoapObject("http://tempuri.org/", "GetJsonData");
-//                request.addProperty("sJsonInData", "{\"SysDataTableList\":[{\"HandleType\":\"0\",\"HandleCode\":\"Plat_GetCountingRoomName\",\"UserCode\":\"\",\"PlatCode\":\"07\",\"DataBaseName\":\"\",\"ClientIP\":\"\",\"FunctionID\":\"\"}]}");
-//                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-//
-//                // 下面这两句是一样的作用，写一句就行了
-//                envelope.bodyOut = request;
-//                envelope.setOutputSoapObject(request);
-//
-//                // 设置是否调用的是dotNet开发的WebService
-//                envelope.dotNet = true;
-//
-//                HttpTransportSE transport = new HttpTransportSE("http://182.92.191.17:8800/TradingService.svc");
-//                try {
-//                    // 调用
-//                    transport.call(soapAction, envelope);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//                // 获取返回的数据
-//                SoapObject object = (SoapObject) envelope.bodyIn;
-//                if(null==object){
-//                    return;
-//                }
-//                // 获取返回的结果
-//                String result = object.getProperty(0).toString();
-//                String data = object.getProperty(1).toString();
-//
-//                LogUtil.d(result);
-//            }
-//        });
+
+            @Override
+            public void onFailure(Object o) {
+                LogUtil.d("result failure:--->" + o.toString());
+            }
+        }));
 
     }
 //

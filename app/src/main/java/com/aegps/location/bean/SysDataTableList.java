@@ -1,4 +1,4 @@
-package com.aegps.location.api.module;
+package com.aegps.location.bean;
 
 import java.util.List;
 

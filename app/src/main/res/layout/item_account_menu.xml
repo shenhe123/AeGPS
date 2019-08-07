@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tv_menu_name"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:gravity="center"
+    tools:text="举报"
+    android:textColor="@color/color_333333"
+    android:textSize="14sp" />

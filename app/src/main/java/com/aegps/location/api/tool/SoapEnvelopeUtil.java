@@ -23,13 +23,4 @@ public class SoapEnvelopeUtil {
         }
         return ((SoapObject) envelope.bodyIn).getProperty(0).toString();
     }
-    public static SoapObject getObjectFromResponse(SoapEnvelope envelope) {
-        if (envelope == null || envelope.bodyIn == null) {
-            return null;
-        }
-        if (envelope.bodyIn instanceof SoapObject) {
-            return (SoapObject) envelope.bodyIn;
-        }
-        return null;
-    }
 }
