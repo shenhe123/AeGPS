@@ -34,7 +34,7 @@ public abstract class AccountMenuWindow extends BasePWControl {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         adapter = new AccountAdapter(mContext);
         adapter.setItemListener((data, position) -> {
-            selectAccount(data.getCountingRoomName());
+            selectAccount(data.getCountingRoomName(), data.getDataBasesName());
             cancel();
         });
         mRecyclerView.setAdapter(adapter);
@@ -61,7 +61,7 @@ public abstract class AccountMenuWindow extends BasePWControl {
         return DisplayUtil.getScreenWidth(mContext) - DensityUtil.dip2px(mContext, 90);
     }
 
-    protected abstract void selectAccount(String accountName);
+    protected abstract void selectAccount(String accountName, String databaseName);
 
     public void setContent(List<ReturnTableResult.ReturnTableBean> content) {
         adapter.setData(content);

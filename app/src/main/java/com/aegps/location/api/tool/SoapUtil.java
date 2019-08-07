@@ -23,6 +23,7 @@ public class SoapUtil {
     public static final String mWeatherEndPoint = "http://182.92.191.17:8800/TradingService.svc";
     public static final String soapAction = "http://tempuri.org/ITradingService/GetJsonData";
     public static final String mNameSpace = "http://tempuri.org/";
+    public static final String methodName = "GetJsonData";
     public int mSOAPVersion = SoapEnvelope.VER11;
 
     private SoapUtil() {
@@ -41,12 +42,11 @@ public class SoapUtil {
 
     /**
      * 异步调用
-     * 获取账套信息
      *
-     * @param methodName
+     * @param sysDataTable 必要参数
      * @param callback
      */
-    public void getAccountData(String methodName, SysDataTableList.SysDataTable sysDataTable, Callback callback) {
+    public void getRequestData(SysDataTableList.SysDataTable sysDataTable, Callback callback) {
         SysDataTableList sysDataTableList = new SysDataTableList();
         List<SysDataTableList.SysDataTable> sysDataTables = new ArrayList<>();
         sysDataTables.add(sysDataTable);
@@ -68,10 +68,10 @@ public class SoapUtil {
      * @param cityName
      * @return
      */
-    public SoapEnvelope getAccountData(String cityName) {
+    public SoapEnvelope getRequestData(String cityName) {
         SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
-                .methodName("getAccountData")
-                .soapAction(mNameSpace + "getAccountData")
+                .methodName("getRequestData")
+                .soapAction(mNameSpace + "getRequestData")
                 .addParam("byProvinceName", cityName)
                 .nameSpace(mNameSpace)
                 .setVersion(mSOAPVersion)
@@ -79,5 +79,4 @@ public class SoapUtil {
                 .build();
         return mSoapClient.newCall(request).execute();
     }
-
 }
