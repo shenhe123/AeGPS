@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aegps.location.R;
-import com.aegps.location.bean.ReturnTableResult;
+import com.aegps.location.bean.net.ReturnTableResult;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -70,4 +70,8 @@ public class CustomView extends LinearLayout {
         mTvName.setTextColor(color);
         return this;
     }
+
+    public String getRightText() {
+        return mTvName.getText().toString();
+    }
 }

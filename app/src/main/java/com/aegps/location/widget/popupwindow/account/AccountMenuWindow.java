@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 
 import com.aegps.location.R;
 import com.aegps.location.adapter.AccountAdapter;
-import com.aegps.location.bean.ReturnTableResult;
+import com.aegps.location.bean.net.ReturnTableResult;
 import com.aegps.location.utils.DensityUtil;
 import com.aegps.location.utils.DisplayUtil;
 import com.aegps.location.widget.popupwindow.BasePWControl;

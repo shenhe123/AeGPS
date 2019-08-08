@@ -37,6 +37,7 @@ dependencies {
     androidTestImplementation deps.test.espresso
     //libs
     implementation files('libs/HwPush_SDK_V2705.jar')
+    implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
     //support
     implementation deps.support.design
     implementation deps.support.appcompat
@@ -49,6 +50,8 @@ dependencies {
     api deps.rxpermissions
     //引入rxandroid
     api deps.rxandroid
-    implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
-    implementation 'com.google.code.gson:gson:2.8.0'
+    //gson
+    api deps.gson
+    //eventbus
+    api deps.eventbus
 }

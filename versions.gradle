@@ -32,8 +32,12 @@ versions.zxing = "3.3.3"
 versions.glide = "3.8.0"
 //rxpermissions
 versions.rxpermissions = "0.9.4@aar"
-
+//rxandroid
 versions.rxandroid = "2.0.1"
+//gson
+versions.gson = "2.8.0"
+//eventbus
+versions.eventbus = "3.1.1"
 
 
 
@@ -62,6 +66,12 @@ deps.rxpermissions = "com.tbruyelle.rxpermissions2:rxpermissions:$versions.rxper
 
 //rxandroid
 deps.rxandroid = "io.reactivex.rxjava2:rxandroid:$versions.rxandroid"
+
+//rxandroid
+deps.gson = "com.google.code.gson:gson:$versions.gson"
+
+//eventbus
+deps.eventbus = "org.greenrobot:eventbus:$versions.eventbus"
 
 ext.deps = deps
 

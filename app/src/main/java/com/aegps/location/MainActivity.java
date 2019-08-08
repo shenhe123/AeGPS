@@ -1,7 +1,7 @@
 package com.aegps.location;
 
 import android.content.Intent;
-import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -11,7 +11,8 @@ import android.widget.Toast;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
-import com.aegps.location.bean.RefreshMonitor;
+import com.aegps.location.bean.event.CommonEvent;
+import com.aegps.location.bean.net.RefreshMonitor;
 import com.aegps.location.receiver.ScreenReceiverUtil;
 import com.aegps.location.service.DaemonService;
 import com.aegps.location.service.PlayerMusicService;
@@ -22,8 +23,13 @@ import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.ScreenManager;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
+import com.aegps.location.utils.ToastUtil;
+import com.aegps.location.widget.CustomView;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 
@@ -86,6 +92,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 运输变更
      */
     private Button mBtnTransportChange;
+    private CustomView mTransportId;
+    private CustomView mCarNum;
+    private CustomView mFreightRate;
+    private CustomView mBeginTime;
+    private CustomView mDrivingTime;
+    private CustomView mDrivingDistance;
+    private CustomView mFreightOrderNumber;
+    private CustomView mClient;
+    private CustomView mAddress;
+    private CustomView mCity;
+    private CustomView mContact;
+    private CustomView mPhone;
+    private CustomView mTel;
+    private CustomView mFreightReceiptTime;
+    private CustomView mFreightDrivingDistance;
+    private CustomView mRemark;
 
     @Override
     public int getLayoutId() {
@@ -94,12 +116,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initData() {
+        transportChange();
+    }
+
+    private void transportChange() {
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
             @Override
             public void onResponse(SoapEnvelope envelope) {
                 // 获取返回的数据
                 SoapObject object = (SoapObject) envelope.bodyIn;
-                if(null==object){
+                if (null == object) {
                     return;
                 }
                 LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
@@ -134,6 +160,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void initView() {
         if (Contants.DEBUG)
             Log.d(TAG, "--->onCreate");
+        EventBus.getDefault().register(this);
         // 1. 注册锁屏广播监听器
         mScreenListener = new ScreenReceiverUtil(this);
         mScreenManager = ScreenManager.getScreenManagerInstance(this);
@@ -154,33 +181,65 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mBtnUnloadReceipt.setOnClickListener(this);
         mBtnTransportChange = (Button) findViewById(R.id.btn_transport_change);
         mBtnTransportChange.setOnClickListener(this);
+        mTransportId = (CustomView) findViewById(R.id.transport_id);
+        mCarNum = (CustomView) findViewById(R.id.car_num);
+        mFreightRate = (CustomView) findViewById(R.id.freight_rate);
+        mBeginTime = (CustomView) findViewById(R.id.begin_time);
+        mDrivingTime = (CustomView) findViewById(R.id.driving_time);
+        mDrivingDistance = (CustomView) findViewById(R.id.driving_distance);
+        mFreightOrderNumber = (CustomView) findViewById(R.id.freight_order_number);
+        mClient = (CustomView) findViewById(R.id.client);
+        mAddress = (CustomView) findViewById(R.id.address);
+        mCity = (CustomView) findViewById(R.id.city);
+        mContact = (CustomView) findViewById(R.id.contact);
+        mPhone = (CustomView) findViewById(R.id.phone);
+        mTel = (CustomView) findViewById(R.id.tel);
+        mFreightReceiptTime = (CustomView) findViewById(R.id.freight_receipt_time);
+        mFreightDrivingDistance = (CustomView) findViewById(R.id.freight_driving_distance);
+        mRemark = (CustomView) findViewById(R.id.remark);
     }
 
     private void refreshEntryView(RefreshMonitor.MonitorEntryTableBean item) {
-
+        mFreightOrderNumber.setRightText(item.getExpressCode() == null ? "" : item.getExpressCode());
+        mClient.setRightText(item.getBaccName() == null ? "" : item.getBaccName());
+        mAddress.setRightText(item.getDeliveryAddress() == null ? "" : item.getDeliveryAddress());
+        mCity.setRightText(item.getDeliveryCity() == null ? "" : item.getDeliveryCity());
+        mContact.setRightText(item.getContactPerson() == null ? "" : item.getContactPerson());
+        mPhone.setRightText(item.getMobileTeleCode() == null ? "" : item.getMobileTeleCode());
+        mTel.setRightText(item.getTelephoneCode() == null ? "" : item.getTelephoneCode());
+        mFreightReceiptTime.setRightText(item.getEndingTime() == null ? "" : item.getEndingTime());
+        mFreightDrivingDistance.setRightText(item.getMileageMeasure() + "");
+        mRemark.setRightText(item.getRemarkSub() == null ? "" : item.getRemarkSub());
     }
 
     private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
-
+        mTransportId.setRightText(item.getTrafficCode() == null ? "" : item.getTrafficCode());
+        mCarNum.setRightText(item.getVehicleCode() == null ? "" : item.getVehicleCode());
+        mFreightRate.setRightText(item.getShippingModeName() == null ? "" : item.getShippingModeName());
+        mBeginTime.setRightText(item.getBeginningTime() == null ? "" : item.getBeginningTime());
+        mDrivingTime.setRightText(item.getDrivingDuration() == null ? "" : item.getDrivingDuration());
+        mDrivingDistance.setRightText(item.getMileageMeasure() + "");
     }
 
-    public void onRunningClick(View v) {
-        if (!isRunning) {
-//            mBtnRun.setText("停止跑步");
-            startRunTimer();
-            // 3. 启动前台Service
-            startDaemonService();
-            // 4. 启动播放音乐Service
-            startPlayMusicService();
-        } else {
-//            mBtnRun.setText("开始跑步");
-            stopRunTimer();
-            //关闭前台Service
-            stopDaemonService();
-            //关闭启动播放音乐Service
-            stopPlayMusicService();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(CommonEvent event) {
+        int code = event.getCode();
+        switch (code) {
+            default:
+                break;
+            case EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE:
+                ToastUtil.showShort("启动成功");
+                // 启动前台Service
+                startDaemonService();
+                // 启动播放音乐Service
+                startPlayMusicService();
+                transportChange();
+                break;
+            case EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE:
+                ToastUtil.showShort("变更运输成功");
+                transportChange();
+                break;
         }
-        isRunning = !isRunning;
     }
 
     private void stopPlayMusicService() {
@@ -195,6 +254,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void startDaemonService() {
         Intent intent = new Intent(MainActivity.this, DaemonService.class);
+        intent.putExtra(DaemonService.EXTRA_IS_ALLOW_UPLOAD_LOCATION, true);
         startService(intent);
     }
 
@@ -245,8 +305,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onDestroy();
         if (Contants.DEBUG)
             Log.d(TAG, "--->onDestroy");
+        EventBus.getDefault().unregister(this);
         stopRunTimer();
-//        mScreenListener.stopScreenReceiverListener();
     }
 
     @Override
@@ -258,11 +318,41 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 EasyCaptureActivity.launch(this, mBtnLoadingBegin.getText().toString(), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
                 break;
             case R.id.btn_unload_receipt:
-                EasyCaptureActivity.launch(this, mBtnUnloadReceipt.getText().toString(), EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE);
+                if (TextUtils.isEmpty(mTransportId.getRightText())) return;
+                unLoadReceipt(mTransportId.getRightText());
                 break;
             case R.id.btn_transport_change:
                 EasyCaptureActivity.launch(this, mBtnTransportChange.getText().toString(), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
                 break;
         }
+    }
+
+    private void unLoadReceipt(String shipmentBarCode) {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
+            @Override
+            public void onResponse(SoapEnvelope envelope) {
+                // 获取返回的数据
+                SoapObject object = (SoapObject) envelope.bodyIn;
+                if (null == object) {
+                    return;
+                }
+                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
+                // 获取返回的结果
+                String result = object.getProperty(0).toString();
+                String data = object.getProperty(1).toString();
+                LogUtil.d("result:--->" + result);
+                LogUtil.d("data:--->" + data);
+                //关闭前台Service
+                stopDaemonService();
+                //关闭启动播放音乐Service
+                stopPlayMusicService();
+                runOnUiThread(() -> ToastUtil.showShort("卸货成功"));
+            }
+
+            @Override
+            public void onFailure(Object o) {
+                LogUtil.e("result failure:--->" + o.toString());
+            }
+        }));
     }
 }

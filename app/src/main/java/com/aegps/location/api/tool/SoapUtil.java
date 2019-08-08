@@ -1,19 +1,12 @@
 package com.aegps.location.api.tool;
 
-import com.aegps.location.bean.SysDataTableList;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.network.SoapClient;
 import com.aegps.location.api.network.SoapRequest;
-import com.aegps.location.utils.ApplicationUtil;
-import com.aegps.location.utils.LogUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import org.json.JSONObject;
 import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,6 +117,12 @@ public class SoapUtil {
         mSoapClient.newCall(request).enqueue(callback);
     }
 
+    /**
+     * 刷新监控
+     * @param mobileId 用户id
+     * @param dataName 账套名
+     * @param callback
+     */
     public void refreshMonitor(String mobileId, String dataName, Callback callback) {
         HashMap<String, Object> params = new HashMap<>();
         List<JsonObject> jsonObjects = new ArrayList<>();
@@ -132,6 +131,93 @@ public class SoapUtil {
         jsonObjects.add(jsonObject);
         params.put("InfoTable", jsonObjects);
         String jsonParams = getDataSet("LO_MobileTraffic_RefreshMonitor", "", dataName, params);
+        params.clear();
+        params.put("sJsonInData", jsonParams);
+        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+                .methodName(methodName)
+                .soapAction(soapAction)
+                .setParams(params)
+                .nameSpace(mNameSpace)
+                .setVersion(mSOAPVersion)
+                .setDotNet(true)
+                .build();
+        mSoapClient.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 载货启动
+     * @param mobileId 用户id
+     * @param dataName 账套名
+     * @param trafficBarCode 运输单code
+     * @param callback
+     */
+    public void loadBegin(String mobileId, String dataName, String trafficBarCode, Callback callback) {
+        HashMap<String, Object> params = new HashMap<>();
+        List<JsonObject> jsonObjects = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("MobileID", mobileId);
+        jsonObject.addProperty("TrafficBarCode", trafficBarCode);
+        jsonObjects.add(jsonObject);
+        params.put("InfoTable", jsonObjects);
+        String jsonParams = getDataSet("LO_MobileTraffic_CargoStart", "", dataName, params);
+        params.clear();
+        params.put("sJsonInData", jsonParams);
+        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+                .methodName(methodName)
+                .soapAction(soapAction)
+                .setParams(params)
+                .nameSpace(mNameSpace)
+                .setVersion(mSOAPVersion)
+                .setDotNet(true)
+                .build();
+        mSoapClient.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 卸货签收
+     * @param mobileId 用户id
+     * @param dataName 账套名
+     * @param shipmentBarCode 运输单code
+     * @param callback
+     */
+    public void unloadReceipt(String mobileId, String dataName, String shipmentBarCode, Callback callback) {
+        HashMap<String, Object> params = new HashMap<>();
+        List<JsonObject> jsonObjects = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("MobileID", mobileId);
+        jsonObject.addProperty("ShipmentBarCode", shipmentBarCode);
+        jsonObjects.add(jsonObject);
+        params.put("InfoTable", jsonObjects);
+        String jsonParams = getDataSet("LO_MobileTraffic_UnloadSigning", "", dataName, params);
+        params.clear();
+        params.put("sJsonInData", jsonParams);
+        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+                .methodName(methodName)
+                .soapAction(soapAction)
+                .setParams(params)
+                .nameSpace(mNameSpace)
+                .setVersion(mSOAPVersion)
+                .setDotNet(true)
+                .build();
+        mSoapClient.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 变更运输
+     * @param mobileId 用户id
+     * @param dataName 账套名
+     * @param trafficBarCode 运输单code
+     * @param callback
+     */
+    public void changeCarriage(String mobileId, String dataName, String trafficBarCode, Callback callback) {
+        HashMap<String, Object> params = new HashMap<>();
+        List<JsonObject> jsonObjects = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("MobileID", mobileId);
+        jsonObject.addProperty("TrafficBarCode", trafficBarCode);
+        jsonObjects.add(jsonObject);
+        params.put("InfoTable", jsonObjects);
+        String jsonParams = getDataSet("LO_MobileTraffic_ChangeCarriage", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
         SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)

@@ -127,6 +127,6 @@ public class CaptureActivity extends BaseActivity implements OnCaptureCallback{
     @Override
     public boolean onResultCallback(String result) {
         LogUtil.d("scan result = " + result);
-        return true;
+        return false;
     }
 }

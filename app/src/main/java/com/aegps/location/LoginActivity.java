@@ -3,13 +3,12 @@ package com.aegps.location;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.aegps.location.bean.MobileVehicleResult;
-import com.aegps.location.bean.ReturnTableResult;
+import com.aegps.location.bean.net.MobileVehicleResult;
+import com.aegps.location.bean.net.ReturnTableResult;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
