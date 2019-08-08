@@ -10,4 +10,5 @@ public class Contants {
 
     public static final String PACKAGE_NAME = "com.aegps.location";
     public static final String SP_ACCOUNT_LIST = "sp_account_list";
+    public static final String SP_DATABASE_NAME = "sp_database_name";
 }

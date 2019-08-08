@@ -3,12 +3,13 @@ package com.aegps.location;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.aegps.location.bean.CommonReturnInfoTable;
+import com.aegps.location.bean.MobileVehicleResult;
 import com.aegps.location.bean.ReturnTableResult;
-import com.aegps.location.bean.SysDataTableList;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
@@ -23,6 +24,7 @@ import com.aegps.location.widget.popupwindow.account.AccountMenuWindow;
 import com.google.gson.Gson;
 
 import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private AccountMenuWindow mAccountWindow;
     private LinearLayout mLayoutParent;
     private List<ReturnTableResult.ReturnTableBean> returnTable = new ArrayList<>();
+    private EditText mEtCarId;
+    private String mDatabaseName;
 
     @Override
     public int getLayoutId() {
@@ -47,7 +51,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public void initData() {
-        getAccountData();
+        getDataBase();
     }
 
     @Override
@@ -56,12 +60,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mIvLogo = ((CircleImageView) findViewById(R.id.iv_icon));
         mIvLogo.setImageResource(R.mipmap.ic_launcher);
         mTvAccount = ((TextView) findViewById(R.id.tv_account));
+        mEtCarId = ((EditText) findViewById(R.id.tv_car_id));
         mTvAccount.setOnClickListener(this);
     }
 
     public void attemptLogin(View view) {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
+        if (TextUtils.isEmpty(mTvAccount.getText().toString().trim()) ||
+                TextUtils.isEmpty(mEtCarId.getText().toString().trim())) {
+            ToastUtil.showShort("账号密码不允许为空");
+            return;
+        }
+        if (TextUtils.isEmpty(mDatabaseName)) {
+            ToastUtil.showShort("账套错误");
+            return;
+        }
+        login("1234567890", mEtCarId.getText().toString(), mDatabaseName);
     }
 
     @Override
@@ -103,7 +116,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 @Override
                 protected void selectAccount(String accountName, String databaseName) {
                     mTvAccount.setText(accountName);
-                    getPhoneRelateCarIdData(databaseName);
+                    mDatabaseName = databaseName;
+                    getPhoneRelateCarIdData();
                 }
 
                 @Override
@@ -123,92 +137,95 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     /**
      * 获取账套信息
      */
-    private void getAccountData() {
-        SysDataTableList.SysDataTable item = new SysDataTableList.SysDataTable("0",
-                "Plat_GetCountingRoomName",
-                "",
-                "07",
-                "",
-                "",
-                "");
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getRequestData(item, new Callback() {
+    private void getDataBase() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getDataBase(new Callback() {
             @Override
             public void onResponse(SoapEnvelope envelope) {
-                LogUtil.d("result:--->" + envelope.bodyIn.toString());
-                if (TextUtils.isEmpty(envelope.bodyIn.toString())) return;
-                String[] bodyArray = envelope.bodyIn.toString().split(";");
-                if (bodyArray.length > 2) {
-                    String sJsonOutData = bodyArray[1];
-                    String returnJson = sJsonOutData.replaceFirst("sJsonOutData=", "");
-
-                    try {
-                        ReturnTableResult returnTableResult = new Gson().fromJson(returnJson, ReturnTableResult.class);
-                        returnTable = returnTableResult.getReturnTable();
-                        //保存账套信息
-                        SharedPrefUtils.saveString(Contants.SP_ACCOUNT_LIST, returnJson);
-                    } catch (Exception e) {
-                        handleException(returnJson);
-                    }
+                // 获取返回的数据
+                SoapObject object = (SoapObject) envelope.bodyIn;
+                if(null==object){
+                    return;
                 }
+                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
+                // 获取返回的结果
+                String result = object.getProperty(0).toString();
+                String data = object.getProperty(1).toString();
+                LogUtil.d("result:--->" + result);
+                LogUtil.d("result:--->" + data);
+                ReturnTableResult returnTableResult = new Gson().fromJson(data, ReturnTableResult.class);
+                returnTable = returnTableResult.getReturnTable();
+                //保存账套信息
+                SharedPrefUtils.saveString(Contants.SP_ACCOUNT_LIST, data);
             }
 
             @Override
             public void onFailure(Object o) {
-                LogUtil.d("result failure:--->" + o.toString());
+                LogUtil.e("result failure:--->" + o.toString());
             }
         }));
 
-    }
-
-    private void handleException(String returnJson) {
-        CommonReturnInfoTable commonReturnInfoTable = new Gson().fromJson(returnJson, CommonReturnInfoTable.class);
-        List<CommonReturnInfoTable.CommonReturnInfoTableBean> beanList = commonReturnInfoTable.getCommonReturnInfoTable();
-        if (beanList != null && beanList.size() > 0) {
-            ToastUtil.showShort(beanList.get(0).getExcpetionData());
-        } else {
-            ToastUtil.showShort("网络异常");
-        }
     }
 
     /**
      * 获取手机默认关联车牌号
      */
-    private void getPhoneRelateCarIdData(String accountName) {
-        SysDataTableList.SysDataTable item = new SysDataTableList.SysDataTable("0",
-                "LO_MobileTraffic_GetMobileVehicle",
-                "",
-                "07",
-                accountName,
-                "",
-                "");
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getRequestData(item, new Callback() {
+    private void getPhoneRelateCarIdData() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getMobileVehicle(mDatabaseName, "1234567890", new Callback() {
             @Override
             public void onResponse(SoapEnvelope envelope) {
-                LogUtil.d("result:--->" + envelope.bodyIn.toString());
-                if (TextUtils.isEmpty(envelope.bodyIn.toString())) return;
-                String[] bodyArray = envelope.bodyIn.toString().split(";");
-                if (bodyArray.length > 2) {
-                    String sJsonOutData = bodyArray[1];
-                    String returnJson = sJsonOutData.replaceFirst("sJsonOutData=", "");
-
-                    try {
-
-                    } catch (Exception e) {
-                        handleException(returnJson);
-                    }
-
-
+                // 获取返回的数据
+                SoapObject object = (SoapObject) envelope.bodyIn;
+                if(null==object){
+                    return;
                 }
+                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
+                // 获取返回的结果
+                String result = object.getProperty(0).toString();
+                String data = object.getProperty(1).toString();
+                LogUtil.d("result:--->" + result);
+                LogUtil.d("data:--->" + data);
+                MobileVehicleResult mobileVehicleResult = new Gson().fromJson(data, MobileVehicleResult.class);
+                if (mobileVehicleResult == null) return;
+                List<MobileVehicleResult.ReturnTableBean> returnTable = mobileVehicleResult.getReturnTable();
+                if (returnTable == null || returnTable.size() <= 0) return;
+                MobileVehicleResult.ReturnTableBean returnTableBean = returnTable.get(0);
+                mEtCarId.setText(returnTableBean.getVehicleCode());
             }
 
             @Override
             public void onFailure(Object o) {
-                LogUtil.d("result failure:--->" + o.toString());
+                LogUtil.e("result failure:--->" + o.toString());
             }
         }));
 
     }
 
+    private void login(String userCode, String password, String dataName) {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().login(userCode, password, dataName, new Callback() {
+            @Override
+            public void onResponse(SoapEnvelope envelope) {
+                // 获取返回的数据
+                SoapObject object = (SoapObject) envelope.bodyIn;
+                if(null==object){
+                    return;
+                }
+                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
+                // 获取返回的结果
+                String result = object.getProperty(0).toString();
+                String data = object.getProperty(1).toString();
+                LogUtil.d("result:--->" + result);
+                LogUtil.d("data:--->" + data);
+                SharedPrefUtils.saveString(Contants.SP_DATABASE_NAME, dataName);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
 
+            @Override
+            public void onFailure(Object o) {
+                LogUtil.e("result failure:--->" + o.toString());
+            }
+        }));
+    }
 }
 

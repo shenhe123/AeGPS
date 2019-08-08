@@ -58,7 +58,8 @@ public class SplashActivity extends BaseActivity {
         RxPermissions rxPermission = new RxPermissions(SplashActivity.this);
         rxPermission.request(Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.CAMERA)
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_PHONE_STATE)
                 .subscribe(granted -> {
                     if (granted) {
                         mHandler.sendEmptyMessageDelayed(GO_HOME,1500);

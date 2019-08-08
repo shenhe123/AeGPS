@@ -8,15 +8,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.aegps.location.api.network.Callback;
+import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
+import com.aegps.location.bean.RefreshMonitor;
 import com.aegps.location.receiver.ScreenReceiverUtil;
 import com.aegps.location.service.DaemonService;
 import com.aegps.location.service.PlayerMusicService;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.HwPushManager;
 import com.aegps.location.utils.JobSchedulerManager;
+import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.ScreenManager;
+import com.aegps.location.utils.SharedPrefUtils;
+import com.aegps.location.utils.ThreadManager;
+import com.google.gson.Gson;
 
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.SoapObject;
+
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -83,7 +94,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initData() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
+            @Override
+            public void onResponse(SoapEnvelope envelope) {
+                // 获取返回的数据
+                SoapObject object = (SoapObject) envelope.bodyIn;
+                if(null==object){
+                    return;
+                }
+                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
+                // 获取返回的结果
+                String result = object.getProperty(0).toString();
+                String data = object.getProperty(1).toString();
+                LogUtil.d("result:--->" + result);
+                LogUtil.d("data:--->" + data);
+                RefreshMonitor refreshMonitor = new Gson().fromJson(data, RefreshMonitor.class);
+                if (refreshMonitor == null) return;
+                List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
+                if (monitorHeaderTable != null && monitorHeaderTable.size() > 0) {
+                    RefreshMonitor.MonitorHeaderTableBean monitorHeaderTableBean = monitorHeaderTable.get(0);
+                    refreshHeaderView(monitorHeaderTableBean);
+                }
+                List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = refreshMonitor.getMonitorEntryTable();
+                if (monitorEntryTable != null && monitorEntryTable.size() > 0) {
+                    RefreshMonitor.MonitorEntryTableBean monitorEntryTableBean = monitorEntryTable.get(0);
+                    refreshEntryView(monitorEntryTableBean);
+                }
 
+            }
+
+            @Override
+            public void onFailure(Object o) {
+                LogUtil.e("result failure:--->" + o.toString());
+            }
+        }));
     }
 
     @Override
@@ -110,6 +154,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mBtnUnloadReceipt.setOnClickListener(this);
         mBtnTransportChange = (Button) findViewById(R.id.btn_transport_change);
         mBtnTransportChange.setOnClickListener(this);
+    }
+
+    private void refreshEntryView(RefreshMonitor.MonitorEntryTableBean item) {
+
+    }
+
+    private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
+
     }
 
     public void onRunningClick(View v) {

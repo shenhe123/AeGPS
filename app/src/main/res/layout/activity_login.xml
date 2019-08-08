@@ -28,7 +28,8 @@
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:textSize="14sp"
-        android:hint="@string/login_edit_account" />
+        android:hint="@string/login_edit_account"
+        android:textColor="#101010"/>
 
     <EditText
         android:id="@+id/tv_car_id"
