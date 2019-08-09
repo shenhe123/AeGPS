@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentActivity;
 
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.StatusBarUtil;
-import com.aegps.location.utils.ToastUtil;
+import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.widget.LoadingProgressDialog;
 
 /**

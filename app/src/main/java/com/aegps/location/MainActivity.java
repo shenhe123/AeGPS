@@ -19,23 +19,18 @@ import com.aegps.location.service.PlayerMusicService;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.HwPushManager;
 import com.aegps.location.utils.JobSchedulerManager;
-import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.ScreenManager;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
-import com.aegps.location.utils.ToastUtil;
+import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.widget.CustomView;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapObject;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * 运动界面，处理各种保活逻辑
@@ -46,8 +41,6 @@ import java.util.TimerTask;
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
 
-    private Timer mRunTimer;
-    private boolean isRunning;
     // 动态注册锁屏等广播
     private ScreenReceiverUtil mScreenListener;
     // 1像素Activity管理类
@@ -122,36 +115,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void transportChange() {
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
             @Override
-            public void onResponse(SoapEnvelope envelope) {
-                // 获取返回的数据
-                SoapObject object = (SoapObject) envelope.bodyIn;
-                if (null == object) {
-                    return;
+            public void onResponse(boolean success, String data) {
+                if (success) {
+                    RefreshMonitor refreshMonitor = new Gson().fromJson(data, RefreshMonitor.class);
+                    if (refreshMonitor == null) return;
+                    List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
+                    if (monitorHeaderTable != null && monitorHeaderTable.size() > 0) {
+                        RefreshMonitor.MonitorHeaderTableBean monitorHeaderTableBean = monitorHeaderTable.get(0);
+                        refreshHeaderView(monitorHeaderTableBean);
+                    }
+                    List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = refreshMonitor.getMonitorEntryTable();
+                    if (monitorEntryTable != null && monitorEntryTable.size() > 0) {
+                        RefreshMonitor.MonitorEntryTableBean monitorEntryTableBean = monitorEntryTable.get(0);
+                        refreshEntryView(monitorEntryTableBean);
+                    }
+                } else {
+                    SoapUtil.onFailure(data);
                 }
-                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
-                // 获取返回的结果
-                String result = object.getProperty(0).toString();
-                String data = object.getProperty(1).toString();
-                LogUtil.d("result:--->" + result);
-                LogUtil.d("data:--->" + data);
-                RefreshMonitor refreshMonitor = new Gson().fromJson(data, RefreshMonitor.class);
-                if (refreshMonitor == null) return;
-                List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
-                if (monitorHeaderTable != null && monitorHeaderTable.size() > 0) {
-                    RefreshMonitor.MonitorHeaderTableBean monitorHeaderTableBean = monitorHeaderTable.get(0);
-                    refreshHeaderView(monitorHeaderTableBean);
-                }
-                List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = refreshMonitor.getMonitorEntryTable();
-                if (monitorEntryTable != null && monitorEntryTable.size() > 0) {
-                    RefreshMonitor.MonitorEntryTableBean monitorEntryTableBean = monitorEntryTable.get(0);
-                    refreshEntryView(monitorEntryTableBean);
-                }
-
             }
 
             @Override
             public void onFailure(Object o) {
-                LogUtil.e("result failure:--->" + o.toString());
+                ToastUtil.showShort(o.toString());
             }
         }));
     }
@@ -254,7 +239,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void startDaemonService() {
         Intent intent = new Intent(MainActivity.this, DaemonService.class);
-        intent.putExtra(DaemonService.EXTRA_IS_ALLOW_UPLOAD_LOCATION, true);
         startService(intent);
     }
 
@@ -267,37 +251,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // 禁用返回键
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (isRunning) {
-                Toast.makeText(MainActivity.this, "正在跑步", Toast.LENGTH_SHORT).show();
+            if (DaemonService.isRunning) {
+                Toast.makeText(MainActivity.this, "正在运输中", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    private void startRunTimer() {
-        TimerTask mTask = new TimerTask() {
-            @Override
-            public void run() {
-                // 更新UI
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        mTvRunTime.setText(timeHour+" : "+timeMin+" : "+timeSec);
-                    }
-                });
-            }
-        };
-        mRunTimer = new Timer();
-        // 每隔1s更新一下时间
-        mRunTimer.schedule(mTask, 1000, 1000);
-    }
-
-    private void stopRunTimer() {
-        if (mRunTimer != null) {
-            mRunTimer.cancel();
-            mRunTimer = null;
-        }
     }
 
     @Override
@@ -306,7 +265,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (Contants.DEBUG)
             Log.d(TAG, "--->onDestroy");
         EventBus.getDefault().unregister(this);
-        stopRunTimer();
     }
 
     @Override
@@ -330,28 +288,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void unLoadReceipt(String shipmentBarCode) {
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
             @Override
-            public void onResponse(SoapEnvelope envelope) {
-                // 获取返回的数据
-                SoapObject object = (SoapObject) envelope.bodyIn;
-                if (null == object) {
-                    return;
+            public void onResponse(boolean success, String data) {
+                if (success) {
+                    //关闭前台Service
+                    stopDaemonService();
+                    //关闭启动播放音乐Service
+                    stopPlayMusicService();
+                    runOnUiThread(() -> ToastUtil.showShort("卸货成功"));
+                } else {
+                    SoapUtil.onFailure(data);
                 }
-                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
-                // 获取返回的结果
-                String result = object.getProperty(0).toString();
-                String data = object.getProperty(1).toString();
-                LogUtil.d("result:--->" + result);
-                LogUtil.d("data:--->" + data);
-                //关闭前台Service
-                stopDaemonService();
-                //关闭启动播放音乐Service
-                stopPlayMusicService();
-                runOnUiThread(() -> ToastUtil.showShort("卸货成功"));
             }
 
             @Override
             public void onFailure(Object o) {
-                LogUtil.e("result failure:--->" + o.toString());
+                ToastUtil.showShort(o.toString());
             }
         }));
     }

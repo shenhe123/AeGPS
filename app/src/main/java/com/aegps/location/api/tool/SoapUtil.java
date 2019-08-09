@@ -3,7 +3,10 @@ package com.aegps.location.api.tool;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.network.SoapClient;
 import com.aegps.location.api.network.SoapRequest;
+import com.aegps.location.bean.net.CommonReturnInfoTable;
+import com.aegps.location.utils.toast.ToastUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import org.ksoap2.SoapEnvelope;
@@ -20,6 +23,7 @@ import java.util.Map;
 public class SoapUtil {
     private static final String TAG = "SoapUtil";
     private static SoapUtil mInstance;
+    private static Gson mGson;
     private SoapClient mSoapClient;
 
     public static final String mWeatherEndPoint = "http://182.92.191.17:8800/TradingService.svc";
@@ -39,6 +43,24 @@ public class SoapUtil {
             mInstance = new SoapUtil();
         }
         return mInstance;
+    }
+
+    public static synchronized Gson getGson() {
+        if (mGson == null) {
+            mGson = new GsonBuilder()
+                    .serializeNulls()//允许序列化反序列化为null
+                    .setLenient()
+                    .create();
+        }
+        return mGson;
+    }
+
+    public static synchronized void onFailure(String message) {
+        CommonReturnInfoTable commonReturnInfoTable = SoapUtil.getGson().fromJson(message, CommonReturnInfoTable.class);
+        if (commonReturnInfoTable == null ||
+                commonReturnInfoTable.getCommonReturnInfoTable() == null ||
+                commonReturnInfoTable.getCommonReturnInfoTable().size() <= 0) return;
+        ToastUtil.showShort(commonReturnInfoTable.getCommonReturnInfoTable().get(0).getExcpetionData());
     }
 
     /**
@@ -218,6 +240,37 @@ public class SoapUtil {
         jsonObjects.add(jsonObject);
         params.put("InfoTable", jsonObjects);
         String jsonParams = getDataSet("LO_MobileTraffic_ChangeCarriage", "", dataName, params);
+        params.clear();
+        params.put("sJsonInData", jsonParams);
+        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+                .methodName(methodName)
+                .soapAction(soapAction)
+                .setParams(params)
+                .nameSpace(mNameSpace)
+                .setVersion(mSOAPVersion)
+                .setDotNet(true)
+                .build();
+        mSoapClient.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 位置上报
+     * @param mobileId 用户id
+     * @param dataName 账套名
+     * @param longitudeX 经度
+     * @param latitudeY 纬度
+     * @param callback
+     */
+    public void locationTargeting(String mobileId, String dataName, String longitudeX, String latitudeY, Callback callback) {
+        HashMap<String, Object> params = new HashMap<>();
+        List<JsonObject> jsonObjects = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("MobileID", mobileId);
+        jsonObject.addProperty("LongitudeX", longitudeX);
+        jsonObject.addProperty("LatitudeY", latitudeY);
+        jsonObjects.add(jsonObject);
+        params.put("InfoTable", jsonObjects);
+        String jsonParams = getDataSet("LO_MobileTraffic_LocationTargeting", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
         SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)

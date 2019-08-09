@@ -13,17 +13,12 @@ import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
 import com.aegps.location.utils.Contants;
-import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
-import com.aegps.location.utils.ToastUtil;
+import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.utils.WindowStatusHelp;
 import com.aegps.location.widget.CircleImageView;
 import com.aegps.location.widget.popupwindow.account.AccountMenuWindow;
-import com.google.gson.Gson;
-
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,28 +133,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      */
     private void getDataBase() {
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getDataBase(new Callback() {
+
             @Override
-            public void onResponse(SoapEnvelope envelope) {
-                // 获取返回的数据
-                SoapObject object = (SoapObject) envelope.bodyIn;
-                if(null==object){
-                    return;
+            public void onResponse(boolean success, String data) {
+                if (success) {
+                    ReturnTableResult returnTableResult = SoapUtil.getGson().fromJson(data, ReturnTableResult.class);
+                    returnTable = returnTableResult.getReturnTable();
+                    //保存账套信息
+                    SharedPrefUtils.saveString(Contants.SP_ACCOUNT_LIST, data);
+                } else {
+                    SoapUtil.onFailure(data);
                 }
-                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
-                // 获取返回的结果
-                String result = object.getProperty(0).toString();
-                String data = object.getProperty(1).toString();
-                LogUtil.d("result:--->" + result);
-                LogUtil.d("result:--->" + data);
-                ReturnTableResult returnTableResult = new Gson().fromJson(data, ReturnTableResult.class);
-                returnTable = returnTableResult.getReturnTable();
-                //保存账套信息
-                SharedPrefUtils.saveString(Contants.SP_ACCOUNT_LIST, data);
             }
 
             @Override
             public void onFailure(Object o) {
-                LogUtil.e("result failure:--->" + o.toString());
+                ToastUtil.showShort(o.toString());
             }
         }));
 
@@ -171,29 +160,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void getPhoneRelateCarIdData() {
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getMobileVehicle(mDatabaseName, "1234567890", new Callback() {
             @Override
-            public void onResponse(SoapEnvelope envelope) {
-                // 获取返回的数据
-                SoapObject object = (SoapObject) envelope.bodyIn;
-                if(null==object){
-                    return;
+            public void onResponse(boolean success, String data) {
+                if (success) {
+                    MobileVehicleResult mobileVehicleResult = SoapUtil.getGson().fromJson(data, MobileVehicleResult.class);
+                    if (mobileVehicleResult == null) return;
+                    List<MobileVehicleResult.ReturnTableBean> returnTable = mobileVehicleResult.getReturnTable();
+                    if (returnTable == null || returnTable.size() <= 0) return;
+                    MobileVehicleResult.ReturnTableBean returnTableBean = returnTable.get(0);
+                    mEtCarId.setText(returnTableBean.getVehicleCode());
+                } else {
+                    SoapUtil.onFailure(data);
                 }
-                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
-                // 获取返回的结果
-                String result = object.getProperty(0).toString();
-                String data = object.getProperty(1).toString();
-                LogUtil.d("result:--->" + result);
-                LogUtil.d("data:--->" + data);
-                MobileVehicleResult mobileVehicleResult = new Gson().fromJson(data, MobileVehicleResult.class);
-                if (mobileVehicleResult == null) return;
-                List<MobileVehicleResult.ReturnTableBean> returnTable = mobileVehicleResult.getReturnTable();
-                if (returnTable == null || returnTable.size() <= 0) return;
-                MobileVehicleResult.ReturnTableBean returnTableBean = returnTable.get(0);
-                mEtCarId.setText(returnTableBean.getVehicleCode());
             }
 
             @Override
             public void onFailure(Object o) {
-                LogUtil.e("result failure:--->" + o.toString());
+                ToastUtil.showShort(o.toString());
             }
         }));
 
@@ -202,27 +184,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void login(String userCode, String password, String dataName) {
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().login(userCode, password, dataName, new Callback() {
             @Override
-            public void onResponse(SoapEnvelope envelope) {
-                // 获取返回的数据
-                SoapObject object = (SoapObject) envelope.bodyIn;
-                if(null==object){
-                    return;
+            public void onResponse(boolean success, String data) {
+                if (success) {
+                    SharedPrefUtils.saveString(Contants.SP_DATABASE_NAME, dataName);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    SoapUtil.onFailure(data);
                 }
-                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
-                // 获取返回的结果
-                String result = object.getProperty(0).toString();
-                String data = object.getProperty(1).toString();
-                LogUtil.d("result:--->" + result);
-                LogUtil.d("data:--->" + data);
-                SharedPrefUtils.saveString(Contants.SP_DATABASE_NAME, dataName);
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
             }
 
             @Override
             public void onFailure(Object o) {
-                LogUtil.e("result failure:--->" + o.toString());
+                ToastUtil.showShort(o.toString());
             }
         }));
     }

@@ -6,34 +6,25 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.aegps.location.api.network.Callback;
-import com.aegps.location.api.network.SoapCall;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.bean.event.CommonEvent;
-import com.aegps.location.bean.net.CommonReturnInfoTable;
 import com.aegps.location.utils.Contants;
-import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
-import com.aegps.location.utils.ToastUtil;
+import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.zxing.CaptureActivity;
-import com.aegps.location.zxing.DecodeFormatManager;
-import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapObject;
 
 public class EasyCaptureActivity extends CaptureActivity {
 
     public static final String EXTRA_TITLE = "extra_title";
-    public static final String EXTRA_SHIPMENTBAR_CODE = "extra_shipmentbar_code";
     public static final String EXTRA_CODE = "extra_code";
     public static final int EXTRA_LOAD_BEGIN_CODE = 1;
     public static final int EXTRA_TRANSPORT_CHANGE_CODE = 3;
 
     private String title = "二维码扫描";
     private int code = -1;
-    private String shipmentBarCode;
 
     public static void launch(Context context, String title, int requstCode) {
         Intent intent = new Intent(context, EasyCaptureActivity.class);
@@ -53,7 +44,6 @@ public class EasyCaptureActivity extends CaptureActivity {
         TextView tvTitle = findViewById(R.id.tvTitle);
         if (getIntent() != null) {
             title = getIntent().getStringExtra(EXTRA_TITLE);
-            shipmentBarCode = getIntent().getStringExtra(EXTRA_SHIPMENTBAR_CODE);
             code = getIntent().getIntExtra(EXTRA_CODE, -1);
         }
         tvTitle.setText(title);
@@ -63,8 +53,8 @@ public class EasyCaptureActivity extends CaptureActivity {
                 .vibrate(true);
     }
 
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.ivLeft:
                 onBackPressed();
                 break;
@@ -87,52 +77,40 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void loadBegin(String trafficBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode, new Callback() {
-            @Override
-            public void onResponse(SoapEnvelope envelope) {
-                // 获取返回的数据
-                SoapObject object = (SoapObject) envelope.bodyIn;
-                if (null == object) {
-                    return;
-                }
-                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
-                // 获取返回的结果
-                String result = object.getProperty(0).toString();
-                String data = object.getProperty(1).toString();
-                LogUtil.d("result:--->" + result);
-                LogUtil.d("data:--->" + data);
-                EventBus.getDefault().post(new CommonEvent(EXTRA_LOAD_BEGIN_CODE, ""));
-            }
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
+                new Callback() {
+                    @Override
+                    public void onResponse(boolean success, String data) {
+                        if (success) {
+                            EventBus.getDefault().post(new CommonEvent(EXTRA_LOAD_BEGIN_CODE, ""));
+                        } else {
+                            SoapUtil.onFailure(data);
+                        }
+                    }
 
-            @Override
-            public void onFailure(Object o) {
-                LogUtil.e("result failure:--->" + o.toString());
-            }
-        }));
+                    @Override
+                    public void onFailure(Object o) {
+                        ToastUtil.showShort(o.toString());
+                    }
+                }));
     }
 
     private void transportChange(String trafficBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode, new Callback() {
-            @Override
-            public void onResponse(SoapEnvelope envelope) {
-                // 获取返回的数据
-                SoapObject object = (SoapObject) envelope.bodyIn;
-                if (null == object) {
-                    return;
-                }
-                LogUtil.d("envelope.bodyIn:--->" + envelope.bodyIn.toString());
-                // 获取返回的结果
-                String result = object.getProperty(0).toString();
-                String data = object.getProperty(1).toString();
-                LogUtil.d("result:--->" + result);
-                LogUtil.d("data:--->" + data);
-                EventBus.getDefault().post(new CommonEvent(EXTRA_TRANSPORT_CHANGE_CODE, ""));
-            }
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
+                new Callback() {
+                    @Override
+                    public void onResponse(boolean success, String data) {
+                        if (success) {
+                            EventBus.getDefault().post(new CommonEvent(EXTRA_TRANSPORT_CHANGE_CODE, ""));
+                        } else {
+                            SoapUtil.onFailure(data);
+                        }
+                    }
 
-            @Override
-            public void onFailure(Object o) {
-                LogUtil.e("result failure:--->" + o.toString());
-            }
-        }));
+                    @Override
+                    public void onFailure(Object o) {
+                        ToastUtil.showShort(o.toString());
+                    }
+                }));
     }
 }

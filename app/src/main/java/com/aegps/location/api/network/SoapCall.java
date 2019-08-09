@@ -1,6 +1,12 @@
 package com.aegps.location.api.network;
 
+import android.text.TextUtils;
+
+import com.aegps.location.utils.LogUtil;
+import com.google.gson.Gson;
+
 import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.SoapObject;
 
 /**
  * Created by shenhe on 2017/3/6.
@@ -71,7 +77,18 @@ public class SoapCall implements Call {
             try {
                 SoapHttpEngine engine = new SoapHttpEngine(mSoapRequest);
                 SoapEnvelope respose = engine.doPost();
-                callback.onResponse(respose);
+                // 获取返回的数据
+                SoapObject object = (SoapObject) respose.bodyIn;
+                if(null==object){
+                    return;
+                }
+                LogUtil.d("envelope.bodyIn:--->" + respose.bodyIn.toString());
+                // 获取返回的结果
+                String result = object.getProperty(0).toString();
+                String data = object.getProperty(1).toString();
+                LogUtil.d("result:--->" + result);
+                LogUtil.d("result:--->" + data);
+                callback.onResponse(TextUtils.equals("true", result), data);
             } catch (Exception e) {
                 callback.onFailure(e.getMessage());
                 e.printStackTrace();

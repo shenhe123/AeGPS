@@ -1,8 +1,12 @@
-package com.aegps.location.utils;
+package com.aegps.location.utils.toast;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.aegps.location.AeApplication;
+import com.aegps.location.R;
 import com.aegps.location.base.BaseApplication;
 
 
@@ -11,16 +15,27 @@ import com.aegps.location.base.BaseApplication;
  */
 public class ToastUtil {
 
-    private static Toast toast;
+    private static IToast toast;
+    static final Handler UTIL_HANDLER = new Handler(Looper.getMainLooper());
 
     private static void initToast(CharSequence message, int duration) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            initToastInMainThread(message, duration);
+        } else {
+            UTIL_HANDLER.post(() -> initToastInMainThread(message, duration));
+        }
+    }
+
+    private static void initToastInMainThread(CharSequence message, int duration) {
         if (TextUtils.isEmpty(message)) return;
         if (toast == null) {
-            toast = Toast.makeText(BaseApplication.getAppContext(), message, duration);
+            //使用默认布局
+            toast = DToast.make(AeApplication.getAppContext()).setText(R.id.tv_content_default, message.toString());
         } else {
-            toast.setText(message);
+            toast.setText(R.id.tv_content_default, message.toString());
             toast.setDuration(duration);
         }
+        toast.setGravity(81, 0, 128);
         toast.show();
     }
 
