@@ -16,4 +16,7 @@
     <color name="transparent">#00000000</color>
     <color name="color_5677FC">#5677FC</color>
     <color name="color_333333">#333333</color>
+    <color name="color_black">#000000</color>
+    <color name="color_ff7c41">#ff7c41</color>
+    <color name="color_f7f7f7">#f7f7f7</color>
 </resources>

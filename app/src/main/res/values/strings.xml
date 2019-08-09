@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AEGPS</string>
+    <string name="app_name">北极欧</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -13,9 +13,9 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="login_edit_account">---请选择账套---</string>
+    <string name="login_edit_account">请选择账套</string>
     <string name="login_edit_card_id">请输入车牌号</string>
-    <string name="login_btn_name">登录</string>
+    <string name="login_btn_name">登 录</string>
     <string name="main_start_load">载货启动</string>
     <string name="main_unload_receipt">卸货签收</string>
     <string name="main_transport_change">运输变更</string>

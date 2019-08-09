@@ -1,7 +1,6 @@
 package com.aegps.location;
 
 import android.content.Intent;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -109,10 +108,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initData() {
-        transportChange();
+        refreshMonitor();
     }
 
-    private void transportChange() {
+    private void refreshMonitor() {
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
@@ -193,7 +192,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mPhone.setRightText(item.getMobileTeleCode() == null ? "" : item.getMobileTeleCode());
         mTel.setRightText(item.getTelephoneCode() == null ? "" : item.getTelephoneCode());
         mFreightReceiptTime.setRightText(item.getEndingTime() == null ? "" : item.getEndingTime());
-        mFreightDrivingDistance.setRightText(item.getMileageMeasure() + "");
+        mFreightDrivingDistance.setRightText(item.getMileageMeasure() + "公里");
         mRemark.setRightText(item.getRemarkSub() == null ? "" : item.getRemarkSub());
     }
 
@@ -203,7 +202,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mFreightRate.setRightText(item.getShippingModeName() == null ? "" : item.getShippingModeName());
         mBeginTime.setRightText(item.getBeginningTime() == null ? "" : item.getBeginningTime());
         mDrivingTime.setRightText(item.getDrivingDuration() == null ? "" : item.getDrivingDuration());
-        mDrivingDistance.setRightText(item.getMileageMeasure() + "");
+        mDrivingDistance.setRightText(item.getMileageMeasure() + "公里");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -218,13 +217,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startDaemonService();
                 // 启动播放音乐Service
                 startPlayMusicService();
-                transportChange();
+                refreshMonitor();
+                break;
+            case EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE:
+                ToastUtil.showShort("卸货成功");
+                //关闭前台Service
+                stopDaemonService();
+                //关闭启动播放音乐Service
+                stopPlayMusicService();
+                resetView();
                 break;
             case EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE:
                 ToastUtil.showShort("变更运输成功");
-                transportChange();
+                refreshMonitor();
                 break;
         }
+    }
+
+    private void resetView() {
+        mTransportId.setRightText("");
+        mCarNum.setRightText("");
+        mFreightRate.setRightText("");
+        mBeginTime.setRightText("");
+        mDrivingTime.setRightText("");
+        mDrivingDistance.setRightText("");
+        mFreightOrderNumber.setRightText("");
+        mClient.setRightText("");
+        mAddress.setRightText("");
+        mCity.setRightText("");
+        mContact.setRightText("");
+        mPhone.setRightText("");
+        mTel.setRightText("");
+        mFreightReceiptTime.setRightText("");
+        mFreightDrivingDistance.setRightText("");
+        mRemark.setRightText("");
     }
 
     private void stopPlayMusicService() {
@@ -276,34 +302,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 EasyCaptureActivity.launch(this, mBtnLoadingBegin.getText().toString(), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
                 break;
             case R.id.btn_unload_receipt:
-                if (TextUtils.isEmpty(mTransportId.getRightText())) return;
-                unLoadReceipt(mTransportId.getRightText());
+                EasyCaptureActivity.launch(this, mBtnUnloadReceipt.getText().toString(), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
                 break;
             case R.id.btn_transport_change:
                 EasyCaptureActivity.launch(this, mBtnTransportChange.getText().toString(), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
                 break;
         }
-    }
-
-    private void unLoadReceipt(String shipmentBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
-            @Override
-            public void onResponse(boolean success, String data) {
-                if (success) {
-                    //关闭前台Service
-                    stopDaemonService();
-                    //关闭启动播放音乐Service
-                    stopPlayMusicService();
-                    runOnUiThread(() -> ToastUtil.showShort("卸货成功"));
-                } else {
-                    SoapUtil.onFailure(data);
-                }
-            }
-
-            @Override
-            public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
-            }
-        }));
     }
 }
