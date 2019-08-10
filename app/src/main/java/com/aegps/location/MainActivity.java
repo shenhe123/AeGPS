@@ -121,13 +121,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
                     if (monitorHeaderTable != null && monitorHeaderTable.size() > 0) {
                         RefreshMonitor.MonitorHeaderTableBean monitorHeaderTableBean = monitorHeaderTable.get(0);
-                        refreshHeaderView(monitorHeaderTableBean);
+                        runOnUiThread(() -> {
+                            refreshHeaderView(monitorHeaderTableBean);
+                            if (monitorHeaderTableBean.getTrafficMainID() != 0) {
+                                // 启动前台Service
+                                startDaemonService();
+                                // 启动播放音乐Service
+                                startPlayMusicService();
+                            }
+                        });
+
                     }
                     List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = refreshMonitor.getMonitorEntryTable();
                     if (monitorEntryTable != null && monitorEntryTable.size() > 0) {
                         RefreshMonitor.MonitorEntryTableBean monitorEntryTableBean = monitorEntryTable.get(0);
-                        refreshEntryView(monitorEntryTableBean);
+                        runOnUiThread(() -> {
+                            refreshEntryView(monitorEntryTableBean);
+                        });
                     }
+
                 } else {
                     SoapUtil.onFailure(data);
                 }
@@ -197,6 +209,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
+        mBtnLoadingBegin.setEnabled(item.getTrafficMainID() == 0);
         mTransportId.setRightText(item.getTrafficCode() == null ? "" : item.getTrafficCode());
         mCarNum.setRightText(item.getVehicleCode() == null ? "" : item.getVehicleCode());
         mFreightRate.setRightText(item.getShippingModeName() == null ? "" : item.getShippingModeName());

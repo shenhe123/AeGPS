@@ -16,6 +16,7 @@ import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.LocationUtil;
+import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.toast.ToastUtil;
@@ -78,6 +79,7 @@ public class DaemonService extends Service {
     private void uploadLocation() {
         String lngAndLat = LocationUtil.getLngAndLat(DaemonService.this);
         String[] lngAndLatArray = lngAndLat.split(",");
+        LogUtil.d(lngAndLat);
         ThreadManager.getThreadPollProxy().execute(() -> {
             SoapUtil.getInstance().locationTargeting("1234567890",
                     SharedPrefUtils.getString(Contants.SP_DATABASE_NAME),
@@ -110,7 +112,7 @@ public class DaemonService extends Service {
         };
         mRunTimer = new Timer();
         // 每隔1s更新一下时间
-        mRunTimer.schedule(mTask, 1000, 1000 * 10);
+        mRunTimer.schedule(mTask, 1000, 1000 * 60 * 5);
     }
 
     private void stopRunTimer() {
@@ -124,9 +126,7 @@ public class DaemonService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // 如果Service被终止
         // 当资源允许情况下，重启service
-        if (!isRunning) {
-            startRunTimer();
-        }
+        startRunTimer();
         return START_STICKY;
     }
 

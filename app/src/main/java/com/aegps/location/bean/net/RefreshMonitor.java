@@ -8,6 +8,7 @@ import java.util.List;
  * @description
  */
 public class RefreshMonitor {
+
     private List<MonitorHeaderTableBean> MonitorHeaderTable;
     private List<MonitorEntryTableBean> MonitorEntryTable;
 
@@ -34,8 +35,8 @@ public class RefreshMonitor {
          * VehicleCode : 冀RW3A29
          * ShippingModeName : 零担
          * BeginningTime : 2019-08-08 08:48
-         * DrivingDuration : 9时33分
-         * MileageMeasure : 0
+         * DrivingDuration : 2天13时
+         * MileageMeasure : 50571.87
          */
 
         private int TrafficMainID;
@@ -44,7 +45,7 @@ public class RefreshMonitor {
         private String ShippingModeName;
         private String BeginningTime;
         private String DrivingDuration;
-        private int MileageMeasure;
+        private double MileageMeasure;
 
         public int getTrafficMainID() {
             return TrafficMainID;
@@ -94,11 +95,11 @@ public class RefreshMonitor {
             this.DrivingDuration = DrivingDuration;
         }
 
-        public int getMileageMeasure() {
+        public double getMileageMeasure() {
             return MileageMeasure;
         }
 
-        public void setMileageMeasure(int MileageMeasure) {
+        public void setMileageMeasure(double MileageMeasure) {
             this.MileageMeasure = MileageMeasure;
         }
     }

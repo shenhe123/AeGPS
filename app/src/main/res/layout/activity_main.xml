@@ -38,9 +38,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:background="@drawable/shape_color_ff7c41"
+                android:background="@drawable/selector_btn_enable"
                 android:text="@string/main_start_load"
-                android:textColor="@color/colorWhite"
+                android:textColor="@drawable/selector_btn_color"
                 android:textSize="14sp" />
 
             <Button
@@ -49,9 +49,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/btn_loading_begin"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/shape_color_ff7c41"
+                android:background="@drawable/selector_btn_enable"
                 android:text="@string/main_unload_receipt"
-                android:textColor="@color/colorWhite"
+                android:textColor="@drawable/selector_btn_color"
                 android:textSize="14sp" />
 
             <Button
@@ -61,9 +61,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignTop="@+id/btn_loading_begin"
                 android:layout_marginStart="5dp"
-                android:background="@drawable/shape_color_ff7c41"
+                android:background="@drawable/selector_btn_enable"
                 android:text="@string/main_transport_change"
-                android:textColor="@color/colorWhite"
+                android:textColor="@drawable/selector_btn_color"
                 android:textSize="14sp" />
         </RelativeLayout>
 
