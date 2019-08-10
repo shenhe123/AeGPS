@@ -12,6 +12,7 @@ import com.aegps.location.bean.net.ReturnTableResult;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
+import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
@@ -68,7 +69,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             ToastUtil.showShort("账套错误");
             return;
         }
-        login("1234567890", mEtCarId.getText().toString(), mDatabaseName);
+        login(ApplicationUtil.getIMEI(), mEtCarId.getText().toString(), mDatabaseName);
     }
 
     @Override
@@ -158,7 +159,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * 获取手机默认关联车牌号
      */
     private void getPhoneRelateCarIdData() {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getMobileVehicle(mDatabaseName, "1234567890", new Callback() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getMobileVehicle(mDatabaseName, ApplicationUtil.getIMEI(), new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {

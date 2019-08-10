@@ -14,6 +14,7 @@ import android.util.Log;
 import com.aegps.location.R;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
+import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.LocationUtil;
 import com.aegps.location.utils.LogUtil;
@@ -81,7 +82,7 @@ public class DaemonService extends Service {
         String[] lngAndLatArray = lngAndLat.split(",");
         LogUtil.d(lngAndLat);
         ThreadManager.getThreadPollProxy().execute(() -> {
-            SoapUtil.getInstance().locationTargeting("1234567890",
+            SoapUtil.getInstance().locationTargeting(ApplicationUtil.getIMEI(),
                     SharedPrefUtils.getString(Contants.SP_DATABASE_NAME),
                     lngAndLatArray[0],
                     lngAndLatArray[1],

@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.bean.event.CommonEvent;
+import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
@@ -81,7 +82,7 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void loadBegin(String trafficBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
                     public void onResponse(boolean success, String data) {
@@ -100,7 +101,7 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void unLoadReceipt(String shipmentBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
@@ -118,7 +119,7 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void transportChange(String trafficBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
                     public void onResponse(boolean success, String data) {

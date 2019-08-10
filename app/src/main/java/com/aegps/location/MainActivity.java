@@ -15,6 +15,7 @@ import com.aegps.location.bean.net.RefreshMonitor;
 import com.aegps.location.receiver.ScreenReceiverUtil;
 import com.aegps.location.service.DaemonService;
 import com.aegps.location.service.PlayerMusicService;
+import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.HwPushManager;
 import com.aegps.location.utils.JobSchedulerManager;
@@ -112,7 +113,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void refreshMonitor() {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor("1234567890", SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
