@@ -1,5 +1,8 @@
 package com.aegps.location.api.network;
 
+import com.aegps.location.utils.Contants;
+import com.aegps.location.utils.LogUtil;
+
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -34,6 +37,11 @@ public class SoapHttpEngine implements HttpEngine {
         if (mSoapRequest.getParamsMap() != null) {
             for (Map.Entry<String, Object> e : mSoapRequest.getParamsMap().entrySet()) {
                 rpc.addProperty(e.getKey(), e.getValue());
+            }
+        }
+        if (Contants.DEBUG) {
+            for (int i = 0; i < rpc.getPropertyCount(); i++) {
+                LogUtil.d("request params = " + rpc.getPropertyAsString(i));
             }
         }
         //设置Soap消息
