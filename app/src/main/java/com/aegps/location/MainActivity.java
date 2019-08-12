@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
-                    RefreshMonitor refreshMonitor = new Gson().fromJson(data, RefreshMonitor.class);
+                    RefreshMonitor refreshMonitor = SoapUtil.getGson().fromJson(data, RefreshMonitor.class);
                     if (refreshMonitor == null) return;
                     List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
                     if (monitorHeaderTable != null && monitorHeaderTable.size() > 0) {
@@ -318,7 +318,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 EasyCaptureActivity.launch(this, mBtnLoadingBegin.getText().toString(), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
                 break;
             case R.id.btn_unload_receipt:
-                EasyCaptureActivity.launch(this, mBtnUnloadReceipt.getText().toString(), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
+                EasyCaptureActivity.launch(this, mBtnUnloadReceipt.getText().toString(), EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE);
                 break;
             case R.id.btn_transport_change:
                 EasyCaptureActivity.launch(this, mBtnTransportChange.getText().toString(), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
