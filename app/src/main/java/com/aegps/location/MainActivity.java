@@ -1,11 +1,12 @@
 package com.aegps.location;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
@@ -15,15 +16,16 @@ import com.aegps.location.bean.net.RefreshMonitor;
 import com.aegps.location.receiver.ScreenReceiverUtil;
 import com.aegps.location.service.DaemonService;
 import com.aegps.location.service.PlayerMusicService;
+import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
-import com.aegps.location.utils.HwPushManager;
 import com.aegps.location.utils.JobSchedulerManager;
 import com.aegps.location.utils.ScreenManager;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.widget.CustomView;
+import com.aegps.location.widget.dialog.ExitAppDialog;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,8 +49,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ScreenManager mScreenManager;
     // JobService，执行系统任务
     private JobSchedulerManager mJobManager;
-    // 华为推送管理类
-    private HwPushManager mHwPushManager;
 
     private ScreenReceiverUtil.SreenStateListener mScreenListenerer = new ScreenReceiverUtil.SreenStateListener() {
         @Override
@@ -165,12 +165,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         // 2. 启动系统任务
         mJobManager = JobSchedulerManager.getJobSchedulerInstance(this);
         mJobManager.startJobScheduler();
-        // 3. 华为推送保活，允许接收透传
-        mHwPushManager = HwPushManager.getInstance(this);
-        mHwPushManager.startRequestToken();
-        mHwPushManager.isEnableReceiveNormalMsg(true);
-        mHwPushManager.isEnableReceiverNotifyMsg(true);
-
 
         mBtnLoadingBegin = (Button) findViewById(R.id.btn_loading_begin);
         mBtnLoadingBegin.setOnClickListener(this);
@@ -290,11 +284,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // 禁用返回键
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (DaemonService.isRunning) {
-                Toast.makeText(MainActivity.this, "正在运输中", Toast.LENGTH_SHORT).show();
-                return true;
-            }
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            ExitAppDialog exitAppDialog = new ExitAppDialog(MainActivity.this);
+            exitAppDialog.setLiftButtonListener(dialog -> {
+                //关闭前台Service
+                stopDaemonService();
+                //关闭启动播放音乐Service
+                stopPlayMusicService();
+                AppManager.getAppManager().finishAllActivity();
+            });
+            exitAppDialog.setRightButtonListener(dialog -> {
+            });
+            exitAppDialog.show();
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }

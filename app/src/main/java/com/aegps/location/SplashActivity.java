@@ -43,6 +43,16 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        // 避免从桌面启动程序后，会重新实例化入口类的activity
+        Intent intent = getIntent();
+        if (!isTaskRoot()
+                && intent != null
+                && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+                && intent.getAction() != null
+                && intent.getAction().equals(Intent.ACTION_MAIN)) {
+            finish();
+            return;
+        }
         requestPermission();
     }
 

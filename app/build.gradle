@@ -36,7 +36,6 @@ dependencies {
     androidTestImplementation deps.test.runner
     androidTestImplementation deps.test.espresso
     //libs
-    implementation files('libs/HwPush_SDK_V2705.jar')
     implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
     //support
     implementation deps.support.design
