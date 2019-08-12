@@ -4,7 +4,7 @@
     android:id="@+id/layout_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/splash"
+    android:background="@mipmap/ic_login_bg"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context="com.aegps.location.LoginActivity">
