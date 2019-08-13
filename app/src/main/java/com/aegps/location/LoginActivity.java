@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.aegps.location.bean.net.MobileVehicleResult;
+import com.aegps.location.bean.net.ReturnTable;
 import com.aegps.location.bean.net.ReturnTableResult;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
@@ -47,6 +48,26 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     public void initData() {
         getDataBase();
+//        requestRemotelogin();
+    }
+
+    private void requestRemotelogin() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().requestRemotelogin(new Callback() {
+            @Override
+            public void onResponse(boolean success, String data) {
+                if (success) {
+
+
+                } else {
+                    SoapUtil.onFailure(data);
+                }
+            }
+
+            @Override
+            public void onFailure(Object o) {
+                ToastUtil.showShort(o.toString());
+            }
+        }));
     }
 
     @Override
@@ -187,6 +208,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
+                    ReturnTable returnTable = SoapUtil.getGson().fromJson(data, ReturnTable.class);
+                    if (returnTable != null && returnTable.getReturnTable() != null && returnTable.getReturnTable().size() > 0) {
+                        ReturnTable.ReturnTableBean returnTableBean = returnTable.getReturnTable().get(0);
+                        if (returnTableBean != null) {
+                            SharedPrefUtils.saveInt(Contants.SP_UPLOAD_INTERVAL_DURATION, returnTableBean.getIntervalDuration());
+                        }
+                    }
                     SharedPrefUtils.saveString(Contants.SP_DATABASE_NAME, dataName);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);

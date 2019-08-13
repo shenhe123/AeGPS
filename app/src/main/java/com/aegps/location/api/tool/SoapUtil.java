@@ -26,9 +26,12 @@ public class SoapUtil {
     private static Gson mGson;
     private SoapClient mSoapClient;
 
-    public static final String mDomainUrl = "http://182.92.191.17:8800/TradingService.svc";
     public static final String mRemoteLoginUrl = "http://cloud.bjosoft.com:8999/CoordinateService.svc";
-    public static final String soapAction = "http://tempuri.org/ITradingService/GetJsonData";
+    public static final String mRemoteAction = "http://tempuri.org/ICoordinateService/GetJsonData";
+    public static String mDomainUrl = "http://182.92.191.17:8800/TradingService.svc";
+    public static String soapAction = "http://tempuri.org/ITradingService/GetJsonData";
+//    public static String mDomainUrl = "";
+//    public static String soapAction = "";
     public static final String mNameSpace = "http://tempuri.org/";
     public static final String methodName = "GetJsonData";
     public int mSOAPVersion = SoapEnvelope.VER11;
@@ -129,7 +132,7 @@ public class SoapUtil {
         params.put("sJsonInData", jsonParams);
         SoapRequest request = new SoapRequest.Builder().endPoint(mRemoteLoginUrl)
                 .methodName(methodName)
-                .soapAction(soapAction)
+                .soapAction(mRemoteAction)
                 .setParams(params)
                 .nameSpace(mNameSpace)
                 .setVersion(mSOAPVersion)
@@ -253,7 +256,7 @@ public class SoapUtil {
     }
 
     /**
-     * 卸货签收
+     * ic_unload_receipt
      * @param mobileId 用户id
      * @param dataName 账套名
      * @param shipmentBarCode 运输单code

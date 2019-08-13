@@ -71,7 +71,7 @@ public class EasyCaptureActivity extends CaptureActivity {
             case EXTRA_LOAD_BEGIN_CODE://载货启动
                 loadBegin(result);
                 break;
-            case EXTRA_UNLOAD_RECEIPT_CODE://卸货签收
+            case EXTRA_UNLOAD_RECEIPT_CODE://ic_unload_receipt
                 unLoadReceipt(result);
                 break;
             case EXTRA_TRANSPORT_CHANGE_CODE://运输变更

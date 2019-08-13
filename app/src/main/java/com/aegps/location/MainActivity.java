@@ -2,11 +2,15 @@ package com.aegps.location;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
@@ -26,11 +30,13 @@ import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.widget.CustomView;
 import com.aegps.location.widget.dialog.ExitAppDialog;
+import com.bumptech.glide.load.engine.Resource;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -76,15 +82,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     /**
      * 装载启动
      */
-    private Button mBtnLoadingBegin;
+    private LinearLayout mLayoutLoadingBegin;
     /**
      * 卸货签收
      */
-    private Button mBtnUnloadReceipt;
+    private LinearLayout mLayoutUnloadReceipt;
     /**
      * 运输变更
      */
-    private Button mBtnTransportChange;
+    private LinearLayout mLayoutTransportChange;
     private CustomView mTransportId;
     private CustomView mCarNum;
     private CustomView mFreightRate;
@@ -101,6 +107,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private CustomView mFreightReceiptTime;
     private CustomView mFreightDrivingDistance;
     private CustomView mRemark;
+    private ImageView mIvLoadingBegin;
+    private TextView mTvLoadingBegin;
 
     @Override
     public int getLayoutId() {
@@ -166,12 +174,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mJobManager = JobSchedulerManager.getJobSchedulerInstance(this);
         mJobManager.startJobScheduler();
 
-        mBtnLoadingBegin = (Button) findViewById(R.id.btn_loading_begin);
-        mBtnLoadingBegin.setOnClickListener(this);
-        mBtnUnloadReceipt = (Button) findViewById(R.id.btn_unload_receipt);
-        mBtnUnloadReceipt.setOnClickListener(this);
-        mBtnTransportChange = (Button) findViewById(R.id.btn_transport_change);
-        mBtnTransportChange.setOnClickListener(this);
+        mLayoutLoadingBegin = (LinearLayout) findViewById(R.id.layout_loading_begin);
+        mLayoutLoadingBegin.setOnClickListener(this);
+        mLayoutUnloadReceipt = (LinearLayout) findViewById(R.id.layout_unload_receipt);
+        mLayoutUnloadReceipt.setOnClickListener(this);
+        mLayoutTransportChange = (LinearLayout) findViewById(R.id.layout_transport_change);
+        mLayoutTransportChange.setOnClickListener(this);
+        mIvLoadingBegin = ((ImageView) findViewById(R.id.iv_loading_begin));
+        mTvLoadingBegin = ((TextView) findViewById(R.id.tv_loading_begin));
         mTransportId = (CustomView) findViewById(R.id.transport_id);
         mCarNum = (CustomView) findViewById(R.id.car_num);
         mFreightRate = (CustomView) findViewById(R.id.freight_rate);
@@ -204,7 +214,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
-        mBtnLoadingBegin.setEnabled(item.getTrafficMainID() == 0);
+        mLayoutLoadingBegin.setClickable(item.getTrafficMainID() == 0);
+        mIvLoadingBegin.setImageResource(item.getTrafficMainID() == 0 ? R.drawable.ic_load_start :  R.drawable.ic_load_start);
+        mTvLoadingBegin.setTextColor(item.getTrafficMainID() == 0 ? getResources().getColor(R.color.color_bbbbbb) : getResources().getColor(R.color.color_ff7c41));
         mTransportId.setRightText(item.getTrafficCode() == null ? "" : item.getTrafficCode());
         mCarNum.setRightText(item.getVehicleCode() == null ? "" : item.getVehicleCode());
         mFreightRate.setRightText(item.getShippingModeName() == null ? "" : item.getShippingModeName());
@@ -314,14 +326,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         switch (v.getId()) {
             default:
                 break;
-            case R.id.btn_loading_begin:
-                EasyCaptureActivity.launch(this, mBtnLoadingBegin.getText().toString(), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
+            case R.id.layout_loading_begin:
+                EasyCaptureActivity.launch(this, getString(R.string.main_start_load), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
                 break;
-            case R.id.btn_unload_receipt:
-                EasyCaptureActivity.launch(this, mBtnUnloadReceipt.getText().toString(), EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE);
+            case R.id.layout_unload_receipt:
+                EasyCaptureActivity.launch(this, getString(R.string.main_unload_receipt), EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE);
                 break;
-            case R.id.btn_transport_change:
-                EasyCaptureActivity.launch(this, mBtnTransportChange.getText().toString(), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
+            case R.id.layout_transport_change:
+                EasyCaptureActivity.launch(this, getString(R.string.main_transport_change), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
                 break;
         }
     }

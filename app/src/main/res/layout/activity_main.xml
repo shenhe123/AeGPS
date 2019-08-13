@@ -26,46 +26,85 @@
             android:layout_height="0.5dp"
             android:background="@color/color_bbbbbb" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorWhite"
             android:layout_marginTop="10dp"
-            android:padding="10dp">
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
 
-            <Button
-                android:id="@+id/btn_loading_begin"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/layout_loading_begin"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/selector_btn_enable"
-                android:text="@string/main_start_load"
-                android:textColor="@drawable/selector_btn_color"
-                android:textSize="14sp" />
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_unload_receipt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/btn_loading_begin"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/selector_btn_enable"
-                android:text="@string/main_unload_receipt"
-                android:textColor="@drawable/selector_btn_color"
-                android:textSize="14sp" />
+                <ImageView
+                    android:id="@+id/iv_loading_begin"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_load_start"/>
 
-            <Button
-                android:id="@+id/btn_transport_change"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/tv_loading_begin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/main_start_load"
+                    android:textColor="@color/color_ff7c41"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_unload_receipt"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignTop="@+id/btn_loading_begin"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/selector_btn_enable"
-                android:text="@string/main_transport_change"
-                android:textColor="@drawable/selector_btn_color"
-                android:textSize="14sp" />
-        </RelativeLayout>
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_unload_receipt"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/main_unload_receipt"
+                    android:textColor="@color/color_ff7c41"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_transport_change"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_unload_receipt"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/main_transport_change"
+                    android:textColor="@color/color_ff7c41"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

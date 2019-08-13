@@ -90,7 +90,7 @@ public class DaemonService extends Service {
                         @Override
                         public void onResponse(boolean success, String data) {
                             if (success) {
-
+                                LogUtil.d(data);
                             } else {
                                 SoapUtil.onFailure(data);
                             }
@@ -113,7 +113,7 @@ public class DaemonService extends Service {
         };
         mRunTimer = new Timer();
         // 每隔1s更新一下时间
-        mRunTimer.schedule(mTask, 1000, 1000 * 60 * 5);
+        mRunTimer.schedule(mTask, 1000, 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2));
     }
 
     private void stopRunTimer() {

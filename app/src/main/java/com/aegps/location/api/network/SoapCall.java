@@ -89,6 +89,7 @@ public class SoapCall implements Call {
                 callback.onResponse(TextUtils.equals("true", result), data);
             } catch (Exception e) {
                 callback.onFailure(e.getMessage());
+                LogUtil.e("onFailure:--->" + e.getMessage());
                 e.printStackTrace();
             } finally {
                 mDispatcher.finished(this);
