@@ -26,7 +26,8 @@ public class SoapUtil {
     private static Gson mGson;
     private SoapClient mSoapClient;
 
-    public static final String mWeatherEndPoint = "http://182.92.191.17:8800/TradingService.svc";
+    public static final String mDomainUrl = "http://182.92.191.17:8800/TradingService.svc";
+    public static final String mRemoteLoginUrl = "http://cloud.bjosoft.com:8999/CoordinateService.svc";
     public static final String soapAction = "http://tempuri.org/ITradingService/GetJsonData";
     public static final String mNameSpace = "http://tempuri.org/";
     public static final String methodName = "GetJsonData";
@@ -71,7 +72,7 @@ public class SoapUtil {
     public void getDataBase(Callback callback) {
         HashMap<String, Object> param = new HashMap<>();
         param.put("sJsonInData", getDataSet("Plat_GetCountingRoomName", "", "", new HashMap<String, Object>()));
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(param)
@@ -99,7 +100,63 @@ public class SoapUtil {
         String jsonParams = getDataSet("LO_MobileTraffic_GetMobileVehicle", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
+                .methodName(methodName)
+                .soapAction(soapAction)
+                .setParams(params)
+                .nameSpace(mNameSpace)
+                .setVersion(mSOAPVersion)
+                .setDotNet(true)
+                .build();
+        mSoapClient.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 请求远程登录地址
+     *
+     * @param callback
+     */
+    public void requestRemotelogin(Callback callback) {
+        HashMap<String, Object> params = new HashMap<>();
+        List<JsonObject> jsonObjects = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("SoftProductCode", "07");
+        jsonObject.addProperty("LogonUser", "");
+        jsonObjects.add(jsonObject);
+        params.put("InfoTable", jsonObjects);
+        String jsonParams = getDataSet("Plat_CloudCustomerInfo", "", "BJOSOFTRegisterDB", params);
+        params.clear();
+        params.put("sJsonInData", jsonParams);
+        SoapRequest request = new SoapRequest.Builder().endPoint(mRemoteLoginUrl)
+                .methodName(methodName)
+                .soapAction(soapAction)
+                .setParams(params)
+                .nameSpace(mNameSpace)
+                .setVersion(mSOAPVersion)
+                .setDotNet(true)
+                .build();
+        mSoapClient.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 远程登录
+     *
+     * @param cutomerCode 远程用户id
+     * @param logonUser 远程用户名
+     * @param callback
+     */
+    public void emotelogin(String cutomerCode, String logonUser, Callback callback) {
+        HashMap<String, Object> params = new HashMap<>();
+        List<JsonObject> jsonObjects = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("CustomerCode", cutomerCode);
+        jsonObject.addProperty("LogonUser", logonUser);
+        jsonObjects.add(jsonObject);
+        params.put("InfoTable", jsonObjects);
+        String jsonParams = getDataSet("Plat_CloudBooksInfo", "", "BJOSOFTRegisterDB", params);
+        params.clear();
+        params.put("sJsonInData", jsonParams);
+        SoapRequest request = new SoapRequest.Builder().endPoint(mRemoteLoginUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(params)
@@ -128,7 +185,7 @@ public class SoapUtil {
         String jsonParams = getDataSet("Plat_Login", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(params)
@@ -155,7 +212,7 @@ public class SoapUtil {
         String jsonParams = getDataSet("LO_MobileTraffic_RefreshMonitor", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(params)
@@ -184,7 +241,7 @@ public class SoapUtil {
         String jsonParams = getDataSet("LO_MobileTraffic_CargoStart", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(params)
@@ -213,7 +270,7 @@ public class SoapUtil {
         String jsonParams = getDataSet("LO_MobileTraffic_UnloadSigning", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(params)
@@ -242,7 +299,7 @@ public class SoapUtil {
         String jsonParams = getDataSet("LO_MobileTraffic_ChangeCarriage", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(params)
@@ -273,7 +330,7 @@ public class SoapUtil {
         String jsonParams = getDataSet("LO_MobileTraffic_LocationTargeting", "", dataName, params);
         params.clear();
         params.put("sJsonInData", jsonParams);
-        SoapRequest request = new SoapRequest.Builder().endPoint(mWeatherEndPoint)
+        SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
                 .setParams(params)
