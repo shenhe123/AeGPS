@@ -188,3 +188,14 @@
 -keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
     <init>(java.lang.Throwable);
 }
+
+# ksoap2
+-libraryjars libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar
+-dontwarn org.kobjects.**
+-keep class org.kobjects.** { *;}
+-dontwarn org.ksoap2.**
+-keep class org.ksoap2.** { *;}
+-dontwarn org.kxml2.**
+-keep class org.kxml2.** { *;}
+-dontwarn org.xmlpull.v1.**
+-keep class org.xmlpull.v1.** { *;}
