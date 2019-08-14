@@ -134,6 +134,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * 获取账套信息
      */
     private void getDataBase() {
+        startProgressDialog();
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getDataBase(new Callback() {
 
             @Override
@@ -153,6 +154,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             public void onFailure(Object o) {
                 ToastUtil.show(o.toString());
             }
+
+            @Override
+            public void onMustRun() {
+                stopProgressDialog();
+            }
         }));
 
     }
@@ -161,6 +167,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * 获取手机默认关联车牌号
      */
     private void getPhoneRelateCarIdData() {
+        startProgressDialog();
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getMobileVehicle(mDatabaseName, ApplicationUtil.getIMEI(), new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
@@ -180,11 +187,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             public void onFailure(Object o) {
                 ToastUtil.show(o.toString());
             }
+
+            @Override
+            public void onMustRun() {
+                stopProgressDialog();
+            }
         }));
 
     }
 
     private void login(String userCode, String password, String dataName) {
+        startProgressDialog("正在登录...");
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().login(userCode, password, dataName, new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
@@ -208,6 +221,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onFailure(Object o) {
                 ToastUtil.show(o.toString());
+            }
+
+            @Override
+            public void onMustRun() {
+                stopProgressDialog();
             }
         }));
     }

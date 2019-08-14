@@ -82,6 +82,7 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void loadBegin(String trafficBarCode) {
+        startProgressDialog("已扫描，正在处理");
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
@@ -97,10 +98,16 @@ public class EasyCaptureActivity extends CaptureActivity {
                     public void onFailure(Object o) {
                         ToastUtil.show(o.toString());
                     }
+
+                    @Override
+                    public void onMustRun() {
+                        stopProgressDialog();
+                    }
                 }));
     }
 
     private void unLoadReceipt(String shipmentBarCode) {
+        startProgressDialog("已扫描，正在处理");
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
@@ -115,10 +122,16 @@ public class EasyCaptureActivity extends CaptureActivity {
             public void onFailure(Object o) {
                 ToastUtil.show(o.toString());
             }
+
+            @Override
+            public void onMustRun() {
+                stopProgressDialog();
+            }
         }));
     }
 
     private void transportChange(String trafficBarCode) {
+        startProgressDialog("已扫描，正在处理");
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
@@ -133,6 +146,11 @@ public class EasyCaptureActivity extends CaptureActivity {
                     @Override
                     public void onFailure(Object o) {
                         ToastUtil.show(o.toString());
+                    }
+
+                    @Override
+                    public void onMustRun() {
+                        stopProgressDialog();
                     }
                 }));
     }

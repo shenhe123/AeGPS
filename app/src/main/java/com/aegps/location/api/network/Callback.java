@@ -8,4 +8,6 @@ public interface Callback {
     void onResponse(boolean success, String data);
 
     void onFailure(Object o);
+
+    void onMustRun();
 }

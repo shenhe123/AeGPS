@@ -100,6 +100,11 @@ public class DaemonService extends Service {
                         public void onFailure(Object o) {
                             ToastUtil.show(o.toString());
                         }
+
+                        @Override
+                        public void onMustRun() {
+
+                        }
                     });
         });
     }

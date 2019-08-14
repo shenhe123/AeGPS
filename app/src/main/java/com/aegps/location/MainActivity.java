@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,6 +35,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 运动界面，处理各种保活逻辑
@@ -102,6 +107,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private CustomView mRemark;
     private ImageView mIvLoadingBegin;
     private TextView mTvLoadingBegin;
+    private ImageView mIvUnloadReceipt;
+    private TextView mTvUnloadReceipt;
+    private ImageView mIvRefresh;
+    private Timer mRunTimer;
+    private Animation operatingAnim;
 
     @Override
     public int getLayoutId() {
@@ -151,13 +161,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void onFailure(Object o) {
                 ToastUtil.show(o.toString());
             }
+
+            @Override
+            public void onMustRun() {
+                //延迟1秒后动画停止
+                mIvRefresh.postDelayed(() -> stopAnimRotate(), 1000);
+
+            }
         }));
     }
 
     @Override
     public void initView() {
-        if (Contants.DEBUG)
-            Log.d(TAG, "--->onCreate");
         EventBus.getDefault().register(this);
         // 1. 注册锁屏广播监听器
         mScreenListener = new ScreenReceiverUtil(this);
@@ -167,14 +182,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mJobManager = JobSchedulerManager.getJobSchedulerInstance(this);
         mJobManager.startJobScheduler();
 
+        operatingAnim = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
+        LinearInterpolator lin = new LinearInterpolator();
+        operatingAnim.setInterpolator(lin);
+
         mLayoutLoadingBegin = (LinearLayout) findViewById(R.id.layout_loading_begin);
         mLayoutLoadingBegin.setOnClickListener(this);
         mLayoutUnloadReceipt = (LinearLayout) findViewById(R.id.layout_unload_receipt);
         mLayoutUnloadReceipt.setOnClickListener(this);
         mLayoutTransportChange = (LinearLayout) findViewById(R.id.layout_transport_change);
         mLayoutTransportChange.setOnClickListener(this);
+        mIvRefresh = ((ImageView) findViewById(R.id.iv_refresh));
+        mIvRefresh.setOnClickListener(this);
         mIvLoadingBegin = ((ImageView) findViewById(R.id.iv_loading_begin));
         mTvLoadingBegin = ((TextView) findViewById(R.id.tv_loading_begin));
+        mIvUnloadReceipt = ((ImageView) findViewById(R.id.iv_unload_receipt));
+        mTvUnloadReceipt = ((TextView) findViewById(R.id.tv_unload_receipt));
         mTransportId = (CustomView) findViewById(R.id.transport_id);
         mCarNum = (CustomView) findViewById(R.id.car_num);
         mFreightRate = (CustomView) findViewById(R.id.freight_rate);
@@ -207,15 +230,30 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
-        mLayoutLoadingBegin.setClickable(item.getTrafficMainID() == 0);
-        mIvLoadingBegin.setImageResource(item.getTrafficMainID() == 0 ? R.drawable.ic_load_start :  R.drawable.ic_load_start);
-        mTvLoadingBegin.setTextColor(item.getTrafficMainID() == 0 ? getResources().getColor(R.color.color_ff7c41) : getResources().getColor(R.color.color_bbbbbb));
+        if (item.getTrafficMainID() == 0) {
+            resetLoadingBeginEnable();
+        } else {
+            resetUnloadReceiptEnable();
+        }
         mTransportId.setRightText(item.getTrafficCode() == null ? "" : item.getTrafficCode());
         mCarNum.setRightText(item.getVehicleCode() == null ? "" : item.getVehicleCode());
         mFreightRate.setRightText(item.getShippingModeName() == null ? "" : item.getShippingModeName());
         mBeginTime.setRightText(item.getBeginningTime() == null ? "" : item.getBeginningTime());
         mDrivingTime.setRightText(item.getDrivingDuration() == null ? "" : item.getDrivingDuration());
         mDrivingDistance.setRightText(item.getMileageMeasure() + "公里");
+    }
+
+    private void startAnimRotate(){
+        if (operatingAnim != null) {
+            mIvRefresh.startAnimation(operatingAnim);
+        }  else {
+            mIvRefresh.setAnimation(operatingAnim);
+            mIvRefresh.startAnimation(operatingAnim);
+        }
+    }
+
+    private void stopAnimRotate(){
+        mIvRefresh.clearAnimation();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -230,7 +268,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startDaemonService();
                 // 启动播放音乐Service
                 startPlayMusicService();
-                refreshMonitor();
+                startRunTimer();
                 break;
             case EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE:
                 ToastUtil.show("卸货成功");
@@ -239,15 +277,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 //关闭启动播放音乐Service
                 stopPlayMusicService();
                 resetView();
+                stopRunTimer();
                 break;
             case EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE:
                 ToastUtil.show("变更运输成功");
-                refreshMonitor();
+                startRunTimer();
                 break;
         }
     }
 
     private void resetView() {
+        /**
+         * 卸货不可用，载货可用
+         */
+        resetLoadingBeginEnable();
+
         mTransportId.setRightText("");
         mCarNum.setRightText("");
         mFreightRate.setRightText("");
@@ -264,6 +308,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mFreightReceiptTime.setRightText("");
         mFreightDrivingDistance.setRightText("");
         mRemark.setRightText("");
+    }
+
+    private void resetLoadingBeginEnable() {
+        //卸货签收不可用
+        mLayoutUnloadReceipt.setClickable(false);
+        mIvUnloadReceipt.setImageResource(R.drawable.ic_unload_receipt);
+        mTvUnloadReceipt.setTextColor(getResources().getColor(R.color.color_bbbbbb));
+        //载货启动可用
+        mLayoutLoadingBegin.setClickable(true);
+        mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
+        mTvLoadingBegin.setTextColor(getResources().getColor(R.color.color_ff7c41));
+        //刷新可用
+        mIvRefresh.setClickable(true);
+        mIvRefresh.setImageResource(R.drawable.ic_refresh_enable);
+    }
+
+    private void resetUnloadReceiptEnable() {
+        //卸货签收可用
+        mLayoutUnloadReceipt.setClickable(true);
+        mIvUnloadReceipt.setImageResource(R.drawable.ic_unload_receipt);
+        mTvUnloadReceipt.setTextColor(getResources().getColor(R.color.color_ff7c41));
+        //载货启动不可用
+        mLayoutLoadingBegin.setClickable(false);
+        mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
+        mTvLoadingBegin.setTextColor(getResources().getColor(R.color.color_bbbbbb));
+        //刷新不可用
+        mIvRefresh.setClickable(false);
+        mIvRefresh.setImageResource(R.drawable.ic_refresh_disable);
     }
 
     private void stopPlayMusicService() {
@@ -284,6 +356,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void stopDaemonService() {
         Intent intent = new Intent(MainActivity.this, DaemonService.class);
         stopService(intent);
+    }
+
+
+
+    private void startRunTimer() {
+        TimerTask mTask = new TimerTask() {
+            @Override
+            public void run() {
+                refreshMonitor();
+            }
+        };
+        mRunTimer = new Timer();
+        // 每隔1s更新一下时间
+        mRunTimer.schedule(mTask, 1000, 1000 * 60 * 10);
+    }
+
+    private void stopRunTimer() {
+        if (mRunTimer != null) {
+            mRunTimer.cancel();
+            mRunTimer = null;
+        }
     }
 
     @Override
@@ -327,6 +420,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.layout_transport_change:
                 EasyCaptureActivity.launch(this, getString(R.string.main_transport_change), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
+                break;
+            case R.id.iv_refresh:
+                startAnimRotate();
+                refreshMonitor();
                 break;
         }
     }

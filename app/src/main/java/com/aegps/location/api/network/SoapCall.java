@@ -86,8 +86,10 @@ public class SoapCall implements Call {
                 // 获取返回的结果
                 String result = object.getProperty(0).toString();
                 String data = object.getProperty(1).toString();
+                callback.onMustRun();
                 callback.onResponse(TextUtils.equals("true", result), data);
             } catch (Exception e) {
+                callback.onMustRun();
                 callback.onFailure(e.getMessage());
                 LogUtil.e("onFailure:--->" + e.getMessage());
                 e.printStackTrace();

@@ -47,6 +47,7 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void requestRemoteCompany() {
+        startProgressDialog();
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().requestRemotelogin(new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
@@ -62,6 +63,11 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void onFailure(Object o) {
                 ToastUtil.show(o.toString());
+            }
+
+            @Override
+            public void onMustRun() {
+                stopProgressDialog();
             }
         }));
     }
@@ -147,6 +153,7 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void next(String cutomerCode, String logonUser) {
+        startProgressDialog();
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().remotelogin(cutomerCode, logonUser, new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
@@ -169,6 +176,11 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void onFailure(Object o) {
                 ToastUtil.show(o.toString());
+            }
+
+            @Override
+            public void onMustRun() {
+                stopProgressDialog();
             }
         }));
     }
