@@ -3,7 +3,7 @@ package com.aegps.location.api.tool;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.network.SoapClient;
 import com.aegps.location.api.network.SoapRequest;
-import com.aegps.location.bean.net.CommonReturnInfoTable;
+import com.aegps.location.bean.net.CommonFailureInfoTable;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,11 +60,11 @@ public class SoapUtil {
     }
 
     public static synchronized void onFailure(String message) {
-        CommonReturnInfoTable commonReturnInfoTable = SoapUtil.getGson().fromJson(message, CommonReturnInfoTable.class);
-        if (commonReturnInfoTable == null ||
-                commonReturnInfoTable.getCommonReturnInfoTable() == null ||
-                commonReturnInfoTable.getCommonReturnInfoTable().size() <= 0) return;
-        ToastUtil.showShort(commonReturnInfoTable.getCommonReturnInfoTable().get(0).getExcpetionData());
+        CommonFailureInfoTable commonFailureInfoTable = SoapUtil.getGson().fromJson(message, CommonFailureInfoTable.class);
+        if (commonFailureInfoTable == null ||
+                commonFailureInfoTable.getCommonReturnInfoTable() == null ||
+                commonFailureInfoTable.getCommonReturnInfoTable().size() <= 0) return;
+        ToastUtil.show(commonFailureInfoTable.getCommonReturnInfoTable().get(0).getExcpetionData());
     }
 
     /**

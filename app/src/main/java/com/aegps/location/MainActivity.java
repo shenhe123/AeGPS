@@ -149,7 +149,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
+                ToastUtil.show(o.toString());
             }
         }));
     }
@@ -225,7 +225,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             default:
                 break;
             case EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE:
-                ToastUtil.showShort("启动成功");
+                ToastUtil.show("启动成功");
                 // 启动前台Service
                 startDaemonService();
                 // 启动播放音乐Service
@@ -233,7 +233,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 refreshMonitor();
                 break;
             case EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE:
-                ToastUtil.showShort("卸货成功");
+                ToastUtil.show("卸货成功");
                 //关闭前台Service
                 stopDaemonService();
                 //关闭启动播放音乐Service
@@ -241,7 +241,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 resetView();
                 break;
             case EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE:
-                ToastUtil.showShort("变更运输成功");
+                ToastUtil.show("变更运输成功");
                 refreshMonitor();
                 break;
         }

@@ -95,7 +95,7 @@ public class EasyCaptureActivity extends CaptureActivity {
 
                     @Override
                     public void onFailure(Object o) {
-                        ToastUtil.showShort(o.toString());
+                        ToastUtil.show(o.toString());
                     }
                 }));
     }
@@ -113,7 +113,7 @@ public class EasyCaptureActivity extends CaptureActivity {
 
             @Override
             public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
+                ToastUtil.show(o.toString());
             }
         }));
     }
@@ -132,7 +132,7 @@ public class EasyCaptureActivity extends CaptureActivity {
 
                     @Override
                     public void onFailure(Object o) {
-                        ToastUtil.showShort(o.toString());
+                        ToastUtil.show(o.toString());
                     }
                 }));
     }

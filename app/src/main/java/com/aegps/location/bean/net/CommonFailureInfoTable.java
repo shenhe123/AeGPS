@@ -6,7 +6,7 @@ import java.util.List;
  * Created by ShenHe on 2019/8/7.
  */
 
-public class CommonReturnInfoTable {
+public class CommonFailureInfoTable {
 
     private List<CommonReturnInfoTableBean> CommonReturnInfoTable;
 

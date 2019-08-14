@@ -141,28 +141,14 @@ public abstract class BaseActivity extends FragmentActivity {
      * 短暂显示Toast提示(来自String)
      **/
     public void showShortToast(String text) {
-        ToastUtil.showShort(text);
+        ToastUtil.show(text);
     }
 
     /**
      * 短暂显示Toast提示(id)
      **/
     public void showShortToast(int resId) {
-        ToastUtil.showShort(resId);
-    }
-
-    /**
-     * 长时间显示Toast提示(来自res)
-     **/
-    public void showLongToast(int resId) {
-        ToastUtil.showLong(resId);
-    }
-
-    /**
-     * 长时间显示Toast提示(来自String)
-     **/
-    public void showLongToast(String text) {
-        ToastUtil.showLong(text);
+        ToastUtil.show(resId);
     }
 
     /**

@@ -61,7 +61,7 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
+                ToastUtil.show(o.toString());
             }
         }));
     }
@@ -80,11 +80,11 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
     public void attemptLogin(View view) {
 //        if (TextUtils.isEmpty(mTvAccount.getText().toString().trim()) ||
         if (TextUtils.isEmpty(mTvCompanyName.getText().toString().trim())) {
-            ToastUtil.showShort("公司名不允许为空");
+            ToastUtil.show("公司名不允许为空");
             return;
         }
         if (TextUtils.isEmpty(mCutomerCode)) {
-            ToastUtil.showShort("远程登录失败");
+            ToastUtil.show("远程登录失败");
             return;
         }
         next(mCutomerCode, "");
@@ -159,7 +159,7 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
                         startActivity(intent);
                         finish();
                     } else {
-                        ToastUtil.showShort("数据错误，请重试");
+                        ToastUtil.show("数据错误，请重试");
                     }
                 } else {
                     SoapUtil.onFailure(data);
@@ -168,7 +168,7 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
+                ToastUtil.show(o.toString());
             }
         }));
     }

@@ -98,7 +98,7 @@ public class DaemonService extends Service {
 
                         @Override
                         public void onFailure(Object o) {
-                            ToastUtil.showShort(o.toString());
+                            ToastUtil.show(o.toString());
                         }
                     });
         });

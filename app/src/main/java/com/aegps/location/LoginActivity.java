@@ -63,11 +63,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void attemptLogin(View view) {
         if (TextUtils.isEmpty(mTvAccount.getText().toString().trim()) ||
                 TextUtils.isEmpty(mEtCarId.getText().toString().trim())) {
-            ToastUtil.showShort("账号密码不允许为空");
+            ToastUtil.show("账号密码不允许为空");
             return;
         }
         if (TextUtils.isEmpty(mDatabaseName)) {
-            ToastUtil.showShort("账套错误");
+            ToastUtil.show("账套错误");
             return;
         }
         login(ApplicationUtil.getIMEI(), mEtCarId.getText().toString(), mDatabaseName);
@@ -151,7 +151,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
             @Override
             public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
+                ToastUtil.show(o.toString());
             }
         }));
 
@@ -178,7 +178,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
             @Override
             public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
+                ToastUtil.show(o.toString());
             }
         }));
 
@@ -207,7 +207,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
             @Override
             public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
+                ToastUtil.show(o.toString());
             }
         }));
     }
