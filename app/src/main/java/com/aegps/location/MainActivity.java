@@ -1,13 +1,9 @@
 package com.aegps.location;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,13 +26,10 @@ import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.widget.CustomView;
 import com.aegps.location.widget.dialog.ExitAppDialog;
-import com.bumptech.glide.load.engine.Resource;
-import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -216,7 +209,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
         mLayoutLoadingBegin.setClickable(item.getTrafficMainID() == 0);
         mIvLoadingBegin.setImageResource(item.getTrafficMainID() == 0 ? R.drawable.ic_load_start :  R.drawable.ic_load_start);
-        mTvLoadingBegin.setTextColor(item.getTrafficMainID() == 0 ? getResources().getColor(R.color.color_bbbbbb) : getResources().getColor(R.color.color_ff7c41));
+        mTvLoadingBegin.setTextColor(item.getTrafficMainID() == 0 ? getResources().getColor(R.color.color_ff7c41) : getResources().getColor(R.color.color_bbbbbb));
         mTransportId.setRightText(item.getTrafficCode() == null ? "" : item.getTrafficCode());
         mCarNum.setRightText(item.getVehicleCode() == null ? "" : item.getVehicleCode());
         mFreightRate.setRightText(item.getShippingModeName() == null ? "" : item.getShippingModeName());

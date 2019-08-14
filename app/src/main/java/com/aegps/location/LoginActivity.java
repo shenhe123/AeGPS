@@ -20,7 +20,7 @@ import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.utils.WindowStatusHelp;
 import com.aegps.location.widget.CircleImageView;
-import com.aegps.location.widget.popupwindow.account.AccountMenuWindow;
+import com.aegps.location.widget.popupwindow.login.DataBaseMenuWindow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     // UI references.
     private CircleImageView mIvLogo;
     private TextView mTvAccount;
-    private AccountMenuWindow mAccountWindow;
+    private DataBaseMenuWindow mAccountWindow;
     private LinearLayout mLayoutParent;
     private List<ReturnTableResult.ReturnTableBean> returnTable = new ArrayList<>();
     private EditText mEtCarId;
@@ -48,26 +48,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     public void initData() {
         getDataBase();
-//        requestRemotelogin();
-    }
-
-    private void requestRemotelogin() {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().requestRemotelogin(new Callback() {
-            @Override
-            public void onResponse(boolean success, String data) {
-                if (success) {
-
-
-                } else {
-                    SoapUtil.onFailure(data);
-                }
-            }
-
-            @Override
-            public void onFailure(Object o) {
-                ToastUtil.showShort(o.toString());
-            }
-        }));
     }
 
     @Override
@@ -127,7 +107,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void initCommentWindow() {
         if (mAccountWindow == null) {
-            mAccountWindow = new AccountMenuWindow(mContext, mLayoutParent) {
+            mAccountWindow = new DataBaseMenuWindow(mContext, mLayoutParent) {
 
                 @Override
                 protected void selectAccount(String accountName, String databaseName) {
@@ -160,6 +140,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             public void onResponse(boolean success, String data) {
                 if (success) {
                     ReturnTableResult returnTableResult = SoapUtil.getGson().fromJson(data, ReturnTableResult.class);
+                    if (returnTableResult == null) return;
                     returnTable = returnTableResult.getReturnTable();
                     //保存账套信息
                     SharedPrefUtils.saveString(Contants.SP_ACCOUNT_LIST, data);

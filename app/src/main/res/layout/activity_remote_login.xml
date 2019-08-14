@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/ic_login_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context="com.aegps.location.LoginActivity">
+
+    <com.aegps.location.widget.CircleImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="173dp"
+        android:layout_height="173dp"
+        android:layout_marginTop="50dp"
+        android:visibility="invisible"
+        tools:src="@mipmap/ic_launcher" />
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="44dp"-->
+        <!--android:layout_marginEnd="20dp"-->
+        <!--android:layout_marginStart="20dp"-->
+        <!--android:layout_marginTop="48dp"-->
+        <!--android:background="@drawable/shape_border_color_bbbbbb"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginEnd="20dp"-->
+            <!--android:text="账    号"-->
+            <!--android:textColor="@color/color_black"-->
+            <!--android:textSize="14sp" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_account"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="44dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="center_vertical"-->
+            <!--android:hint="@string/remote_login_custom_id"-->
+            <!--android:paddingEnd="10dp"-->
+            <!--android:paddingStart="10dp"-->
+            <!--android:textColor="@color/color_black"-->
+            <!--android:textColorHint="@color/color_bbbbbb"-->
+            <!--android:textSize="14sp" />-->
+
+    <!--</LinearLayout>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/shape_border_color_bbbbbb"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="公司名"
+            android:textColor="@color/color_black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_car_id"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:gravity="center_vertical"
+            android:hint="@string/remote_login_company_name"
+            android:textColorHint="@color/color_bbbbbb"
+            android:textColor="@color/color_black"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/shape_color_ff7c41"
+        android:onClick="attemptLogin"
+        android:text="@string/remote_login_next"
+        android:textColor="@color/colorWhite"
+        android:textSize="16sp" />
+
+</LinearLayout>

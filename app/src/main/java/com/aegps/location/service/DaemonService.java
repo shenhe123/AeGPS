@@ -143,8 +143,5 @@ public class DaemonService extends Service {
             Log.d(TAG, "DaemonService---->onDestroy，前台service被杀死");
         isRunning = false;
         stopRunTimer();
-        // 重启自己
-        Intent intent = new Intent(getApplicationContext(), DaemonService.class);
-        startService(intent);
     }
 }

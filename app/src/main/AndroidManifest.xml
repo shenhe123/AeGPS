@@ -114,6 +114,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".zxing.CaptureActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".RemoteLoginActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

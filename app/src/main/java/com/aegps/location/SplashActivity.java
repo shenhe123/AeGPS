@@ -3,14 +3,10 @@ package com.aegps.location;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
 import com.aegps.location.base.BaseActivity;
-import com.aegps.location.utils.LogUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 /** 欢迎界面
@@ -57,7 +53,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void goHomeActivity() {
-        Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
+        Intent intent = new Intent(SplashActivity.this,RemoteLoginActivity.class);
         startActivity(intent);
         finish();
     }

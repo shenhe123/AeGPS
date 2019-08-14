@@ -148,10 +148,11 @@ public class SoapUtil {
      * @param logonUser 远程用户名
      * @param callback
      */
-    public void emotelogin(String cutomerCode, String logonUser, Callback callback) {
+    public void remotelogin(String cutomerCode, String logonUser, Callback callback) {
         HashMap<String, Object> params = new HashMap<>();
         List<JsonObject> jsonObjects = new ArrayList<>();
         JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("SoftProductCode", "07");
         jsonObject.addProperty("CustomerCode", cutomerCode);
         jsonObject.addProperty("LogonUser", logonUser);
         jsonObjects.add(jsonObject);
@@ -161,7 +162,7 @@ public class SoapUtil {
         params.put("sJsonInData", jsonParams);
         SoapRequest request = new SoapRequest.Builder().endPoint(mRemoteLoginUrl)
                 .methodName(methodName)
-                .soapAction(soapAction)
+                .soapAction(mRemoteAction)
                 .setParams(params)
                 .nameSpace(mNameSpace)
                 .setVersion(mSOAPVersion)
