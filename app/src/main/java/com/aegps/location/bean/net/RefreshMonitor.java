@@ -45,7 +45,7 @@ public class RefreshMonitor {
         private String ShippingModeName;
         private String BeginningTime;
         private String DrivingDuration;
-        private double MileageMeasure;
+        private float MileageMeasure;
 
         public int getTrafficMainID() {
             return TrafficMainID;
@@ -95,11 +95,11 @@ public class RefreshMonitor {
             this.DrivingDuration = DrivingDuration;
         }
 
-        public double getMileageMeasure() {
+        public float getMileageMeasure() {
             return MileageMeasure;
         }
 
-        public void setMileageMeasure(double MileageMeasure) {
+        public void setMileageMeasure(float MileageMeasure) {
             this.MileageMeasure = MileageMeasure;
         }
     }
@@ -131,7 +131,7 @@ public class RefreshMonitor {
         private String MobileTeleCode;
         private String RemarkSub;
         private String EndingTime;
-        private int MileageMeasure;
+        private float MileageMeasure;
 
         public int getTrafficMainID() {
             return TrafficMainID;
@@ -221,11 +221,11 @@ public class RefreshMonitor {
             this.EndingTime = EndingTime;
         }
 
-        public int getMileageMeasure() {
+        public float getMileageMeasure() {
             return MileageMeasure;
         }
 
-        public void setMileageMeasure(int MileageMeasure) {
+        public void setMileageMeasure(float MileageMeasure) {
             this.MileageMeasure = MileageMeasure;
         }
     }

@@ -11,9 +11,32 @@ android {
         versionName app_version.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        config {
+            storeFile file(signFile)
+            storePassword signPassword
+            keyAlias signAlias
+            keyPassword signPassword
+            v2SigningEnabled false
+        }
+    }
+
     buildTypes {
-        release {
+        debug {
+            // 混淆
             minifyEnabled false
+            // 移除无用的resource文件
+            shrinkResources false
+            signingConfig signingConfigs.config
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            // 混淆
+            minifyEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+            signingConfig signingConfigs.config
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -26,6 +49,16 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+def appendVersionName_release(variant, defaultConfig) {
+    variant.outputs.all { output ->
+        def outputFile = output.outputFile
+        if (outputFile != null && outputFile.name.endsWith('.apk')) {
+            def fileName = outputFile.name.replace("-release", "_release_" + defaultConfig.versionName)
+            outputFileName = fileName
+        }
     }
 }
 
