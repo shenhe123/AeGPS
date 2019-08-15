@@ -402,8 +402,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (Contants.DEBUG)
-            Log.d(TAG, "--->onDestroy");
         EventBus.getDefault().unregister(this);
     }
 

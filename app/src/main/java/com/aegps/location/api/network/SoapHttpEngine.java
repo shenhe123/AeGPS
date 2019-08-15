@@ -39,10 +39,8 @@ public class SoapHttpEngine implements HttpEngine {
                 rpc.addProperty(e.getKey(), e.getValue());
             }
         }
-        if (Contants.DEBUG) {
-            for (int i = 0; i < rpc.getPropertyCount(); i++) {
-                LogUtil.d("request params = " + rpc.getPropertyAsString(i));
-            }
+        for (int i = 0; i < rpc.getPropertyCount(); i++) {
+            LogUtil.d("request params = " + rpc.getPropertyAsString(i));
         }
         //设置Soap消息
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(mSoapRequest.getVersion());

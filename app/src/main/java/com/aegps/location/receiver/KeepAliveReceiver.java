@@ -15,12 +15,13 @@ import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SystemUtils;
 
-/** 监听系统广播，复活进程
- *  (1) 网络变化广播
- *  (2) 屏幕解锁广播
- *  (3) 应用安装卸载广播
- *  (4) 开机广播
- *
+/**
+ * 监听系统广播，复活进程
+ * (1) 网络变化广播
+ * (2) 屏幕解锁广播
+ * (3) 应用安装卸载广播
+ * (4) 开机广播
+ * <p>
  * Created by shenhe on 2019/7/30.
  */
 
@@ -30,11 +31,10 @@ public class KeepAliveReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if(Contants.DEBUG)
-            Log.d(TAG,"AliveBroadcastReceiver---->接收到的系统广播："+action);
-        getNetworkBroadcast(context,intent);
-        if(SystemUtils.isAPPALive(context,Contants.PACKAGE_NAME)){
-            Log.i(TAG,"AliveBroadcastReceiver---->APP还是活着的");
+        LogUtil.d(TAG, "AliveBroadcastReceiver---->接收到的系统广播：" + action);
+        getNetworkBroadcast(context, intent);
+        if (SystemUtils.isAPPALive(context, Contants.PACKAGE_NAME)) {
+            LogUtil.i(TAG, "AliveBroadcastReceiver---->APP还是活着的");
             return;
         }
 //        Intent intentAlive = new Intent(context, MainActivity.class);
@@ -42,15 +42,15 @@ public class KeepAliveReceiver extends BroadcastReceiver {
 //        context.startActivity(intentAlive);
         startDaemonService(context);
         startPlayMusicService(context);
-        Log.i(TAG,"AliveBroadcastReceiver---->复活进程(APP)");
+        LogUtil.i(TAG, "AliveBroadcastReceiver---->复活进程(APP)");
     }
 
-    private void getNetworkBroadcast(Context context, Intent intent){
+    private void getNetworkBroadcast(Context context, Intent intent) {
         String action = intent.getAction();
         // wifi状态改变
-        if(WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)){
-            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,0);
-            switch (wifiState){
+        if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
+            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
+            switch (wifiState) {
                 case WifiManager.WIFI_STATE_DISABLED:
                     LogUtil.d(TAG, "wifi关闭");
                     break;
@@ -62,13 +62,13 @@ public class KeepAliveReceiver extends BroadcastReceiver {
             }
         }
         // 连接到一个有效wifi路由器
-        if(WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)){
+        if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
             Parcelable parcelableExtra = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-            if(null != parcelableExtra){
-                NetworkInfo networkInfo = (NetworkInfo)parcelableExtra;
+            if (null != parcelableExtra) {
+                NetworkInfo networkInfo = (NetworkInfo) parcelableExtra;
                 NetworkInfo.State state = networkInfo.getState();
                 boolean isConnected = state == NetworkInfo.State.CONNECTED;
-                if(isConnected){
+                if (isConnected) {
                     LogUtil.d(TAG, "设备连接到一个有效WIFI路由器");
                 }
             }
@@ -78,21 +78,20 @@ public class KeepAliveReceiver extends BroadcastReceiver {
         // 其中，移动网络--->ConnectivityManager.TYPE_MOBILE；
         //       Wifi--->ConnectivityManager.TYPE_WIFI
         //       不明确类型：ConnectivityManager.EXTRA_NETWORK_INFO
-        if(ConnectivityManager.CONNECTIVITY_ACTION.equals(action)){
-            ConnectivityManager manager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo gprs = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            if(gprs.isConnected()){
+            if (gprs.isConnected()) {
                 LogUtil.d(TAG, "移动网络打开");
-            }else {
+            } else {
                 LogUtil.d(TAG, "移动网络关闭");
             }
         }
     }
 
 
-
     private void startPlayMusicService(Context context) {
-        Intent intent = new Intent(context,PlayerMusicService.class);
+        Intent intent = new Intent(context, PlayerMusicService.class);
         context.startService(intent);
     }
 

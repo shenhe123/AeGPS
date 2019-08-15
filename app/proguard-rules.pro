@@ -174,8 +174,9 @@
 -keep class com.google.gson.stream.** { *; }
 -keep class com.google.gson.examples.android.model.** { *; }
 -keep class com.qiancheng.carsmangersystem.**{*;}
+
 # Application classes that will be serialized/deserialized over Gson 下面替换成自己的实体类
--keep class com.aegps.loaction.bean.** { *; }
+-keep class com.aegps.location.bean.** { *; }
 
 # eventbus
 -keepattributes *Annotation*

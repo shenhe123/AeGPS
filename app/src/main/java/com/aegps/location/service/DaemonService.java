@@ -48,8 +48,7 @@ public class DaemonService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (Contants.DEBUG)
-            Log.d(TAG, "DaemonService---->onCreate被调用，启动前台service");
+        LogUtil.d(TAG, "DaemonService---->onCreate被调用，启动前台service");
         isRunning = true;
         //如果API大于18，需要弹出一个可见通知
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -144,8 +143,7 @@ public class DaemonService extends Service {
             NotificationManager mManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             mManager.cancel(NOTICE_ID);
         }
-        if (Contants.DEBUG)
-            Log.d(TAG, "DaemonService---->onDestroy，前台service被杀死");
+        LogUtil.d(TAG, "DaemonService---->onDestroy，前台service被杀死");
         isRunning = false;
         stopRunTimer();
     }

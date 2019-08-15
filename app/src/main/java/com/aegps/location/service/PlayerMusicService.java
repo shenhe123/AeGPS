@@ -9,9 +9,11 @@ import android.util.Log;
 
 import com.aegps.location.R;
 import com.aegps.location.utils.Contants;
+import com.aegps.location.utils.LogUtil;
 
-/**循环播放一段无声音频，以提升进程优先级
- *
+/**
+ * 循环播放一段无声音频，以提升进程优先级
+ * <p>
  * Created by shenhe on 2019/7/30.
  */
 
@@ -28,8 +30,7 @@ public class PlayerMusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if(Contants.DEBUG)
-            Log.d(TAG,TAG+"---->onCreate,启动服务");
+        LogUtil.d(TAG, TAG + "---->onCreate,启动服务");
         mMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.silent);
         mMediaPlayer.setLooping(true);
     }
@@ -45,18 +46,16 @@ public class PlayerMusicService extends Service {
         return START_STICKY;
     }
 
-    private void startPlayMusic(){
-        if(mMediaPlayer != null){
-            if(Contants.DEBUG)
-                Log.d(TAG,"启动后台播放音乐");
+    private void startPlayMusic() {
+        if (mMediaPlayer != null) {
+            LogUtil.d(TAG, "启动后台播放音乐");
             mMediaPlayer.start();
         }
     }
 
-    private void stopPlayMusic(){
-        if(mMediaPlayer != null){
-            if(Contants.DEBUG)
-                Log.d(TAG,"关闭后台播放音乐");
+    private void stopPlayMusic() {
+        if (mMediaPlayer != null) {
+            LogUtil.d(TAG, "关闭后台播放音乐");
             mMediaPlayer.stop();
         }
     }
@@ -65,10 +64,9 @@ public class PlayerMusicService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopPlayMusic();
-        if(Contants.DEBUG)
-            Log.d(TAG,TAG+"---->onCreate,停止服务");
+        LogUtil.d(TAG, TAG + "---->onCreate,停止服务");
         // 重启自己
-        Intent intent = new Intent(getApplicationContext(),PlayerMusicService.class);
+        Intent intent = new Intent(getApplicationContext(), PlayerMusicService.class);
         startService(intent);
     }
 }

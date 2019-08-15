@@ -28,7 +28,6 @@ public class ToastUtil {
     }
 
     private static void initToastInMainThread(CharSequence message) {
-        LogUtil.e("thread name = " + Thread.currentThread().getName());
         if (TextUtils.isEmpty(message)) return;
         if (toast == null) {
             //使用默认布局

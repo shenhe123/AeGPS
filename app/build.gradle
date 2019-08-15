@@ -52,16 +52,6 @@ android {
     }
 }
 
-def appendVersionName_release(variant, defaultConfig) {
-    variant.outputs.all { output ->
-        def outputFile = output.outputFile
-        if (outputFile != null && outputFile.name.endsWith('.apk')) {
-            def fileName = outputFile.name.replace("-release", "_release_" + defaultConfig.versionName)
-            outputFileName = fileName
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

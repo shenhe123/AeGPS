@@ -11,6 +11,7 @@ import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
 import com.aegps.location.bean.net.RemoteLoginResult;
 import com.aegps.location.bean.net.RemoteLoginUrlResult;
+import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.WindowStatusHelp;
 import com.aegps.location.utils.toast.ToastUtil;
@@ -106,10 +107,14 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
     }
 
     /**
-     * 展示账套弹窗
+     * 展示公司名弹窗
      */
     private void showPopupWindow() {
         if (this.isFinishing()) {
+            return;
+        }
+        if (returnTable == null || returnTable.size() <= 0) {
+            ToastUtil.show("获取公司信息失败");
             return;
         }
         if (mCompanyMenuWindwo == null) {

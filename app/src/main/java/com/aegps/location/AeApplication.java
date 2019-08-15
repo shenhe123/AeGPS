@@ -18,7 +18,8 @@ public class AeApplication extends BaseApplication {
         //初始化SharedPrefrence
         SharedPrefUtils.init(this);
 
-        LogUtil.init(BuildConfig.DEBUG,"");
+//        LogUtil.init(BuildConfig.DEBUG,"");
+        LogUtil.init(true,"");
     }
 
     @Override

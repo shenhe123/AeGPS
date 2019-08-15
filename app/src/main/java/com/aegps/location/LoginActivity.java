@@ -89,6 +89,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if (this.isFinishing()) {
             return;
         }
+
+        if (returnTable == null || returnTable.size() <= 0) {
+            ToastUtil.show("获取账套信息失败");
+            return;
+        }
         if (mAccountWindow == null) {
             initCommentWindow();
         }
