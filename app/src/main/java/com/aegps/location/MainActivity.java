@@ -320,8 +320,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
         mTvLoadingBegin.setTextColor(getResources().getColor(R.color.color_ff7c41));
         //刷新可用
-        mIvRefresh.setClickable(true);
-        mIvRefresh.setImageResource(R.drawable.ic_refresh_enable);
+        mIvRefresh.setClickable(false);
+        mIvRefresh.setImageResource(R.drawable.ic_refresh_disable);
     }
 
     private void resetUnloadReceiptEnable() {
@@ -334,8 +334,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
         mTvLoadingBegin.setTextColor(getResources().getColor(R.color.color_bbbbbb));
         //刷新不可用
-        mIvRefresh.setClickable(false);
-        mIvRefresh.setImageResource(R.drawable.ic_refresh_disable);
+        mIvRefresh.setClickable(true);
+        mIvRefresh.setImageResource(R.drawable.ic_refresh_enable);
     }
 
     private void stopPlayMusicService() {
