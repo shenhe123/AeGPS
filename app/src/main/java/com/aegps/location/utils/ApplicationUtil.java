@@ -1,5 +1,6 @@
 package com.aegps.location.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -19,9 +20,11 @@ public class ApplicationUtil {
     /**
      * 获取手机IMEI号
      */
+    @SuppressLint({"MissingPermission", "HardwareIds"})
     public static String getIMEI() {
         if (!TextUtils.isEmpty(imei) && !"000000000000000".equals(imei)) {
-            return imei;
+//            return imei;
+            return System.currentTimeMillis() + "";
         }
         try {
             TelephonyManager telephonyManager = (TelephonyManager) AeApplication.getAppContext()

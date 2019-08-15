@@ -129,7 +129,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void onResponse(boolean success, String data) {
                 if (success) {
                     RefreshMonitor refreshMonitor = SoapUtil.getGson().fromJson(data, RefreshMonitor.class);
-                    if (refreshMonitor == null) return;
+                    if (refreshMonitor == null) {
+                        resetLoadingBeginEnable();
+                        return;
+                    }
                     List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
                     if (monitorHeaderTable != null && monitorHeaderTable.size() > 0) {
                         RefreshMonitor.MonitorHeaderTableBean monitorHeaderTableBean = monitorHeaderTable.get(0);
@@ -151,14 +154,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             refreshEntryView(monitorEntryTableBean);
                         });
                     }
-
+                    if ((monitorHeaderTable == null || monitorHeaderTable.size() <= 0) && (monitorEntryTable == null || monitorEntryTable.size() <= 0)) {
+                        resetLoadingBeginEnable();
+                    }
                 } else {
+                    resetLoadingBeginEnable();
                     SoapUtil.onFailure(data);
                 }
             }
 
             @Override
             public void onFailure(Object o) {
+                resetLoadingBeginEnable();
                 ToastUtil.show(o.toString());
             }
 
