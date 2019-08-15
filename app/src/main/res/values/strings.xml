@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">北极欧</string>
+    <string name="app_name">北极欧-云物流</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

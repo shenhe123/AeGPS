@@ -109,9 +109,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView mTvLoadingBegin;
     private ImageView mIvUnloadReceipt;
     private TextView mTvUnloadReceipt;
+    private ImageView mIvTransportChange;
+    private TextView mTvTransportChange;
     private ImageView mIvRefresh;
     private Timer mRunTimer;
     private Animation operatingAnim;
+
 
     @Override
     public int getLayoutId() {
@@ -203,6 +206,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTvLoadingBegin = ((TextView) findViewById(R.id.tv_loading_begin));
         mIvUnloadReceipt = ((ImageView) findViewById(R.id.iv_unload_receipt));
         mTvUnloadReceipt = ((TextView) findViewById(R.id.tv_unload_receipt));
+        mIvTransportChange = ((ImageView) findViewById(R.id.iv_transport_change));
+        mTvTransportChange = ((TextView) findViewById(R.id.tv_transport_change));
         mTransportId = (CustomView) findViewById(R.id.transport_id);
         mCarNum = (CustomView) findViewById(R.id.car_num);
         mFreightRate = (CustomView) findViewById(R.id.freight_rate);
@@ -318,12 +323,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void resetLoadingBeginEnable() {
         //卸货签收不可用
         mLayoutUnloadReceipt.setClickable(false);
-        mIvUnloadReceipt.setImageResource(R.drawable.ic_unload_receipt);
+//        mIvUnloadReceipt.setImageResource(R.drawable.ic_unload_receipt);
         mTvUnloadReceipt.setTextColor(getResources().getColor(R.color.color_bbbbbb));
         //载货启动可用
         mLayoutLoadingBegin.setClickable(true);
-        mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
+//        mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
         mTvLoadingBegin.setTextColor(getResources().getColor(R.color.color_ff7c41));
+        //运输变更可用
+        mLayoutTransportChange.setClickable(true);
+//        mIvTransportChange.setImageResource(R.drawable.ic_transport_change);
+        mTvTransportChange.setTextColor(getResources().getColor(R.color.color_ff7c41));
         //刷新可用
         mIvRefresh.setClickable(false);
         mIvRefresh.setImageResource(R.drawable.ic_refresh_disable);
@@ -332,12 +341,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void resetUnloadReceiptEnable() {
         //卸货签收可用
         mLayoutUnloadReceipt.setClickable(true);
-        mIvUnloadReceipt.setImageResource(R.drawable.ic_unload_receipt);
+//        mIvUnloadReceipt.setImageResource(R.drawable.ic_unload_receipt);
         mTvUnloadReceipt.setTextColor(getResources().getColor(R.color.color_ff7c41));
         //载货启动不可用
         mLayoutLoadingBegin.setClickable(false);
-        mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
+//        mIvLoadingBegin.setImageResource(R.drawable.ic_load_start);
         mTvLoadingBegin.setTextColor(getResources().getColor(R.color.color_bbbbbb));
+        //运输变更可用
+        mLayoutTransportChange.setClickable(false);
+//        mIvTransportChange.setImageResource(R.drawable.ic_transport_change);
+        mTvTransportChange.setTextColor(getResources().getColor(R.color.color_bbbbbb));
         //刷新不可用
         mIvRefresh.setClickable(true);
         mIvRefresh.setImageResource(R.drawable.ic_refresh_enable);
