@@ -130,7 +130,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (success) {
                     RefreshMonitor refreshMonitor = SoapUtil.getGson().fromJson(data, RefreshMonitor.class);
                     if (refreshMonitor == null) {
-                        resetLoadingBeginEnable();
+                        runOnUiThread(() -> resetLoadingBeginEnable());
                         return;
                     }
                     List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
@@ -150,22 +150,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = refreshMonitor.getMonitorEntryTable();
                     if (monitorEntryTable != null && monitorEntryTable.size() > 0) {
                         RefreshMonitor.MonitorEntryTableBean monitorEntryTableBean = monitorEntryTable.get(0);
-                        runOnUiThread(() -> {
-                            refreshEntryView(monitorEntryTableBean);
-                        });
+                        runOnUiThread(() -> refreshEntryView(monitorEntryTableBean));
                     }
                     if ((monitorHeaderTable == null || monitorHeaderTable.size() <= 0) && (monitorEntryTable == null || monitorEntryTable.size() <= 0)) {
-                        resetLoadingBeginEnable();
+                        runOnUiThread(() -> resetLoadingBeginEnable());
                     }
                 } else {
-                    resetLoadingBeginEnable();
+                    runOnUiThread(() -> resetLoadingBeginEnable());
                     SoapUtil.onFailure(data);
                 }
             }
 
             @Override
             public void onFailure(Object o) {
-                resetLoadingBeginEnable();
+                runOnUiThread(() -> resetLoadingBeginEnable());
                 ToastUtil.show(o.toString());
             }
 

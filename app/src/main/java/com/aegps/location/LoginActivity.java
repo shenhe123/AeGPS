@@ -182,7 +182,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     List<MobileVehicleResult.ReturnTableBean> returnTable = mobileVehicleResult.getReturnTable();
                     if (returnTable == null || returnTable.size() <= 0) return;
                     MobileVehicleResult.ReturnTableBean returnTableBean = returnTable.get(0);
-                    mEtCarId.setText(returnTableBean.getVehicleCode());
+                    runOnUiThread(() -> mEtCarId.setText(returnTableBean.getVehicleCode()));
                 } else {
                     SoapUtil.onFailure(data);
                 }
