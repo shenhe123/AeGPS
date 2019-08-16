@@ -7,16 +7,16 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.aegps.location.R;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
+import com.aegps.location.location.BDLocationUtils;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
-import com.aegps.location.utils.LocationUtil;
 import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
@@ -38,6 +38,7 @@ public class DaemonService extends Service {
     private static final String CHANNEL_ID_STRING = "channel_id_string";
     public static boolean isRunning = false;
     private Timer mRunTimer;
+    private Handler handler = new Handler();
 
     @Nullable
     @Override
@@ -74,17 +75,26 @@ public class DaemonService extends Service {
         } else {
             startForeground(NOTICE_ID, new Notification());
         }
+        //获取经纬度
+        BDLocationUtils bdLocationUtils = new BDLocationUtils(this);
+        bdLocationUtils.doLocation();//开启定位
+        bdLocationUtils.mLocationClient.start();//开始定位
     }
 
     private void uploadLocation() {
-        String lngAndLat = LocationUtil.getLngAndLat(DaemonService.this);
-        String[] lngAndLatArray = lngAndLat.split(",");
-        LogUtil.d(lngAndLat);
+        if (BDLocationUtils.longitude == 0.0 && BDLocationUtils.latitude == 0.0) {
+            handler.postDelayed(this::uploadLoacationInfo, 1000);
+        } else {
+            uploadLoacationInfo();
+        }
+    }
+
+    private void uploadLoacationInfo() {
         ThreadManager.getThreadPollProxy().execute(() -> {
             SoapUtil.getInstance().locationTargeting(ApplicationUtil.getIMEI(),
                     SharedPrefUtils.getString(Contants.SP_DATABASE_NAME),
-                    lngAndLatArray[0],
-                    lngAndLatArray[1],
+                    BDLocationUtils.latitude + "",
+                    BDLocationUtils.longitude + "",
                     new Callback() {
                         @Override
                         public void onResponse(boolean success, String data) {

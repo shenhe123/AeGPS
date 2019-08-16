@@ -9,7 +9,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <!-- 必需的权限 -->
+    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -27,6 +30,23 @@
         android:supportsRtl="true"
         android:theme="@style/Activity.Theme"
         android:usesCleartextTraffic="true">
+
+        <!--百度定位sdk start-->
+
+        <!-- 声明service组件 -->
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
+
+        <!-- AK鉴权 -->
+        <!-- meta-data需要写在application中 -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="d9yooOGnhSGLYgA3H4uLWRNQgPoWGCSN" />  <!-- http://lbsyun.baidu.com/apiconsole/key -->
+        <!--百度定位sdk end-->
+
         <activity android:name=".SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>

@@ -10,6 +10,10 @@ android {
         versionCode app_version.versionCode
         versionName app_version.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters "armeabi"
+        }
     }
 
     signingConfigs {
@@ -60,6 +64,8 @@ dependencies {
     androidTestImplementation deps.test.espresso
     //libs
     implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
+    //百度定位
+    implementation files('libs/BaiduLBS_Android.jar')
     //support
     implementation deps.support.design
     implementation deps.support.appcompat
