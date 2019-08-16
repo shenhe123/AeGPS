@@ -39,6 +39,7 @@ public class DaemonService extends Service {
     public static boolean isRunning = false;
     private Timer mRunTimer;
     private Handler handler = new Handler();
+    private BDLocationUtils bdLocationUtils;
 
     @Nullable
     @Override
@@ -76,7 +77,7 @@ public class DaemonService extends Service {
             startForeground(NOTICE_ID, new Notification());
         }
         //获取经纬度
-        BDLocationUtils bdLocationUtils = new BDLocationUtils(this);
+        bdLocationUtils = new BDLocationUtils(this);
         bdLocationUtils.doLocation();//开启定位
         bdLocationUtils.mLocationClient.start();//开始定位
     }
@@ -93,8 +94,8 @@ public class DaemonService extends Service {
         ThreadManager.getThreadPollProxy().execute(() -> {
             SoapUtil.getInstance().locationTargeting(ApplicationUtil.getIMEI(),
                     SharedPrefUtils.getString(Contants.SP_DATABASE_NAME),
-                    BDLocationUtils.latitude + "",
                     BDLocationUtils.longitude + "",
+                    BDLocationUtils.latitude + "",
                     new Callback() {
                         @Override
                         public void onResponse(boolean success, String data) {
@@ -155,6 +156,7 @@ public class DaemonService extends Service {
         }
         LogUtil.d(TAG, "DaemonService---->onDestroy，前台service被杀死");
         isRunning = false;
+        bdLocationUtils.mLocationClient.stop();
         stopRunTimer();
     }
 }
