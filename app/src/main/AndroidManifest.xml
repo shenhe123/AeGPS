@@ -2,24 +2,50 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aegps.location">
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <!-- Normal Permissions 不需要运行时注册 -->
+    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!-- 必需的权限 -->
-    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+
+    <!-- 请求网络 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- 不是SDK需要的权限，是示例中的后台唤醒定位需要的权限 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <!-- 需要运行时注册的权限 -->
+    <!-- 相机 -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- 用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- 用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- 用于提高GPS定位速度 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <!-- 写入扩展存储，向扩展卡写入数据，用于写入缓存定位数据 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- 读取缓存数据 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!-- 更改设置 -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+
+    <!-- 3.2.0版本增加 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <!-- 3.2.0版本增加 -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+
+    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <application
         android:name=".AeApplication"
@@ -31,21 +57,15 @@
         android:theme="@style/Activity.Theme"
         android:usesCleartextTraffic="true">
 
-        <!--百度定位sdk start-->
-
-        <!-- 声明service组件 -->
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote" >
-        </service>
-
-        <!-- AK鉴权 -->
-        <!-- meta-data需要写在application中 -->
+        <!--高德地图定位-->
         <meta-data
-            android:name="com.baidu.lbsapi.API_KEY"
-            android:value="d9yooOGnhSGLYgA3H4uLWRNQgPoWGCSN" />  <!-- http://lbsyun.baidu.com/apiconsole/key -->
-        <!--百度定位sdk end-->
+            android:name="com.amap.api.v2.apikey"
+            android:value="1bc795354b8d507bcaf76d1100305075" />
+
+        <!-- 定位需要的服务 适配Android Q需要加上android:foregroundServiceType="location"-->
+        <service
+            android:name="com.amap.api.location.APSService"
+            android:foregroundServiceType="location" />
 
         <activity android:name=".SplashActivity"
             android:screenOrientation="portrait">
@@ -65,71 +85,31 @@
                 android:enable="false"属性
         -->
         <activity
-            android:name=".SinglePixelActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize|navigation|keyboard"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="false"
-            android:launchMode="singleInstance"
-            android:theme="@style/SingleActivityStyle" />
-        <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:excludeFromRecents="true"
             android:launchMode="singleTask" />
 
-        <!-- 注册Service -->
         <service
-            android:name=".service.DaemonService"
-            android:enabled="true"
+            android:name="com.aegps.location.locationservice.LocationService"
             android:exported="true"
-            android:process=":daemon_service" />
-        <service
-            android:name=".service.CancelNoticeService"
             android:enabled="true"
-            android:exported="true"
-            android:process=":service" />
+            android:process=":remote1">
+            <intent-filter>
+                <action android:name="com.aegps.location.locationservice.LocationService" />
+            </intent-filter>
+        </service>
+
         <service
-            android:name=".service.PlayerMusicService"
+            android:name="com.aegps.location.locationservice.LocationHelperService"
+            android:exported="true"
             android:enabled="true"
-            android:exported="true"
-            android:process=":music_service" />
-        <service
-            android:name=".service.AliveJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <!-- 接收系统广播接收器 -->
-        <receiver android:name=".receiver.KeepAliveReceiver">
-
-            <!-- 设备重启广播 -->
+            android:process=":remote2">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.aegps.location.locationservice.LocationHelperService" />
+            </intent-filter>
+        </service>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <!-- 安装或卸载广播 -->
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
-
-                <data android:scheme="package" />
-            </intent-filter>
-            <!-- 解锁广播 -->
-            <intent-filter>
-                <action android:name="android.intent.action.ACTION_USER_PRESENT" />
-            </intent-filter>
-            <!-- 存储卡挂载广播 -->
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_MOUNTED" />
-                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
-
-                <data android:scheme="file"></data>
-            </intent-filter>
-            <!-- 网络状态广播 -->
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-                <action android:name="android.net.wifi.STATE_CHANGE" />
-            </intent-filter>
-        </receiver>
         <activity android:name=".EasyCaptureActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".zxing.CaptureActivity"

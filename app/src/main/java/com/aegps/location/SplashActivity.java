@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.aegps.location.base.BaseActivity;
+import com.aegps.location.utils.AppManager;
+import com.aegps.location.utils.toast.ToastUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 /** 欢迎界面
@@ -49,28 +51,12 @@ public class SplashActivity extends BaseActivity {
             finish();
             return;
         }
-        requestPermission();
+        mHandler.sendEmptyMessageDelayed(GO_HOME,1500);
     }
 
     private void goHomeActivity() {
         Intent intent = new Intent(SplashActivity.this,RemoteLoginActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    @SuppressLint("CheckResult")
-    private void requestPermission() {
-        //同时请求多个权限
-        RxPermissions rxPermission = new RxPermissions(SplashActivity.this);
-        rxPermission.request(Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.CAMERA,
-                Manifest.permission.READ_PHONE_STATE)
-                .subscribe(granted -> {
-                    if (granted) {
-                        mHandler.sendEmptyMessageDelayed(GO_HOME,1500);
-                    }
-                });
-
     }
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 
 public class SharedPrefUtils {
     public static final String LF_SP_ATTENDANCE = "lf_sp_advert";
+    public static final String PREFERENCES_ALARM = "preferences_alarm";
 
     private static SharedPreferences sSharedPreferences = null;
 

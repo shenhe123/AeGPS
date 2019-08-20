@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao' // apply plugin
 
 android {
     compileSdkVersion build_versions.compileSdk
@@ -45,6 +46,16 @@ android {
         }
     }
 
+    configurations {
+        all*.exclude group: 'com.android.support', module: 'support-v13'
+    }
+
+    greendao {
+        schemaVersion 1
+        daoPackage 'com.aegps.location.greendb.gen'
+        targetGenDir 'src/main/java'
+    }
+
     lintOptions {
         abortOnError false
         warning 'InvalidPackage'
@@ -64,8 +75,10 @@ dependencies {
     androidTestImplementation deps.test.espresso
     //libs
     implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
-    //百度定位
-    implementation files('libs/BaiduLBS_Android.jar')
+    //高德地图定位
+    implementation files('libs/AMap_Location_V4.3.0_20181016.jar')
+    implementation files('libs/AMap_Search_V6.5.0_20180930.jar')
+    implementation files('libs/Android_Map3D_SDK_V6.5.0_20180930.jar')
     //support
     implementation deps.support.design
     implementation deps.support.appcompat
@@ -82,4 +95,8 @@ dependencies {
     api deps.gson
     //eventbus
     api deps.eventbus
+
+    implementation 'org.greenrobot:greendao:3.2.0'
+    //可展开recyclerview
+    implementation 'com.malinskiy:superrecyclerview:1.1.4'
 }

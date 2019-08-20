@@ -23,7 +23,8 @@ public class ApplicationUtil {
     @SuppressLint({"MissingPermission", "HardwareIds"})
     public static String getIMEI() {
         if (!TextUtils.isEmpty(imei) && !"000000000000000".equals(imei)) {
-            return imei;
+//            return imei;
+            return "866654037572580";
         }
         try {
             TelephonyManager telephonyManager = (TelephonyManager) AeApplication.getAppContext()

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorWhite"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="运输信息"
+            android:textColor="@color/color_black"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/iv_refresh"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="10dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_refresh_enable" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_bbbbbb" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:paddingBottom="15dp"
+        android:paddingStart="10dp"
+        android:paddingTop="15dp">
+
+        <com.aegps.location.widget.CustomView
+            android:id="@+id/transport_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tvColor="@color/color_333333"
+            app:tvStartText="运输单号：" />
+
+        <com.aegps.location.widget.CustomView
+            android:id="@+id/begin_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:tvColor="@color/color_333333"
+            app:tvStartText="启动时间：" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <com.aegps.location.widget.CustomView
+                android:id="@+id/car_num"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:tvColor="@color/color_333333"
+                app:tvStartText="车牌号码：" />
+
+            <com.aegps.location.widget.CustomView
+                android:id="@+id/freight_rate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:tvColor="@color/color_333333"
+                app:tvStartText="运价方式：" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <com.aegps.location.widget.CustomView
+                android:id="@+id/driving_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:tvColor="@color/color_333333"
+                app:tvStartText="行驶时长：" />
+
+            <com.aegps.location.widget.CustomView
+                android:id="@+id/driving_distance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:tvColor="@color/color_333333"
+                app:tvStartText="行驶距离：" />
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

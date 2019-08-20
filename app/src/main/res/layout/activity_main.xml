@@ -1,348 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_f7f7f7"
     android:fitsSystemWindows="true"
-    android:fillViewport="true"
-    android:scrollbars="none">
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/colorWhite"
+        android:gravity="center"
+        android:text="运输信息"
+        android:textColor="@color/color_black"
+        android:textSize="18sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_bbbbbb" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_f7f7f7"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@color/colorWhite"
-            android:gravity="center"
-            android:text="运输信息"
-            android:textColor="@color/color_black"
-            android:textSize="18sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/color_bbbbbb" />
+        android:layout_marginTop="10dp"
+        android:background="@color/colorWhite"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/layout_loading_begin"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
-            android:layout_marginTop="10dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp">
-
-            <LinearLayout
-                android:id="@+id/layout_loading_begin"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/iv_loading_begin"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_load_start"/>
-
-                <TextView
-                    android:id="@+id/tv_loading_begin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/main_start_load"
-                    android:textColor="@color/color_ff7c41"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_unload_receipt"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/iv_unload_receipt"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_unload_receipt"/>
-
-                <TextView
-                    android:id="@+id/tv_unload_receipt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/main_unload_receipt"
-                    android:textColor="@color/color_ff7c41"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_transport_change"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/iv_transport_change"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_transport_change"/>
-
-                <TextView
-                    android:id="@+id/tv_transport_change"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/main_transport_change"
-                    android:textColor="@color/color_ff7c41"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@color/colorWhite"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="48dp"
-                android:gravity="center_vertical"
-                android:layout_marginStart="10dp"
-                android:text="运输信息"
-                android:textSize="16sp"
-                android:textColor="@color/color_black"/>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/iv_refresh"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginEnd="10dp"
-                android:padding="5dp"
-                android:src="@drawable/ic_refresh_enable"/>
-        </LinearLayout>
+                android:id="@+id/iv_loading_begin"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_load_start" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/color_bbbbbb"/>
+            <TextView
+                android:id="@+id/tv_loading_begin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/main_start_load"
+                android:textColor="@color/color_ff7c41"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/layout_unload_receipt"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/colorWhite"
-            android:paddingStart="10dp"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp">
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/transport_id"
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/iv_unload_receipt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_unload_receipt" />
+
+            <TextView
+                android:id="@+id/tv_unload_receipt"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="运输单号：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/begin_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="启动时间：" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="15dp">
-
-                <com.aegps.location.widget.CustomView
-                    android:id="@+id/car_num"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    app:tvColor="@color/color_333333"
-                    app:tvStartText="车牌号码：" />
-
-                <com.aegps.location.widget.CustomView
-                    android:id="@+id/freight_rate"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    app:tvColor="@color/color_333333"
-                    app:tvStartText="运价方式：" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="15dp">
-                <com.aegps.location.widget.CustomView
-                    android:id="@+id/driving_time"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    app:tvColor="@color/color_333333"
-                    app:tvStartText="行驶时长：" />
-
-                <com.aegps.location.widget.CustomView
-                    android:id="@+id/driving_distance"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    app:tvColor="@color/color_333333"
-                    app:tvStartText="行驶距离：" />
-            </LinearLayout>
+                android:layout_marginTop="10dp"
+                android:text="@string/main_unload_receipt"
+                android:textColor="@color/color_ff7c41"
+                android:textSize="14sp" />
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:gravity="center_vertical"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:background="@color/colorWhite"
-            android:text="信息详情"
-            android:textSize="16sp"
-            android:textColor="@color/color_black"/>
+        <LinearLayout
+            android:id="@+id/layout_transport_change"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <View
-            android:id="@+id/line"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/color_bbbbbb" />
+            <ImageView
+                android:id="@+id/iv_transport_change"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_transport_change" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorWhite"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:paddingStart="10dp">
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/freight_order_number"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tv_transport_change"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="运费单号：" />
+                android:layout_marginTop="10dp"
+                android:text="@string/main_transport_change"
+                android:textColor="@color/color_ff7c41"
+                android:textSize="14sp" />
 
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/client"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/freight_order_number"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="客户：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/client"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="详细地址：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/city"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/strut"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/address"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="城市：" />
-
-            <View
-                android:id="@+id/strut"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_centerHorizontal="true" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/contact"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/address"
-                android:layout_marginTop="15dp"
-                android:layout_toEndOf="@+id/strut"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="联系人：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/phone"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/strut"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/city"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="手机：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/tel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/city"
-                android:layout_marginTop="15dp"
-                android:layout_toEndOf="@+id/strut"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="电话：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/freight_receipt_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/phone"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="签收时间：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/freight_driving_distance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/phone"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="行驶里程：" />
-
-            <com.aegps.location.widget.CustomView
-                android:id="@+id/remark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/freight_receipt_time"
-                android:layout_marginTop="15dp"
-                app:tvColor="@color/color_333333"
-                app:tvStartText="备注：" />
-        </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 
-</ScrollView>
+    <com.malinskiy.superrecyclerview.SuperRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+        app:recyclerClipToPadding="true"
+        app:scrollbarStyle="outsideOverlay" />
+</LinearLayout>
+
