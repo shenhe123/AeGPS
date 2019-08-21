@@ -176,14 +176,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         runOnUiThread(() -> resetLoadingBeginEnable());
                     }
                 } else {
-                    runOnUiThread(() -> resetLoadingBeginEnable());
                     SoapUtil.onFailure(data);
                 }
             }
 
             @Override
             public void onFailure(Object o) {
-                runOnUiThread(() -> resetLoadingBeginEnable());
                 ToastUtil.show(o.toString());
             }
 
@@ -320,7 +318,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE:
                 ToastUtil.show("卸货成功");
                 stopLocationService();
-                resetView();
                 LocationStatusManager.getInstance().resetToInit(getApplicationContext());
                 stopRunTimer();
                 break;
@@ -345,16 +342,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             ToastUtil.show("定位环境不佳，请检查网络或到空旷户外重新定位");
         }
-    }
-
-    private void resetView() {
-        /**
-         * 卸货不可用，载货可用
-         */
-        resetLoadingBeginEnable();
-
-        monitorEntryTable.clear();
-        mAdapter.notifyDataSetChanged();
     }
 
     private void resetLoadingBeginEnable() {
@@ -551,14 +538,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             locationLatLng = new LatLng(gcj02tobd09[1], gcj02tobd09[0]);
             Log.e("shenhe 定位結果", "onLocationChanged: " + locationLatLng);
             SharedPrefUtils.saveString("locationLatLng", locationLatLng.latitude + "," + locationLatLng.longitude);
-            FilteWriterUtil.wirteToLoacal(FilteWriterUtil.getRootDir(AeApplication.getAppContext()) + "/1/log.txt"
-                    , "当前时间：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                            + "\nlongitude=" + locationLatLng.longitude
-                            + "\nlatitude=" + locationLatLng.latitude
-                            + "\ncountry=" + location.getCountry()
-                            + "\ncity=" + location.getCity()
-                            + "\nstreet=" + location.getStreet()
-                            + "\naddress=" + location.getAddress() + "\n\n");
+//            FilteWriterUtil.wirteToLoacal(FilteWriterUtil.getRootDir(AeApplication.getAppContext()) + "/1/log.txt"
+//                    , "当前时间：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+//                            + "\nlongitude=" + locationLatLng.longitude
+//                            + "\nlatitude=" + locationLatLng.latitude
+//                            + "\ncountry=" + location.getCountry()
+//                            + "\ncity=" + location.getCity()
+//                            + "\nstreet=" + location.getStreet()
+//                            + "\naddress=" + location.getAddress() + "\n\n");
         } else {
             locationSuccess = false;
         }
