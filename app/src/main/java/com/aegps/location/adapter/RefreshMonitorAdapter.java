@@ -3,9 +3,11 @@ package com.aegps.location.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.aegps.location.R;
 import com.aegps.location.bean.net.RefreshMonitor;
@@ -48,6 +50,9 @@ public class RefreshMonitorAdapter extends RecyclerView.Adapter<RefreshMonitorAd
         viewHolder.mFreightReceiptTime.setRightText(dataList.get(i).getEndingTime() == null ? "" : dataList.get(i).getEndingTime());
         viewHolder.mFreightDrivingDistance.setRightText(dataList.get(i).getMileageMeasure() + "公里");
         viewHolder.mRemark.setRightText(dataList.get(i).getRemarkSub() == null ? "" : dataList.get(i).getRemarkSub());
+        viewHolder.mLayoutRoot.setBackgroundColor(TextUtils.isEmpty(dataList.get(i).getEndingTime())
+                ? context.getResources().getColor(R.color.colorWhite)
+                : context.getResources().getColor(R.color.color_f7f7f7));
 
     }
 
@@ -87,6 +92,7 @@ public class RefreshMonitorAdapter extends RecyclerView.Adapter<RefreshMonitorAd
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
+        private LinearLayout mLayoutRoot;
         private CustomView mFreightOrderNumber;
         private CustomView mClient;
         private CustomView mAddress;
@@ -101,6 +107,7 @@ public class RefreshMonitorAdapter extends RecyclerView.Adapter<RefreshMonitorAd
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            mLayoutRoot = itemView.findViewById(R.id.layout_root);
             mFreightOrderNumber = itemView.findViewById(R.id.freight_order_number);
             mClient = itemView.findViewById(R.id.client);
             mAddress = itemView.findViewById(R.id.address);
