@@ -20,6 +20,9 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+#重点
+-ignorewarnings
+
 # 代码混淆压缩比，在0~7之间，默认为5，一般不做修改
 -optimizationpasses 5
 
@@ -201,21 +204,45 @@
 -dontwarn org.xmlpull.v1.**
 -keep class org.xmlpull.v1.** { *;}
 
-# 3D 地图 V5.0.0之后：
--keep   class com.amap.api.maps.**{*;}
--keep   class com.autonavi.**{*;}
--keep   class com.amap.api.trace.**{*;}
-#定位
+# 高德相关依赖
+# 集合包:3D地图3.3.2 导航1.8.0 定位2.5.0
+-dontwarn com.amap.api.**
+-dontwarn com.autonavi.**
+-keep class com.amap.api.**{*;}
+-keep class com.autonavi.**{*;}
+# 地图服务
+-dontwarn com.amap.api.services.**
+-keep class com.map.api.services.** {*;}
+# 3D地图
+-dontwarn com.amap.api.mapcore.**
+-dontwarn com.amap.api.maps.**
+-dontwarn com.autonavi.amap.mapcore.**
+-keep class com.amap.api.mapcore.**{*;}
+-keep class com.amap.api.maps.**{*;}
+-keep class com.autonavi.amap.mapcore.**{*;}
+# 定位
+-dontwarn com.amap.api.location.**
+-dontwarn com.aps.**
 -keep class com.amap.api.location.**{*;}
--keep class com.amap.api.fence.**{*;}
--keep class com.autonavi.aps.amapapi.model.**{*;}
+-keep class com.aps.**{*;}
+# 导航
+-dontwarn com.amap.api.navi.**
+-dontwarn com.autonavi.**
+-keep class com.amap.api.navi.** {*;}
+-keep class com.autonavi.** {*;}
 
-#搜索
--keep   class com.amap.api.services.**{*;}
 #2D地图
 -keep class com.amap.api.maps2d.**{*;}
 -keep class com.amap.api.mapcore2d.**{*;}
 
-#导航
--keep class com.amap.api.navi.**{*;}
--keep class com.autonavi.**{*;}
+#重点(greendao需要配置)
+### greenDAO 3
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+public static java.lang.String TABLENAME;
+}
+-keep class **$Properties
+
+# If you do not use SQLCipher:
+-dontwarn org.greenrobot.greendao.database.**
+# If you do not use RxJava:
+-dontwarn rx.**
