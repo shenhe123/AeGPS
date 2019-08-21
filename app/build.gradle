@@ -97,6 +97,4 @@ dependencies {
     api deps.eventbus
 
     implementation 'org.greenrobot:greendao:3.2.0'
-    //可展开recyclerview
-    implementation 'com.malinskiy:superrecyclerview:1.1.4'
 }

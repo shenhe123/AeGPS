@@ -1,6 +1,5 @@
 package com.aegps.location;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -12,16 +11,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.os.PowerManager;
 import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -36,8 +32,6 @@ import com.aegps.location.base.BaseActivity;
 import com.aegps.location.bean.event.CommonEvent;
 import com.aegps.location.bean.net.RefreshMonitor;
 import com.aegps.location.locationservice.CoordinateTransformUtil;
-import com.aegps.location.locationservice.PowerManagerUtil;
-import com.aegps.location.utils.FilteWriterUtil;
 import com.aegps.location.locationservice.LocationChangBroadcastReceiver;
 import com.aegps.location.locationservice.LocationService;
 import com.aegps.location.locationservice.LocationStatusManager;
@@ -45,6 +39,7 @@ import com.aegps.location.locationservice.Utils;
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
+import com.aegps.location.utils.FilteWriterUtil;
 import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
@@ -56,8 +51,6 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.model.LatLng;
-import com.malinskiy.superrecyclerview.SuperRecyclerView;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -113,7 +106,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private AMapLocationClient mlocationClient;
     private boolean locationSuccess = false;//定位是否成功
     private LatLng locationLatLng;//定位成功的经纬度
-    private SuperRecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private RefreshMonitorAdapter mAdapter;
     private static final String NOTIFICATION_CHANNEL_NAME = "BackgroundLocation";
     private NotificationManager notificationManager = null;
@@ -176,7 +169,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }
                     monitorEntryTable = refreshMonitor.getMonitorEntryTable();
                     if (monitorEntryTable != null && monitorEntryTable.size() > 0) {
-                        runOnUiThread(() -> mAdapter.notifyDataSetChanged());
+                        runOnUiThread(() -> mAdapter.setData(monitorEntryTable));
                     }
                     if ((monitorHeaderTable == null || monitorHeaderTable.size() <= 0) && (monitorEntryTable == null || monitorEntryTable.size() <= 0)) {
                         runOnUiThread(() -> resetLoadingBeginEnable());
@@ -227,23 +220,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mIvTransportChange = ((ImageView) findViewById(R.id.iv_transport_change));
         mTvTransportChange = ((TextView) findViewById(R.id.tv_transport_change));
 
-        mLayoutHeader = LayoutInflater.from(this).inflate(R.layout.item_refresh_monitor_header, null);
-        mTransportId = (CustomView) mLayoutHeader.findViewById(R.id.transport_id);
-        mCarNum = (CustomView) mLayoutHeader.findViewById(R.id.car_num);
-        mFreightRate = (CustomView) mLayoutHeader.findViewById(R.id.freight_rate);
-        mBeginTime = (CustomView) mLayoutHeader.findViewById(R.id.begin_time);
-        mDrivingTime = (CustomView) mLayoutHeader.findViewById(R.id.driving_time);
-        mDrivingDistance = (CustomView) mLayoutHeader.findViewById(R.id.driving_distance);
+        mTransportId = (CustomView) findViewById(R.id.transport_id);
+        mCarNum = (CustomView) findViewById(R.id.car_num);
+        mFreightRate = (CustomView) findViewById(R.id.freight_rate);
+        mBeginTime = (CustomView) findViewById(R.id.begin_time);
+        mDrivingTime = (CustomView) findViewById(R.id.driving_time);
+        mDrivingDistance = (CustomView) findViewById(R.id.driving_distance);
 
-        mRecyclerView = ((SuperRecyclerView) findViewById(R.id.recyclerView));
+        mRecyclerView = ((RecyclerView) findViewById(R.id.recyclerView));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        mRecyclerView.getMoreProgressView().getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-        mAdapter = new RefreshMonitorAdapter(this, monitorEntryTable);
-        ViewGroup parent = (ViewGroup) this.mLayoutHeader.getParent();
-        if (parent != null) {
-            parent.removeView(this.mLayoutHeader);
-        }
-        mAdapter.setHeaderView(mLayoutHeader);
+        mRecyclerView.setNestedScrollingEnabled(false);
+        mAdapter = new RefreshMonitorAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -366,6 +353,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         resetLoadingBeginEnable();
 
         monitorEntryTable.clear();
+        monitorEntryTable.add(new RefreshMonitor.MonitorEntryTableBean());
         mAdapter.notifyDataSetChanged();
     }
 

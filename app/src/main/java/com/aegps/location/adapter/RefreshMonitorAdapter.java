@@ -3,13 +3,13 @@ package com.aegps.location.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.aegps.location.R;
 import com.aegps.location.bean.net.RefreshMonitor;
+import com.aegps.location.bean.net.RemoteLoginResult;
 import com.aegps.location.widget.CustomView;
 
 import java.util.ArrayList;
@@ -20,30 +20,98 @@ import java.util.List;
  *
  * @description
  */
-public class RefreshMonitorAdapter extends HeaderRecycleAdapter<RefreshMonitor.MonitorEntryTableBean> implements MultiTypeSupport<RefreshMonitor.MonitorEntryTableBean> {
-    private Context mContext;
+public class RefreshMonitorAdapter extends RecyclerView.Adapter<RefreshMonitorAdapter.ViewHolder> {
+    private List<RefreshMonitor.MonitorEntryTableBean> dataList = new ArrayList<>();
+    private Context context;
+    private CompanyMenuAdapter.onRecyclerItemClickerListener mListener;
 
-    public RefreshMonitorAdapter(Context context, List<RefreshMonitor.MonitorEntryTableBean> dataList) {
-        super(context, dataList, R.layout.item_refresh_monitor);
-        this.mContext = context;
+    public RefreshMonitorAdapter(Context context) {
+        this.context = context;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_refresh_monitor, viewGroup, false);
+        return new RefreshMonitorAdapter.ViewHolder(view);
     }
 
     @Override
-    public void bindData(final CommonViewHolder holder, final RefreshMonitor.MonitorEntryTableBean data) {
-        ((CustomView) holder.getView(R.id.freight_order_number)).setRightText(data.getExpressCode() == null ? "" : data.getExpressCode());
-        ((CustomView) holder.getView(R.id.client)).setRightText(data.getBaccName() == null ? "" : data.getBaccName());
-        ((CustomView) holder.getView(R.id.address)).setRightText(data.getDeliveryAddress() == null ? "" : data.getDeliveryAddress());
-        ((CustomView) holder.getView(R.id.city)).setRightText(data.getDeliveryCity() == null ? "" : data.getDeliveryCity());
-        ((CustomView) holder.getView(R.id.contact)).setRightText(data.getContactPerson() == null ? "" : data.getContactPerson());
-        ((CustomView) holder.getView(R.id.phone)).setRightText(data.getMobileTeleCode() == null ? "" : data.getMobileTeleCode());
-        ((CustomView) holder.getView(R.id.tel)).setRightText(data.getTelephoneCode() == null ? "" : data.getTelephoneCode());
-        ((CustomView) holder.getView(R.id.freight_receipt_time)).setRightText(data.getEndingTime() == null ? "" : data.getEndingTime());
-        ((CustomView) holder.getView(R.id.freight_driving_distance)).setRightText(data.getMileageMeasure() + "公里");
-        ((CustomView) holder.getView(R.id.remark)).setRightText(data.getRemarkSub() == null ? "" : data.getRemarkSub());
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        viewHolder.mFreightOrderNumber.setRightText(dataList.get(i).getExpressCode() == null ? "" : dataList.get(i).getExpressCode());
+        viewHolder.mClient.setRightText(dataList.get(i).getBaccName() == null ? "" : dataList.get(i).getBaccName());
+        viewHolder.mAddress.setRightText(dataList.get(i).getDeliveryAddress() == null ? "" : dataList.get(i).getDeliveryAddress());
+        viewHolder.mCity.setRightText(dataList.get(i).getDeliveryCity() == null ? "" : dataList.get(i).getDeliveryCity());
+        viewHolder.mContact.setRightText(dataList.get(i).getContactPerson() == null ? "" : dataList.get(i).getContactPerson());
+        viewHolder.mPhone.setRightText(dataList.get(i).getMobileTeleCode() == null ? "" : dataList.get(i).getMobileTeleCode());
+        viewHolder.mTel.setRightText(dataList.get(i).getTelephoneCode() == null ? "" : dataList.get(i).getTelephoneCode());
+        viewHolder.mFreightReceiptTime.setRightText(dataList.get(i).getEndingTime() == null ? "" : dataList.get(i).getEndingTime());
+        viewHolder.mFreightDrivingDistance.setRightText(dataList.get(i).getMileageMeasure() + "公里");
+        viewHolder.mRemark.setRightText(dataList.get(i).getRemarkSub() == null ? "" : dataList.get(i).getRemarkSub());
+
     }
 
     @Override
-    public int getLayoutId(RefreshMonitor.MonitorEntryTableBean item, int position) {
-        return R.layout.item_refresh_monitor;
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataList.size();
+    }
+
+    /**
+     * 设置数据源
+     */
+    public void setData(List<RefreshMonitor.MonitorEntryTableBean> dataList) {
+        if (null != dataList) {
+            this.dataList.clear();
+            this.dataList.addAll(dataList);
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * 增加点击监听
+     */
+    public void setItemListener(CompanyMenuAdapter.onRecyclerItemClickerListener mListener) {
+        this.mListener = mListener;
+    }
+
+    /**
+     * 点击监听回调接口
+     */
+    public interface onRecyclerItemClickerListener {
+        void onRecyclerItemClick(RemoteLoginResult.ReturnTableBean data, int position);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder{
+        private CustomView mFreightOrderNumber;
+        private CustomView mClient;
+        private CustomView mAddress;
+        private CustomView mCity;
+        private CustomView mContact;
+        private CustomView mPhone;
+        private CustomView mTel;
+        private CustomView mFreightReceiptTime;
+        private CustomView mFreightDrivingDistance;
+        private CustomView mRemark;
+
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mFreightOrderNumber = itemView.findViewById(R.id.freight_order_number);
+            mClient = itemView.findViewById(R.id.client);
+            mAddress = itemView.findViewById(R.id.address);
+            mCity = itemView.findViewById(R.id.city);
+            mContact = itemView.findViewById(R.id.contact);
+            mPhone = itemView.findViewById(R.id.phone);
+            mTel = itemView.findViewById(R.id.tel);
+            mFreightReceiptTime = itemView.findViewById(R.id.freight_receipt_time);
+            mFreightDrivingDistance = itemView.findViewById(R.id.freight_driving_distance);
+            mRemark = itemView.findViewById(R.id.remark);
+
+        }
     }
 }
