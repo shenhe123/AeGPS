@@ -17,6 +17,7 @@ import com.aegps.location.utils.WindowStatusHelp;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.widget.CircleImageView;
 import com.aegps.location.widget.popupwindow.login.CompanyMenuWindow;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.List;

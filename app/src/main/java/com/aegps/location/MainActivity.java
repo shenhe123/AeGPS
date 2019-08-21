@@ -51,6 +51,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.model.LatLng;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -353,7 +354,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         resetLoadingBeginEnable();
 
         monitorEntryTable.clear();
-        monitorEntryTable.add(new RefreshMonitor.MonitorEntryTableBean());
         mAdapter.notifyDataSetChanged();
     }
 

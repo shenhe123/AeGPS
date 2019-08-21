@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.aegps.location">
 
     <!-- Normal Permissions 不需要运行时注册 -->
@@ -10,6 +11,7 @@
     <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+    <uses-permission android:name="android.permission.READ_LOGS" />
 
     <!-- 请求网络 -->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -35,7 +37,10 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <!-- 更改设置 -->
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <!--通知震动-->
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <!-- 3.2.0版本增加 -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>

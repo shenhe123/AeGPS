@@ -1,7 +1,5 @@
 package com.aegps.location;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -16,7 +14,6 @@ import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.zxing.CaptureActivity;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -85,7 +82,6 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void loadBegin(String trafficBarCode) {
-        startProgressDialog("已扫描，正在处理");
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
@@ -104,13 +100,11 @@ public class EasyCaptureActivity extends CaptureActivity {
 
                     @Override
                     public void onMustRun() {
-                        stopProgressDialog();
                     }
                 }));
     }
 
     private void unLoadReceipt(String shipmentBarCode) {
-        startProgressDialog("已扫描，正在处理");
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
@@ -128,13 +122,11 @@ public class EasyCaptureActivity extends CaptureActivity {
 
             @Override
             public void onMustRun() {
-                stopProgressDialog();
             }
         }));
     }
 
     private void transportChange(String trafficBarCode) {
-        startProgressDialog("已扫描，正在处理");
         ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
@@ -153,7 +145,6 @@ public class EasyCaptureActivity extends CaptureActivity {
 
                     @Override
                     public void onMustRun() {
-                        stopProgressDialog();
                     }
                 }));
     }

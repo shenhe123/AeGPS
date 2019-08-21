@@ -117,6 +117,7 @@ public class LoadingProgressDialog {
         creatingLoadingDialog.setContentView(main, fill_parent);// 设置布局
 
         loadingDialog = creatingLoadingDialog;
+        if (((Activity) context).isFinishing() || ((Activity) context).isDestroyed()) return;
         loadingDialog.show();
 
         // 需要为loadingDialog注册取消监听，如果不注册的话，会有可能报错
