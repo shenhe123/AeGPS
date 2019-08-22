@@ -103,13 +103,21 @@ public class PowerManagerUtil {
 
                 if (pmLock != null) {
                     // release
-                    pmLock.release();
+                    try {
+                        pmLock.release();
+                    } catch (Exception e) {
+
+                    }
                     pmLock = null;
                 }
 
                 pmLock = pm.newWakeLock(levelAndFlags, "MyTag");
                 pmLock.acquire();
-                pmLock.release();
+                try {
+                    pmLock.release();
+                } catch (Exception e) {
+
+                }
             }
         }).start();
     }
@@ -138,7 +146,11 @@ public class PowerManagerUtil {
     //释放设备电源锁
     public static void releaseWakeLock(){
         if (null != mWakeLock){
-            mWakeLock.release();
+            try {
+                mWakeLock.release();
+            } catch (Exception e) {
+
+            }
             mWakeLock = null;
         }
     }

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +40,6 @@ import com.aegps.location.locationservice.Utils;
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
-import com.aegps.location.utils.FilteWriterUtil;
 import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
@@ -51,15 +51,12 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.model.LatLng;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -76,6 +73,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private static final String TAG = "MainActivity";
     public static final String MESSAGE_RECEIVED_ACTION = "com.aegps.location.ui.MESSAGE_RECEIVED_ACTION";
     public static final int SPAN = 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2);
+//    public static final int SPAN = 1000 * 6;
+//    public static final int TIME_INTERVAL = 1000 * 5;
+    public static final int TIME_INTERVAL = 1000 * 60;
     /**
      * 装载启动
      */
@@ -120,6 +120,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private BroadcastReceiver alarmReceiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
+//            // 重复定时任务
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
+//            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
+//            }
             if(intent.getAction().equals("LOCATION")){
                 if(null != mlocationClient){
                     mlocationClient.startLocation();
@@ -127,7 +133,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
     };
-    private View mLayoutHeader;
     private List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = new ArrayList<>();
 
 
@@ -150,7 +155,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (success) {
                     RefreshMonitor refreshMonitor = SoapUtil.getGson().fromJson(data, RefreshMonitor.class);
                     if (refreshMonitor == null) {
-                        runOnUiThread(() -> resetLoadingBeginEnable());
+                        runOnUiThread(() -> {
+                            resetLoadingBeginEnable();
+                            resetView();
+                        });
                         return;
                     }
                     List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
@@ -173,17 +181,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         runOnUiThread(() -> mAdapter.setData(monitorEntryTable));
                     }
                     if ((monitorHeaderTable == null || monitorHeaderTable.size() <= 0) && (monitorEntryTable == null || monitorEntryTable.size() <= 0)) {
-                        runOnUiThread(() -> resetLoadingBeginEnable());
+                        runOnUiThread(() -> {
+                            resetLoadingBeginEnable();
+                            resetView();
+                        });
                     }
                 } else {
-                    runOnUiThread(() -> resetLoadingBeginEnable());
                     SoapUtil.onFailure(data);
                 }
             }
 
             @Override
             public void onFailure(Object o) {
-                runOnUiThread(() -> resetLoadingBeginEnable());
                 ToastUtil.show(o.toString());
             }
 
@@ -258,6 +267,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mlocationClient.setLocationListener(this);
         AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        // 使用连续
+        mLocationOption.setOnceLocation(false);
+        mLocationOption.setLocationCacheEnable(false);
+        // 地址信息
+        mLocationOption.setNeedAddress(true);
         mLocationOption.setInterval(SPAN);
         mlocationClient.setLocationOption(mLocationOption);
         mlocationClient.startLocation();
@@ -320,7 +334,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE:
                 ToastUtil.show("卸货成功");
                 stopLocationService();
-                resetView();
                 LocationStatusManager.getInstance().resetToInit(getApplicationContext());
                 stopRunTimer();
                 break;
@@ -335,12 +348,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (Utils.getInternet()) {//判断当然是否有网络
 
             Intent intent = new Intent(MainActivity.this, LocationService.class);
-            startService(intent);
+//            startService(intent);
+            if (Build.VERSION.SDK_INT >= 26) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+
 
             if(null != alarm){
                 //设置一个闹钟，2秒之后每隔一段时间执行启动一次定位程序
                 alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000,
-                        60 * 1000, alarmPi);
+                        TIME_INTERVAL, alarmPi);
+//                // pendingIntent 为发送广播
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
+//                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                    alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
+//                } else {
+//                    alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, TIME_INTERVAL, alarmPi);
+//                }
             }
         } else {
             ToastUtil.show("定位环境不佳，请检查网络或到空旷户外重新定位");
@@ -348,12 +375,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void resetView() {
-        /**
-         * 卸货不可用，载货可用
-         */
-        resetLoadingBeginEnable();
+        refreshHeaderView(new RefreshMonitor.MonitorHeaderTableBean());
 
         monitorEntryTable.clear();
+        monitorEntryTable.add(new RefreshMonitor.MonitorEntryTableBean());
         mAdapter.notifyDataSetChanged();
     }
 
@@ -403,7 +428,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         };
         mRunTimer = new Timer();
         // 每隔1s更新一下时间
-        mRunTimer.schedule(mTask, 1000, 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2));
+        mRunTimer.schedule(mTask, 1000, SPAN);
     }
 
     private void stopRunTimer() {
@@ -469,12 +494,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 notificationChannel.enableLights(true);//是否在桌面icon右上角展示小圆点
                 notificationChannel.setLightColor(Color.BLUE); //小圆点颜色
                 notificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
+                notificationChannel.setSound(null, null);
                 notificationManager.createNotificationChannel(notificationChannel);
                 isCreateChannel = true;
             }
             builder = new Notification.Builder(getApplicationContext(), channelId);
         } else {
             builder = new Notification.Builder(getApplicationContext());
+            builder.setSound(null);
         }
         builder.setSmallIcon(R.mipmap.ic_logo)
                 .setContentTitle("云物流")
@@ -551,14 +578,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             locationLatLng = new LatLng(gcj02tobd09[1], gcj02tobd09[0]);
             Log.e("shenhe 定位結果", "onLocationChanged: " + locationLatLng);
             SharedPrefUtils.saveString("locationLatLng", locationLatLng.latitude + "," + locationLatLng.longitude);
-            FilteWriterUtil.wirteToLoacal(FilteWriterUtil.getRootDir(AeApplication.getAppContext()) + "/1/log.txt"
-                    , "当前时间：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                            + "\nlongitude=" + locationLatLng.longitude
-                            + "\nlatitude=" + locationLatLng.latitude
-                            + "\ncountry=" + location.getCountry()
-                            + "\ncity=" + location.getCity()
-                            + "\nstreet=" + location.getStreet()
-                            + "\naddress=" + location.getAddress() + "\n\n");
+//            FilteWriterUtil.wirteToLoacal(FilteWriterUtil.getRootDir(AeApplication.getAppContext()) + "/1/log.txt"
+//                    , "当前时间：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+//                            + "\nlongitude=" + locationLatLng.longitude
+//                            + "\nlatitude=" + locationLatLng.latitude
+//                            + "\ncountry=" + location.getCountry()
+//                            + "\ncity=" + location.getCity()
+//                            + "\nstreet=" + location.getStreet()
+//                            + "\naddress=" + location.getAddress() + "\n\n");
         } else {
             locationSuccess = false;
         }

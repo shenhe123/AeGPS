@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
@@ -43,7 +44,12 @@ public class LocationHelperService extends Service {
             public void onServiceDisconnected(ComponentName name) {
                 Intent intent = new Intent();
                 intent.setAction(locationServiceName);
-                startService(Utils.getExplicitIntent(getApplicationContext(), intent));
+//                startService(Utils.getExplicitIntent(getApplicationContext(), intent));
+                if (Build.VERSION.SDK_INT >= 26) {
+                    startForegroundService(Utils.getExplicitIntent(getApplicationContext(), intent));
+                } else {
+                    startService(Utils.getExplicitIntent(getApplicationContext(), intent));
+                }
             }
 
             @Override
