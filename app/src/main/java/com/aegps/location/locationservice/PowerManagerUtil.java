@@ -102,14 +102,23 @@ public class PowerManagerUtil {
                 }
 
                 if (pmLock != null) {
-                    // release
-                    pmLock.release();
+                    try {
+                        // release
+                        pmLock.release();
+                    } catch (Exception e) {
+
+                    }
                     pmLock = null;
                 }
 
                 pmLock = pm.newWakeLock(levelAndFlags, "MyTag");
                 pmLock.acquire();
-                pmLock.release();
+                try {
+                    // release
+                    pmLock.release();
+                } catch (Exception e) {
+
+                }
             }
         }).start();
     }

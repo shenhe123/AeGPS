@@ -74,6 +74,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private static final String TAG = "MainActivity";
     public static final String MESSAGE_RECEIVED_ACTION = "com.aegps.location.ui.MESSAGE_RECEIVED_ACTION";
     public static final int SPAN = 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2);
+    private static final long TIME_INTERVAL = 60 * 1000;
     /**
      * 装载启动
      */
@@ -118,6 +119,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private BroadcastReceiver alarmReceiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
+            // 重复定时任务
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
+            }
             if(intent.getAction().equals("LOCATION")){
                 if(null != mlocationClient){
                     mlocationClient.startLocation();
@@ -125,7 +132,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
     };
-    private View mLayoutHeader;
     private List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = new ArrayList<>();
 
 
@@ -148,7 +154,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (success) {
                     RefreshMonitor refreshMonitor = SoapUtil.getGson().fromJson(data, RefreshMonitor.class);
                     if (refreshMonitor == null) {
-                        runOnUiThread(() -> resetLoadingBeginEnable());
+                        runOnUiThread(() -> {
+                            resetLoadingBeginEnable();
+                            resetView();
+                        });
                         return;
                     }
                     List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
@@ -157,9 +166,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         runOnUiThread(() -> {
                             refreshHeaderView(monitorHeaderTableBean);
                             if (monitorHeaderTableBean.getTrafficMainID() != 0) {
-                                startLocationService();
                                 if (!isFirst) {
                                     isFirst = true;
+                                    startLocationService();
                                     startRunTimer();
                                 }
                             }
@@ -171,7 +180,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         runOnUiThread(() -> mAdapter.setData(monitorEntryTable));
                     }
                     if ((monitorHeaderTable == null || monitorHeaderTable.size() <= 0) && (monitorEntryTable == null || monitorEntryTable.size() <= 0)) {
-                        runOnUiThread(() -> resetLoadingBeginEnable());
+                        runOnUiThread(() -> {
+                            resetLoadingBeginEnable();
+                            resetView();
+                        });
                     }
                 } else {
                     SoapUtil.onFailure(data);
@@ -255,6 +267,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         mLocationOption.setInterval(SPAN);
+        // 使用连续
+        mLocationOption.setOnceLocation(false);
+        mLocationOption.setLocationCacheEnable(false);
+        // 地址信息
+        mLocationOption.setNeedAddress(true);
         mlocationClient.setLocationOption(mLocationOption);
         mlocationClient.startLocation();
     }
@@ -266,12 +283,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         registerReceiver(loc, intentFilter);
     }
 
+    private void resetView() {
+        refreshHeaderView(new RefreshMonitor.MonitorHeaderTableBean());
+        monitorEntryTable.clear();
+        monitorEntryTable.add(new RefreshMonitor.MonitorEntryTableBean());
+    }
+
     /**
      * 关闭服务
      * 先关闭守护进程，再关闭定位服务
      */
     private void stopLocationService() {
-        sendBroadcast(Utils.getCloseBrodecastIntent());
+//        sendBroadcast(Utils.getCloseBrodecastIntent());
     }
 
     private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
@@ -328,17 +351,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void startLocationService() {
         if (Utils.getInternet()) {//判断当然是否有网络
-            Intent intent = new Intent(MainActivity.this, LocationService.class);
-            if (Build.VERSION.SDK_INT >= 26) {
-                startForegroundService(intent);
-            } else {
-                startService(intent);
-            }
+//            Intent intent = new Intent(MainActivity.this, LocationService.class);
+//            if (Build.VERSION.SDK_INT >= 26) {
+//                startForegroundService(intent);
+//            } else {
+//                startService(intent);
+//            }
 
             if(null != alarm){
                 //设置一个闹钟，2秒之后每隔一段时间执行启动一次定位程序
-                alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000,
-                        58 * 1000, alarmPi);
+                // pendingIntent 为发送广播
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
+                } else {
+                    alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, TIME_INTERVAL, alarmPi);
+                }
+
             }
         } else {
             ToastUtil.show("定位环境不佳，请检查网络或到空旷户外重新定位");
@@ -361,6 +391,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //刷新可用
         mIvRefresh.setClickable(false);
         mIvRefresh.setImageResource(R.drawable.ic_refresh_disable);
+
+
     }
 
     private void resetUnloadReceiptEnable() {
@@ -391,8 +423,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         };
         mRunTimer = new Timer();
         // 每隔1s更新一下时间
-        mRunTimer.schedule(mTask, 1000, 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2));
-//        mRunTimer.schedule(mTask, 1000, 1000 * 6);
+        mRunTimer.schedule(mTask, 1000, SPAN);
     }
 
     private void stopRunTimer() {
@@ -458,12 +489,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 notificationChannel.enableLights(true);//是否在桌面icon右上角展示小圆点
                 notificationChannel.setLightColor(Color.BLUE); //小圆点颜色
                 notificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
+                notificationChannel.setSound(null, null);
                 notificationManager.createNotificationChannel(notificationChannel);
                 isCreateChannel = true;
             }
             builder = new Notification.Builder(getApplicationContext(), channelId);
         } else {
             builder = new Notification.Builder(getApplicationContext());
+            builder.setSound(null);
         }
         builder.setSmallIcon(R.mipmap.ic_logo)
                 .setContentTitle("云物流")

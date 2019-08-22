@@ -38,7 +38,6 @@ public class LocationChangBroadcastReceiver extends BroadcastReceiver {
                 LatLng locationLatLng = new LatLng(gcj02tobd09[1], gcj02tobd09[0]);
                 Log.e("shenhe 定位結果", "LocationChangBroadcastReceiver: " + locationLatLng);
                 SharedPrefUtils.saveString("locationLatLng", locationLatLng.latitude + "," + locationLatLng.longitude);
-                PowerManagerUtil.acquireWakeLock(context);
 //                FilteWriterUtil.wirteToLoacal(FilteWriterUtil.getRootDir(AeApplication.getAppContext()) + "/1/log.txt"
 //                        , "当前时间：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
 //                                + "\nlongitude=" + locationLatLng.longitude

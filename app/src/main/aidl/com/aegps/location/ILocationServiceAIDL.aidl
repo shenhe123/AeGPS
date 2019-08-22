@@ -1,4 +1,4 @@
-package com.aegps.location.locationservice;
+package com.aegps.location;
 
 
 

@@ -9,6 +9,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 
+import com.aegps.location.ILocationHelperServiceAIDL;
+import com.aegps.location.ILocationServiceAIDL;
+
 
 public class NotificationService extends Service {
 
@@ -54,14 +57,14 @@ public class NotificationService extends Service {
 
     public Binder mBinder;
 
-    public class LocationServiceBinder extends com.aegps.location.locationservice.ILocationServiceAIDL.Stub {
+    public class LocationServiceBinder extends ILocationServiceAIDL.Stub {
 
         @Override
         public void onFinishBind(){
         }
     }
 
-    private com.aegps.location.locationservice.ILocationHelperServiceAIDL mHelperAIDL;
+    private ILocationHelperServiceAIDL mHelperAIDL;
 
     private void startBindHelperService() {
         connection = new ServiceConnection() {
@@ -73,7 +76,7 @@ public class NotificationService extends Service {
 
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                com.aegps.location.locationservice.ILocationHelperServiceAIDL l = com.aegps.location.locationservice.ILocationHelperServiceAIDL.Stub.asInterface(service);
+                ILocationHelperServiceAIDL l = ILocationHelperServiceAIDL.Stub.asInterface(service);
                 mHelperAIDL = l;
                 try {
                     l.onFinishBind(NOTI_ID);
