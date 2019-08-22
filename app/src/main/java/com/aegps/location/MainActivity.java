@@ -157,7 +157,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     if (refreshMonitor == null) {
                         runOnUiThread(() -> {
                             resetLoadingBeginEnable();
-                            resetView();
+                            resetHeaderView();
+                            resetEntryView();
                         });
                         return;
                     }
@@ -175,16 +176,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
                         });
 
+                    } else {
+                        runOnUiThread(() -> {
+                            resetHeaderView();
+                            resetLoadingBeginEnable();
+                        });
                     }
                     monitorEntryTable = refreshMonitor.getMonitorEntryTable();
                     if (monitorEntryTable != null && monitorEntryTable.size() > 0) {
                         runOnUiThread(() -> mAdapter.setData(monitorEntryTable));
-                    }
-                    if ((monitorHeaderTable == null || monitorHeaderTable.size() <= 0) && (monitorEntryTable == null || monitorEntryTable.size() <= 0)) {
-                        runOnUiThread(() -> {
-                            resetLoadingBeginEnable();
-                            resetView();
-                        });
+                    } else {
+                        runOnUiThread(() -> resetEntryView());
                     }
                 } else {
                     SoapUtil.onFailure(data);
@@ -374,12 +376,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private void resetView() {
+    private void resetHeaderView() {
         refreshHeaderView(new RefreshMonitor.MonitorHeaderTableBean());
+    }
 
+    private void resetEntryView() {
         monitorEntryTable.clear();
-        monitorEntryTable.add(new RefreshMonitor.MonitorEntryTableBean());
-        mAdapter.notifyDataSetChanged();
+        mAdapter.setData(monitorEntryTable);
     }
 
     private void resetLoadingBeginEnable() {

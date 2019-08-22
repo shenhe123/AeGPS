@@ -84,7 +84,7 @@ public class NotificationService extends Service {
         };
         Intent intent = new Intent();
         intent.setAction(mHelperServiceName);
-        intent.setPackage("com.aegps.location.locationservice");
+        intent.setPackage("com.aegps.location");
         Intent explicitIntent = Utils.getExplicitIntent(getApplicationContext(), intent);
         bindService(explicitIntent, connection, Service.BIND_AUTO_CREATE);
     }
