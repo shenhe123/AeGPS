@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,11 +36,11 @@ import com.aegps.location.locationservice.CoordinateTransformUtil;
 import com.aegps.location.locationservice.LocationChangBroadcastReceiver;
 import com.aegps.location.locationservice.LocationService;
 import com.aegps.location.locationservice.LocationStatusManager;
+import com.aegps.location.locationservice.NotificationService;
 import com.aegps.location.locationservice.Utils;
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
-import com.aegps.location.utils.FilteWriterUtil;
 import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
@@ -51,15 +52,12 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.model.LatLng;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -330,14 +328,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void startLocationService() {
         if (Utils.getInternet()) {//判断当然是否有网络
-
             Intent intent = new Intent(MainActivity.this, LocationService.class);
-            startService(intent);
+            if (Build.VERSION.SDK_INT >= 26) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
 
             if(null != alarm){
                 //设置一个闹钟，2秒之后每隔一段时间执行启动一次定位程序
                 alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000,
-                        60 * 1000, alarmPi);
+                        58 * 1000, alarmPi);
             }
         } else {
             ToastUtil.show("定位环境不佳，请检查网络或到空旷户外重新定位");
@@ -391,6 +392,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mRunTimer = new Timer();
         // 每隔1s更新一下时间
         mRunTimer.schedule(mTask, 1000, 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2));
+//        mRunTimer.schedule(mTask, 1000, 1000 * 6);
     }
 
     private void stopRunTimer() {
@@ -484,7 +486,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if(isBackground){
             if(null != mlocationClient) {
                 //启动后台定位，第一个参数为通知栏ID，建议整个APP使用一个
-                mlocationClient.enableBackgroundLocation(2001, buildNotification());
+                mlocationClient.enableBackgroundLocation(NotificationService.NOTI_ID, buildNotification());
             }
         }
     }

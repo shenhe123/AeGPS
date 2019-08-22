@@ -3,7 +3,7 @@ apply plugin: 'org.greenrobot.greendao' // apply plugin
 
 android {
     compileSdkVersion build_versions.compileSdk
-    buildToolsVersion '28.0.3'
+    buildToolsVersion build_versions.buildTools
     defaultConfig {
         applicationId "com.aegps.location"
         minSdkVersion build_versions.minSdk

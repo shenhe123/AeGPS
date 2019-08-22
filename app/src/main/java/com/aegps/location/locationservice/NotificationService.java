@@ -15,7 +15,7 @@ public class NotificationService extends Service {
     /**
      * startForeground的 noti_id
      */
-    private static int NOTI_ID = 123321;
+    public static int NOTI_ID = 123321;
 
     private Utils.CloseServiceReceiver mCloseReceiver;
 
@@ -84,7 +84,8 @@ public class NotificationService extends Service {
         };
         Intent intent = new Intent();
         intent.setAction(mHelperServiceName);
-        intent.setPackage("com.aegps.location.locationservice");
+
+        intent.setPackage("com.aegps.location");
         Intent explicitIntent = Utils.getExplicitIntent(getApplicationContext(), intent);
         bindService(explicitIntent, connection, Service.BIND_AUTO_CREATE);
     }

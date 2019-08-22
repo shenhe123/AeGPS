@@ -4,9 +4,12 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
+
+import com.aegps.location.BuildConfig;
 
 public class LocationHelperService extends Service {
     private Utils.CloseServiceReceiver mCloseReceiver;
@@ -43,12 +46,16 @@ public class LocationHelperService extends Service {
             public void onServiceDisconnected(ComponentName name) {
                 Intent intent = new Intent();
                 intent.setAction(locationServiceName);
-                startService(Utils.getExplicitIntent(getApplicationContext(), intent));
+                if (Build.VERSION.SDK_INT >= 26) {
+                    startForegroundService(Utils.getExplicitIntent(getApplicationContext(), intent));
+                } else {
+                    startService(Utils.getExplicitIntent(getApplicationContext(), intent));
+                }
             }
 
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                ILocationServiceAIDL l = ILocationServiceAIDL.Stub.asInterface(service);
+                com.aegps.location.locationservice.ILocationServiceAIDL l = com.aegps.location.locationservice.ILocationServiceAIDL.Stub.asInterface(service);
                 try {
                     l.onFinishBind();
                 } catch (RemoteException e) {
@@ -65,7 +72,7 @@ public class LocationHelperService extends Service {
 
     private HelperBinder mBinder;
 
-    private class HelperBinder extends ILocationHelperServiceAIDL.Stub {
+    private class HelperBinder extends com.aegps.location.locationservice.ILocationHelperServiceAIDL.Stub {
 
         @Override
         public void onFinishBind(int notiId) throws RemoteException {
