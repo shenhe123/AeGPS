@@ -119,12 +119,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private BroadcastReceiver alarmReceiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
-            // 重复定时任务
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
-            }
+//            // 重复定时任务
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
+//            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
+//            }
             if(intent.getAction().equals("LOCATION")){
                 if(null != mlocationClient){
                     mlocationClient.startLocation();
@@ -294,7 +294,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 先关闭守护进程，再关闭定位服务
      */
     private void stopLocationService() {
-//        sendBroadcast(Utils.getCloseBrodecastIntent());
+        sendBroadcast(Utils.getCloseBrodecastIntent());
     }
 
     private void refreshHeaderView(RefreshMonitor.MonitorHeaderTableBean item) {
@@ -351,23 +351,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void startLocationService() {
         if (Utils.getInternet()) {//判断当然是否有网络
-//            Intent intent = new Intent(MainActivity.this, LocationService.class);
-//            if (Build.VERSION.SDK_INT >= 26) {
-//                startForegroundService(intent);
-//            } else {
-//                startService(intent);
-//            }
+            Intent intent = new Intent(MainActivity.this, LocationService.class);
+            if (Build.VERSION.SDK_INT >= 26) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
 
             if(null != alarm){
                 //设置一个闹钟，2秒之后每隔一段时间执行启动一次定位程序
                 // pendingIntent 为发送广播
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
-                } else {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
+//                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                    alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
+//                } else {
                     alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, TIME_INTERVAL, alarmPi);
-                }
+//                }
 
             }
         } else {
