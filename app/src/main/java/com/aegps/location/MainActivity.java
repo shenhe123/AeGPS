@@ -36,6 +36,8 @@ import com.aegps.location.locationservice.CoordinateTransformUtil;
 import com.aegps.location.locationservice.LocationChangBroadcastReceiver;
 import com.aegps.location.locationservice.LocationService;
 import com.aegps.location.locationservice.LocationStatusManager;
+import com.aegps.location.locationservice.NetUtil;
+import com.aegps.location.locationservice.PowerManagerUtil;
 import com.aegps.location.locationservice.Utils;
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.ApplicationUtil;
@@ -616,6 +618,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         @Override
                         public void onFailure(Object o) {
                             ToastUtil.show(o.toString());
+                            if ((!NetUtil.isConnected(AeApplication.getAppContext()) || !NetUtil.isNetworkAvailable(AeApplication.getAppContext())) && !PowerManagerUtil.getInstance().isScreenOn(AeApplication.getAppContext())) {
+                                PowerManagerUtil.getInstance().wakeUpScreen(AeApplication.getAppContext());
+                            }
                         }
 
                         @Override

@@ -46,4 +46,47 @@ public class NetUtil {
         }
         return hasWifoCon;
     }
+
+    /**
+     * @方法说明:网络是否可用
+     * @方法名称:isNetworkAvailable
+     * @param context
+     * @return
+     * @返回值:boolean
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        if(context !=null){
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo info = cm.getActiveNetworkInfo();
+            if(info !=null){
+                return info.isAvailable();
+            }
+        }
+        return false;
+    }
+    /**
+     * 判断网络是否连接
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isConnected(Context context)
+    {
+        ConnectivityManager connectivity = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (null != connectivity)
+        {
+
+            NetworkInfo info = connectivity.getActiveNetworkInfo();
+            if (null != info && info.isConnected())
+            {
+                if (info.getState() == NetworkInfo.State.CONNECTED)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
