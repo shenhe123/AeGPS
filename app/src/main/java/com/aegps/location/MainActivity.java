@@ -36,7 +36,6 @@ import com.aegps.location.locationservice.CoordinateTransformUtil;
 import com.aegps.location.locationservice.LocationChangBroadcastReceiver;
 import com.aegps.location.locationservice.LocationService;
 import com.aegps.location.locationservice.LocationStatusManager;
-import com.aegps.location.locationservice.NetUtil;
 import com.aegps.location.locationservice.PowerManagerUtil;
 import com.aegps.location.locationservice.Utils;
 import com.aegps.location.utils.AppManager;
@@ -53,6 +52,9 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.model.LatLng;
+import com.fanjun.keeplive.KeepLive;
+import com.fanjun.keeplive.config.ForegroundNotification;
+import com.fanjun.keeplive.config.KeepLiveService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -74,10 +76,12 @@ import static com.amap.api.location.AMapLocation.LOCATION_SUCCESS;
 public class MainActivity extends BaseActivity implements View.OnClickListener, AMapLocationListener {
     private static final String TAG = "MainActivity";
     public static final String MESSAGE_RECEIVED_ACTION = "com.aegps.location.ui.MESSAGE_RECEIVED_ACTION";
-    public static final int SPAN = 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2);
-//    public static final int SPAN = 1000 * 6;
+    public static final int UPLOAD_TIME_INTERVAL = 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2);
+    //    public static final int SPAN = 1000 * 6;
 //    public static final int TIME_INTERVAL = 1000 * 5;
-    public static final int TIME_INTERVAL = 1000 * 60;
+    //定位时间间隔
+    public static final int TIME_INTERVAL = 1000 * 10;
+    public static final int LONG_TIME_INTERVAL = 1000 * 60 * 10;
     /**
      * 装载启动
      */
@@ -107,7 +111,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private Animation operatingAnim;
     public static boolean isForeground = false;
     private AMapLocationClient mlocationClient;
-    private boolean locationSuccess = false;//定位是否成功
     private LatLng locationLatLng;//定位成功的经纬度
     private RecyclerView mRecyclerView;
     private RefreshMonitorAdapter mAdapter;
@@ -119,23 +122,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private AlarmManager alarm = null;
     private boolean isFirst = false;
 
-    private BroadcastReceiver alarmReceiver = new BroadcastReceiver(){
+    //定义个广播接收，启动定位服务
+    private BroadcastReceiver alarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            // 重复定时任务
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
-//            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, alarmPi);
-//            }
-            if(intent.getAction().equals("LOCATION")){
-                if(null != mlocationClient){
+            if (intent.getAction().equals("LOCATION")) {
+                if (null != mlocationClient && !mlocationClient.isStarted()) {
                     mlocationClient.startLocation();
                 }
             }
         }
     };
+
+    //定义个广播接收，长闹钟，唤醒任务
+    private BroadcastReceiver longAlarmReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("LONG_LOCATION")) {
+                if (null != mlocationClient && !mlocationClient.isStarted()) {
+                    mlocationClient.startLocation();
+                }
+
+                startLocationService();
+                startRunTimer();
+            }
+        }
+    };
+
     private List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = new ArrayList<>();
+    private Intent longAlarmIntent;
+    private PendingIntent longAlarmPi;
 
 
     @Override
@@ -145,6 +161,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void initData() {
+        keepLive();
         initLocation();
         broadInit();
         refreshMonitor();
@@ -162,6 +179,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             resetHeaderView();
                             resetEntryView();
                         });
+                        //设置停止标志，停止刷新任务
+                        SharedPrefUtils.saveString("stop", "1");
+                        stopRunTimer();
                         return;
                     }
                     List<RefreshMonitor.MonitorHeaderTableBean> monitorHeaderTable = refreshMonitor.getMonitorHeaderTable();
@@ -177,11 +197,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 }
                             }
                         });
-
                     } else {
                         runOnUiThread(() -> {
                             resetHeaderView();
                             resetLoadingBeginEnable();
+                            //设置停止标志，停止刷新任务
+                            SharedPrefUtils.saveString("stop", "1");
+                            stopRunTimer();
                         });
                     }
                     monitorEntryTable = refreshMonitor.getMonitorEntryTable();
@@ -248,12 +270,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mRecyclerView.setAdapter(mAdapter);
     }
 
+    /**
+     * 初始化闹钟服务
+     */
     private void initAlarm() {
         // 创建Intent对象，action为LOCATION
         alarmIntent = new Intent();
         alarmIntent.setAction("LOCATION");
-        IntentFilter ift = new IntentFilter();
-
         // 定义一个PendingIntent对象，PendingIntent.getBroadcast包含了sendBroadcast的动作。
         // 也就是发送了action 为"LOCATION"的intent
         alarmPi = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
@@ -264,8 +287,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         IntentFilter filter = new IntentFilter();
         filter.addAction("LOCATION");
         registerReceiver(alarmReceiver, filter);
+
+        longAlarmIntent = new Intent();
+        longAlarmIntent.setAction("LONG_LOCATION");
+        longAlarmPi = PendingIntent.getBroadcast(this, 1, longAlarmIntent, 0);
+        //动态注册一个广播
+        IntentFilter filter1 = new IntentFilter();
+        filter.addAction("LONG_LOCATION");
+        registerReceiver(longAlarmReceiver, filter1);
     }
 
+    /**
+     * 初始化定位
+     */
     private void initLocation() {
         mlocationClient = new AMapLocationClient(getApplicationContext());
         mlocationClient.setLocationListener(this);
@@ -276,11 +310,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mLocationOption.setLocationCacheEnable(false);
         // 地址信息
         mLocationOption.setNeedAddress(true);
-        mLocationOption.setInterval(SPAN);
+        mLocationOption.setInterval(TIME_INTERVAL);
         mlocationClient.setLocationOption(mLocationOption);
         mlocationClient.startLocation();
     }
 
+    /**
+     * 初始化广播服务
+     */
     private void broadInit() {
         LocationChangBroadcastReceiver loc = AeApplication.getlocationChangeBoardcase();
         IntentFilter intentFilter = new IntentFilter();
@@ -310,16 +347,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mDrivingDistance.setRightText(item.getMileageMeasure() + "公里");
     }
 
-    private void startAnimRotate(){
+    private void startAnimRotate() {
         if (operatingAnim != null) {
             mIvRefresh.startAnimation(operatingAnim);
-        }  else {
+        } else {
             mIvRefresh.setAnimation(operatingAnim);
             mIvRefresh.startAnimation(operatingAnim);
         }
     }
 
-    private void stopAnimRotate(){
+    private void stopAnimRotate() {
         mIvRefresh.clearAnimation();
     }
 
@@ -333,45 +370,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 ToastUtil.show("启动成功");
                 startLocationService();
                 LocationStatusManager.getInstance().resetToInit(getApplicationContext());
+                SharedPrefUtils.remove("stop");
                 startRunTimer();
                 break;
             case EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE:
                 ToastUtil.show("卸货成功");
-                stopLocationService();
-                LocationStatusManager.getInstance().resetToInit(getApplicationContext());
-                stopRunTimer();
                 break;
             case EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE:
+                SharedPrefUtils.remove("stop");
                 ToastUtil.show("变更运输成功");
                 break;
         }
         refreshMonitor();
     }
 
+    /**
+     * 开始定位服务
+     */
     private void startLocationService() {
         if (Utils.getInternet()) {//判断当然是否有网络
 
             Intent intent = new Intent(MainActivity.this, LocationService.class);
-//            startService(intent);
             if (Build.VERSION.SDK_INT >= 26) {
                 startForegroundService(intent);
             } else {
                 startService(intent);
             }
 
-
-            if(null != alarm){
-                //设置一个闹钟，2秒之后每隔一段时间执行启动一次定位程序
-                alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000,
+            if (null != alarm) {
+                //设置一个闹钟，10秒之后每隔一段时间执行启动一次定位程序
+                alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + UPLOAD_TIME_INTERVAL,
                         TIME_INTERVAL, alarmPi);
-//                // pendingIntent 为发送广播
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                    alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
-//                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                    alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
-//                } else {
-//                    alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, TIME_INTERVAL, alarmPi);
-//                }
+                //设置一个闹钟，每隔30分钟执行启动定位和上传任务
+                alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + UPLOAD_TIME_INTERVAL,
+                        LONG_TIME_INTERVAL, longAlarmPi);
             }
         } else {
             ToastUtil.show("定位环境不佳，请检查网络或到空旷户外重新定位");
@@ -423,6 +455,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mIvRefresh.setImageResource(R.drawable.ic_refresh_enable);
     }
 
+    /**
+     * 开始刷新任务
+     */
     private void startRunTimer() {
         TimerTask mTask = new TimerTask() {
             @Override
@@ -431,9 +466,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 refreshMonitor();
             }
         };
-        mRunTimer = new Timer();
-        // 每隔1s更新一下时间
-        mRunTimer.schedule(mTask, 1000, SPAN);
+        if (null != mRunTimer) {
+            mRunTimer.cancel();
+        }
+        if (!"1".equals(SharedPrefUtils.getString("stop"))) {
+            mRunTimer = new Timer();
+            // 每隔一段时间上传一次数据
+            mRunTimer.schedule(mTask, 1000, UPLOAD_TIME_INTERVAL);
+        }
     }
 
     private void stopRunTimer() {
@@ -442,8 +482,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             mRunTimer = null;
         }
 
-        if(null != alarm){
+        if (null != alarm) {
             alarm.cancel(alarmPi);
+            alarm.cancel(longAlarmPi);
         }
     }
 
@@ -477,23 +518,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onResume();
         isForeground = true;
         //切入前台后关闭后台定位功能
-        if(null != mlocationClient) {
+        if (null != mlocationClient) {
             mlocationClient.disableBackgroundLocation(true);
         }
     }
 
+    /**
+     * 构建一个notifi 用户高德地图定位
+     *
+     * @return
+     */
     @SuppressLint("NewApi")
     public Notification buildNotification() {
 
         Notification.Builder builder = null;
         Notification notification = null;
-        if(android.os.Build.VERSION.SDK_INT >= 26) {
+        if (Build.VERSION.SDK_INT >= 26) {
             //Android O上对Notification进行了修改，如果设置的targetSDKVersion>=26建议使用此种方式创建通知栏
             if (null == notificationManager) {
                 notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             }
             String channelId = getPackageName();
-            if(!isCreateChannel) {
+            if (!isCreateChannel) {
                 NotificationChannel notificationChannel = new NotificationChannel(channelId,
                         NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
                 notificationChannel.enableLights(true);//是否在桌面icon右上角展示小圆点
@@ -513,7 +559,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 .setContentText("正在后台运行")
                 .setWhen(System.currentTimeMillis());
 
-        if (android.os.Build.VERSION.SDK_INT >= 16) {
+        if (Build.VERSION.SDK_INT >= 16) {
             notification = builder.build();
         } else {
             return builder.getNotification();
@@ -521,13 +567,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         return notification;
     }
 
+    /**
+     * 设置后台服务用于尽可能的调用定位程序
+     */
     @Override
     protected void onStop() {
         super.onStop();
-        boolean isBackground = ((AeApplication)getApplication()).isBackground();
+        boolean isBackground = ((AeApplication) getApplication()).isBackground();
         //如果app已经切入到后台，启动后台定位功能
-        if(isBackground){
-            if(null != mlocationClient) {
+        if (isBackground) {
+            if (null != mlocationClient) {
                 //启动后台定位，第一个参数为通知栏ID，建议整个APP使用一个
                 mlocationClient.enableBackgroundLocation(2001, buildNotification());
             }
@@ -548,9 +597,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             unregisterReceiver(loc);
         }
 
-        if(null != alarmReceiver){
+        if (null != alarmReceiver) {
             unregisterReceiver(alarmReceiver);
             alarmReceiver = null;
+        }
+
+        if (notificationManager != null) {
+            notificationManager.cancel(2001);
+            notificationManager.cancel(123321);
+            notificationManager.cancel(13691);
         }
     }
 
@@ -575,28 +630,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    /**
+     * 坐标变更
+     *
+     * @param location
+     */
     @Override
     public void onLocationChanged(AMapLocation location) {
         if (location != null && location.getErrorCode() == LOCATION_SUCCESS) {
-            locationSuccess = true;
             double[] gcj02tobd09 = CoordinateTransformUtil.gcj02tobd09(location.getLongitude(), location.getLatitude());
             locationLatLng = new LatLng(gcj02tobd09[1], gcj02tobd09[0]);
             Log.e("shenhe 定位結果", "onLocationChanged: " + locationLatLng);
             SharedPrefUtils.saveString("locationLatLng", locationLatLng.latitude + "," + locationLatLng.longitude);
-//            FilteWriterUtil.wirteToLoacal(FilteWriterUtil.getRootDir(AeApplication.getAppContext()) + "/1/log.txt"
-//                    , "当前时间：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-//                            + "\nlongitude=" + locationLatLng.longitude
-//                            + "\nlatitude=" + locationLatLng.latitude
-//                            + "\ncountry=" + location.getCountry()
-//                            + "\ncity=" + location.getCity()
-//                            + "\nstreet=" + location.getStreet()
-//                            + "\naddress=" + location.getAddress() + "\n\n");
-        } else {
-            locationSuccess = false;
         }
     }
 
+    private int count = 0;
+
+    /**
+     * 更新坐标信息
+     */
     private void uploadLoacationInfo() {
+        //先点亮屏幕再进行数据传输
+        if (count == 3) {
+            if (!PowerManagerUtil.getInstance().isScreenOn(AeApplication.getAppContext())) {
+                PowerManagerUtil.getInstance().wakeUpScreen(AeApplication.getAppContext());
+            }
+            count = 0;
+        }
         ThreadManager.getThreadPollProxy().execute(() -> {
             String locationLatLng = SharedPrefUtils.getString("locationLatLng");
             if (TextUtils.isEmpty(locationLatLng)) return;
@@ -617,10 +678,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                         @Override
                         public void onFailure(Object o) {
-                            ToastUtil.show(o.toString());
-                            if ((!NetUtil.isConnected(AeApplication.getAppContext()) || !NetUtil.isNetworkAvailable(AeApplication.getAppContext())) && !PowerManagerUtil.getInstance().isScreenOn(AeApplication.getAppContext())) {
-                                PowerManagerUtil.getInstance().wakeUpScreen(AeApplication.getAppContext());
-                            }
                         }
 
                         @Override
@@ -629,5 +686,39 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         }
                     });
         });
+        count++;
+    }
+
+    /**
+     * 开启保活组件(流氓模式)
+     */
+    private void keepLive() {
+        //定义前台服务的默认样式。即标题、描述和图标
+        ForegroundNotification foregroundNotification = new ForegroundNotification("北极欧云物流", "守护助手", R.mipmap.ic_logo, null);
+        //启动保活服务
+        KeepLive.startWork(getApplication(), KeepLive.RunMode.ROGUE, foregroundNotification,
+                //你需要保活的服务，如socket连接、定时任务等，建议不用匿名内部类的方式在这里写
+                new KeepLiveService() {
+                    /**
+                     * 运行中
+                     * 由于服务可能会多次自动启动，该方法可能重复调用
+                     */
+                    @Override
+                    public void onWorking() {
+                        if (!"1".equals(SharedPrefUtils.getString("stop"))) {
+                            startRunTimer();
+                        }
+                    }
+
+                    /**
+                     * 服务终止
+                     * 由于服务可能会被多次终止，该方法可能重复调用，需同onWorking配套使用，如注册和注销broadcast
+                     */
+                    @Override
+                    public void onStop() {
+
+                    }
+                }
+        );
     }
 }

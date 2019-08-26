@@ -39,14 +39,6 @@ public class LocationChangBroadcastReceiver extends BroadcastReceiver {
                 Log.e("shenhe 定位結果", "LocationChangBroadcastReceiver: " + locationLatLng);
                 SharedPrefUtils.saveString("locationLatLng", locationLatLng.latitude + "," + locationLatLng.longitude);
                 PowerManagerUtil.acquireWakeLock(context);
-//                FilteWriterUtil.wirteToLoacal(FilteWriterUtil.getRootDir(AeApplication.getAppContext()) + "/1/log.txt"
-//                        , "当前时间：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-//                                + "\nlongitude=" + locationLatLng.longitude
-//                                + "\nlatitude=" + locationLatLng.latitude
-//                                + "\ncountry=" + location.getCountry()
-//                                + "\ncity=" + location.getCity()
-//                                + "\nstreet=" + location.getStreet()
-//                                + "\naddress=" + location.getAddress() + "\n\n");
                 processCustomMessageA(context, location);
             }
         }

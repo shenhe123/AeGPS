@@ -1,10 +1,8 @@
 package com.aegps.location;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.aegps.location.base.BaseApplication;
 import com.aegps.location.greendb.base.MySQLiteOpenHelper;
@@ -15,10 +13,6 @@ import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.bumptech.glide.Glide;
 import com.tencent.bugly.crashreport.CrashReport;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 /**
  * Created by ShenHe on 2019/3/3.

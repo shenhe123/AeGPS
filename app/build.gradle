@@ -104,4 +104,6 @@ dependencies {
     //bugly
     implementation 'com.tencent.bugly:crashreport:3.0.0'
     implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
+
+    implementation project(':keeplive')
 }
