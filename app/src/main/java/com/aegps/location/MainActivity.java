@@ -1,6 +1,7 @@
 package com.aegps.location;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -55,11 +56,14 @@ import com.amap.api.maps.model.LatLng;
 import com.fanjun.keeplive.KeepLive;
 import com.fanjun.keeplive.config.ForegroundNotification;
 import com.fanjun.keeplive.config.KeepLiveService;
+import com.fanjun.keeplive.service.HideForegroundService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -497,7 +501,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 stopLocationService();
                 LocationStatusManager.getInstance().resetToInit(getApplicationContext());
                 stopRunTimer();
-                AppManager.getAppManager().finishAllActivity();
+
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(0);
+
             });
             exitAppDialog.setRightButtonListener(dialog -> {
             });
