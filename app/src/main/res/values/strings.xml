@@ -27,4 +27,14 @@
     <string name="notifyMsg">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。</string>
     <string name="setting">设置</string>
     <string name="cancel">取消</string>
+
+    <!--UpdateAppManager-->
+    <string name="update_app_quit">退出程序</string>
+    <string name="update_app_free_flow">免流量更新</string>
+    <string name="update_app_new">立即更新</string>
+    <string name="update_app_use_new">用新版</string>
+    <string name="update_app_not">暂不更新</string>
+    <string name="update_app_loading">安装包正在下载中&#8230;</string>
+    <string name="update_app_load">正在下载</string>
+    <string name="check_app">正在检查版本</string>
 </resources>

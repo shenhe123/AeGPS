@@ -1,6 +1,9 @@
 package com.aegps.location;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -13,6 +16,7 @@ import com.aegps.location.bean.net.ReturnTableResult;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
+import com.aegps.location.update.UpdateAppHelper;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.SharedPrefUtils;
@@ -39,6 +43,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private List<ReturnTableResult.ReturnTableBean> returnTable = new ArrayList<>();
     private EditText mEtCarId;
     private String mDatabaseName;
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 0) {
+                getDataBase();
+            }
+        }
+    };
 
     @Override
     public int getLayoutId() {
@@ -47,7 +60,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public void initData() {
-        getDataBase();
+        UpdateAppHelper.checkCommonUpdate(LoginActivity.this);
     }
 
     @Override

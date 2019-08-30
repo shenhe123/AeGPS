@@ -1,15 +1,11 @@
 package com.aegps.location;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 
 import com.aegps.location.base.BaseActivity;
-import com.aegps.location.utils.AppManager;
-import com.aegps.location.utils.toast.ToastUtil;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 /** 欢迎界面
  *

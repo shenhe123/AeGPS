@@ -78,4 +78,61 @@
         <item name="android:windowEnterAnimation">@anim/anim_top_show</item>
         <item name="android:windowExitAnimation">@anim/anim_top_dismiss</item>
     </style>
+
+    <!--更新对话框-->
+    <declare-styleable name="UpdateAppNumberProgressBar">
+        <attr name="progress_current" format="integer"/>
+        <attr name="progress_max" format="integer"/>
+
+        <attr name="progress_unreached_color" format="color"/>
+        <attr name="progress_reached_color" format="color"/>
+
+        <attr name="progress_reached_bar_height" format="dimension"/>
+        <attr name="progress_unreached_bar_height" format="dimension"/>
+
+        <attr name="progress_text_size" format="dimension"/>
+        <attr name="progress_text_color" format="color"/>
+
+        <attr name="progress_text_offset" format="dimension"/>
+
+        <attr name="progress_text_visibility" format="enum">
+            <enum name="visible" value="0"/>
+            <enum name="invisible" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <style name="ProgressDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@style/PopWindowAnimation</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!--dialog-->
+    <style name="PopWindowAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popupwindow_show</item>
+        <item name="android:windowExitAnimation">@anim/popupwindow_dismiss</item>
+    </style>
+
+
+
+    <style name="UpdateAppNumberProgressBar_orange">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+
+        <item name="progress_max">100</item>
+        <item name="progress_current">0</item>
+
+        <item name="progress_unreached_color">#CCCCCC</item>
+        <item name="progress_reached_color">@color/color_ff7c41</item>
+
+        <item name="progress_text_size">12sp</item>
+        <item name="progress_text_color">@color/viewfinder_result_point_color</item>
+
+        <item name="progress_reached_bar_height">4dp</item>
+        <item name="progress_unreached_bar_height">3dp</item>
+    </style>
 </resources>

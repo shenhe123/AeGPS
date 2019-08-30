@@ -4,6 +4,7 @@ import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.network.SoapClient;
 import com.aegps.location.api.network.SoapRequest;
 import com.aegps.location.bean.net.CommonFailureInfoTable;
+import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -337,6 +338,34 @@ public class SoapUtil {
         SoapRequest request = new SoapRequest.Builder().endPoint(mDomainUrl)
                 .methodName(methodName)
                 .soapAction(soapAction)
+                .setParams(params)
+                .nameSpace(mNameSpace)
+                .setVersion(mSOAPVersion)
+                .setDotNet(true)
+                .build();
+        mSoapClient.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 检查更新
+     *
+     * @param callback
+     */
+    public void checkUpdate(Callback callback) {
+        HashMap<String, Object> params = new HashMap<>();
+        List<JsonObject> jsonObjects = new ArrayList<>();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("CustomerCode", SharedPrefUtils.getString("cutomerCode"));
+        jsonObject.addProperty("SoftProductCode", "07");
+        jsonObject.addProperty("LogonUser", "");
+        jsonObjects.add(jsonObject);
+        params.put("InfoTable", jsonObjects);
+        String jsonParams = getDataSet("Plat_CloudUpgradeInfo", "", "BJOSOFTRegisterDB", params);
+        params.clear();
+        params.put("sJsonInData", jsonParams);
+        SoapRequest request = new SoapRequest.Builder().endPoint(mRemoteLoginUrl)
+                .methodName(methodName)
+                .soapAction(mRemoteAction)
                 .setParams(params)
                 .nameSpace(mNameSpace)
                 .setVersion(mSOAPVersion)

@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
     <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
 
     <!-- 请求网络 -->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -77,6 +79,17 @@
             android:name="com.amap.api.location.APSService"
             android:foregroundServiceType="location" />
 
+        <!-- 适配安卓7.0以上的系统获取照相机 的照片 -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.aegps.location.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/capture_image_path"/>
+        </provider>
+
         <activity android:name=".SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -85,6 +98,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait" />
@@ -99,6 +113,10 @@
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:excludeFromRecents="true"
             android:launchMode="singleTask" />
+
+        <!-- app更新Service start -->
+        <service android:name=".update.service.DownloadService"/>
+        <!-- app更新Service end -->
 
         <service
             android:name="com.aegps.location.locationservice.LocationService"

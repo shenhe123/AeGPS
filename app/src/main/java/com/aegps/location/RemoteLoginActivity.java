@@ -17,6 +17,7 @@ import com.aegps.location.base.BaseActivity;
 import com.aegps.location.bean.net.RemoteLoginResult;
 import com.aegps.location.bean.net.RemoteLoginUrlResult;
 import com.aegps.location.utils.LogUtil;
+import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.WindowStatusHelp;
 import com.aegps.location.utils.toast.ToastUtil;
@@ -193,6 +194,7 @@ public class RemoteLoginActivity extends BaseActivity implements View.OnClickLis
                     if (remoteLoginUrlResult != null && remoteLoginUrlResult.getReturnTable() != null && remoteLoginUrlResult.getReturnTable().size() > 0) {
                         RemoteLoginUrlResult.ReturnTableBean returnTableBean = remoteLoginUrlResult.getReturnTable().get(0);
                         SoapUtil.mDomainUrl = returnTableBean.getRequestURL();
+                        SharedPrefUtils.saveString("cutomerCode", cutomerCode);
                         Intent intent = new Intent(RemoteLoginActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
