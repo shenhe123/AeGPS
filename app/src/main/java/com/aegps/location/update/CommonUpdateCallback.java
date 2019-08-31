@@ -2,6 +2,7 @@ package com.aegps.location.update;
 
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.View;
 
 import com.aegps.location.R;
@@ -20,10 +21,12 @@ import java.io.File;
 
 public class CommonUpdateCallback extends UpdateCallback {
 
+    private Handler mHandler;
     private Context mContext;
 
-    public CommonUpdateCallback(Context mContext) {
+    public CommonUpdateCallback(Context mContext, Handler handler) {
         this.mContext = mContext;
+        this.mHandler = handler;
     }
 
     @Override
@@ -135,5 +138,11 @@ public class CommonUpdateCallback extends UpdateCallback {
         updateAppDialog.setRightButtonListener(dialog -> AppManager.getAppManager().finishAllActivity());
         updateAppDialog.setCancelable(false);
         updateAppDialog.show();
+    }
+
+    @Override
+    protected void onAfter() {
+        super.onAfter();
+        mHandler.sendEmptyMessage(0);
     }
 }

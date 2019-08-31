@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.aegps.location.BuildConfig;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.bean.net.CheckUpdateResult;
@@ -91,6 +92,12 @@ public class UpdateAppManager {
                         return;
                     }
                     CheckUpdateResult.ReturnTableBean returnTableBean = checkUpdateResult.getReturnTable().get(0);
+                    if (returnTableBean.getVersion() <= BuildConfig.VERSION_CODE) {
+                        if (mShowToast) {
+                            callback.noNewApp("已是最新版本");
+                        }
+                        return;
+                    }
                     if (!returnTableBean.isIsUpdate()) {
                         if (mShowToast) {
                             callback.noNewApp("已是最新版本");
@@ -140,7 +147,7 @@ public class UpdateAppManager {
     public boolean checkHasUpdate(final UpdateCallback callback) {
         if (mUpdateApp != null) {
             if (!TextUtils.isEmpty(mUpdateApp.getUpdate()) && TextUtils.equals("Y", mUpdateApp.getUpdate())) {
-                callback.hasNewApp(mUpdateApp, UpdateAppManager.this);
+                mActivity.runOnUiThread(() -> callback.hasNewApp(mUpdateApp, UpdateAppManager.this));
             } else {
                 return false;
             }

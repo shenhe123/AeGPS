@@ -36,6 +36,7 @@ public class CheckUpdateResult {
         private String ApkName;
         private String MD5Value;
         private boolean IsMD5Check;
+        private int Version;
 
         public boolean isIsForcedUpdate() {
             return IsForcedUpdate;
@@ -91,6 +92,14 @@ public class CheckUpdateResult {
 
         public void setIsMD5Check(boolean IsMD5Check) {
             this.IsMD5Check = IsMD5Check;
+        }
+
+        public int getVersion() {
+            return Version;
+        }
+
+        public void setVersion(int version) {
+            Version = version;
         }
     }
 }

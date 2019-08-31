@@ -60,7 +60,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public void initData() {
-        UpdateAppHelper.checkCommonUpdate(LoginActivity.this);
+        UpdateAppHelper.checkCommonUpdate(LoginActivity.this, mHandler);
     }
 
     @Override
