@@ -425,11 +425,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (mRunTimer != null){
             return ;
         }
-        final String stop = SharedPrefUtils.getString("stop");
         TimerTask mTask = new TimerTask() {
             @Override
             public void run() {
-                if("1".equals(stop)) {
+                if("1".equals(SharedPrefUtils.getString("stop"))) {
                     if(mRunTimer!=null){
                         mRunTimer.cancel();
                         mRunTimer = null;
@@ -438,7 +437,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 uploadLoacationInfo();
             }
         };
-        if(!"1".equals(stop)) {
+        if(!"1".equals(SharedPrefUtils.getString("stop"))) {
             mRunTimer = new Timer();
             // 每隔一段时间上传一次数据
             mRunTimer.schedule(mTask, 1000, UPLOAD_TIME_INTERVAL);
