@@ -37,6 +37,7 @@ import com.aegps.location.locationservice.LocationService;
 import com.aegps.location.locationservice.LocationStatusManager;
 import com.aegps.location.locationservice.PowerManagerUtil;
 import com.aegps.location.locationservice.Utils;
+import com.aegps.location.screenlock.ScreenLockService;
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
@@ -170,6 +171,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             refreshHeaderView(monitorHeaderTableBean);
                             if (monitorHeaderTableBean.getTrafficMainID() != 0) {
                                 startLocationService();
+                                startScreenService();
                                 if (!isFirst) {
                                     isFirst = true;
                                     startRunTimer();
@@ -340,6 +342,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE:
                 ToastUtil.show("启动成功");
                 startLocationService();
+                startScreenService();
                 LocationStatusManager.getInstance().resetToInit(getApplicationContext());
                 SharedPrefUtils.remove("stop");
                 startRunTimer();
@@ -371,6 +374,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             ToastUtil.show("定位环境不佳，请检查网络或到空旷户外重新定位");
         }
+    }
+
+    /**
+     * 开启自定义锁屏
+     */
+    private void startScreenService(){
+        Intent intent = new Intent(this, ScreenLockService.class);
+        startService(intent);
+    }
+
+    /**
+     * 关闭锁屏
+     */
+    private void stopScreenService() {
+        Intent intent = new Intent(this, ScreenLockService.class);
+        stopService(intent);
     }
 
     private void resetHeaderView() {
@@ -462,6 +481,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             ExitAppDialog exitAppDialog = new ExitAppDialog(MainActivity.this);
             exitAppDialog.setLiftButtonListener(dialog -> {
                 stopLocationService();
+                stopScreenService();
                 LocationStatusManager.getInstance().resetToInit(getApplicationContext());
                 stopRunTimer();
                 Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -676,6 +696,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 PowerManagerUtil.getInstance().wakeUpScreen(AeApplication.getAppContext());
                             }
                             startLocationService();
+                            startScreenService();
                             startRunTimer();
                         }
                     }

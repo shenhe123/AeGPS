@@ -59,6 +59,8 @@
     <!--申请加入电池优化白名单-->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+
     <application
         android:name=".AeApplication"
         android:allowBackup="true"
@@ -144,6 +146,18 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".RemoteLoginActivity"
             android:screenOrientation="portrait"/>
+
+
+        <activity
+            android:name=".screenlock.ScreenLockActivity"
+            android:theme="@style/screen_lock"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"/>
+
+        <service
+            android:name=".screenlock.ScreenLockService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>
