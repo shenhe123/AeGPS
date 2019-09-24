@@ -63,6 +63,7 @@
 
     <application
         android:name=".AeApplication"
+        tools:replace="android:allowBackup"
         android:allowBackup="true"
         android:icon="@mipmap/ic_logo"
         android:label="@string/app_name"
@@ -158,6 +159,84 @@
             android:name=".screenlock.ScreenLockService"
             android:enabled="true"
             android:exported="true"/>
+
+        <!--自定义消息推送接收器-->
+        <receiver android:name=".push.CustomPushReceiver">
+            <intent-filter>
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_CONNECT_STATUS_CHANGED" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_NOTIFICATION" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_NOTIFICATION_CLICK" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_MESSAGE" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_COMMAND_RESULT" />
+
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
+        <!--默认的消息推送接收器-->
+        <receiver android:name="com.xuexiang.xpush.core.receiver.impl.XPushReceiver">
+            <intent-filter>
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_CONNECT_STATUS_CHANGED" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_NOTIFICATION" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_NOTIFICATION_CLICK" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_MESSAGE" />
+                <action android:name="com.xuexiang.xpush.core.action.RECEIVE_COMMAND_RESULT" />
+
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
+        <!--name格式：XPush_[PlatformName]_[PlatformCode]-->
+        <!--value格式：对应客户端实体类的全类名路径-->
+
+        <!--如果引入了xpush-jpush库-->
+        <meta-data
+            android:name="XPush_JPush_1000"
+            android:value="com.xuexiang.xpush.jpush.JPushClient" />
+
+        <!--如果引入了xpush-umeng库-->
+        <meta-data
+            android:name="XPush_UMengPush_1001"
+            android:value="com.xuexiang.xpush.umeng.UMengPushClient" />
+
+        <!--如果引入了xpush-huawei库-->
+        <meta-data
+            android:name="XPush_HuaweiPush_1002"
+            android:value="com.xuexiang.xpush.huawei.HuaweiPushClient" />
+
+        <!--如果引入了xpush-xiaomi库-->
+        <meta-data
+            android:name="XPush_MIPush_1003"
+            android:value="com.xuexiang.xpush.xiaomi.XiaoMiPushClient" />
+
+        <!--极光推送静态注册-->
+        <meta-data
+            android:name="JPUSH_CHANNEL"
+            android:value="default_developer" />
+        <meta-data
+            android:name="JPUSH_APPKEY"
+            android:value="fa303376b075b6afcca5a0e2" />
+
+        <!--友盟推送静态注册-->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5d776d2d3fc1950eb40001aa" />
+        <meta-data
+            android:name="UMENG_MESSAGE_SECRET"
+            android:value="d78bc4994ea3644ab5de36c0c3f96aca" />
+
+        <!--华为HMS推送静态注册-->
+        <meta-data
+            android:name="com.huawei.hms.client.appid"
+            android:value="101116157"/>
+
+        <!--小米推送静态注册，下面的“\ ”必须加上，否则将无法正确读取-->
+        <meta-data
+            android:name="MIPUSH_APPID"
+            android:value="\ 2882303761518170102"/>
+        <meta-data
+            android:name="MIPUSH_APPKEY"
+            android:value="\ 5411817043102"/>
     </application>
 
 </manifest>
