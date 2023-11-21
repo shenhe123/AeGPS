@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void initData() {
         initLocationOption();
-        mNotification = buildNotification();
+        mNotification = Utils.buildNotification(this);
         broadInit();
         refreshMonitor();
     }
@@ -273,7 +273,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 //可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
                 locationOption.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
                 //可选，默认gcj02，设置返回的定位结果坐标系，如果配合百度地图使用，建议设置为bd09ll;
-                locationOption.setCoorType("gcj02");
+                locationOption.setCoorType("bd09ll");
                 //可选，默认0，即仅定位一次，设置发起连续定位请求的间隔需要大于等于1000ms才是有效的
                 locationOption.setScanSpan(5000);
                 //可选，设置是否需要地址信息，默认不需要
@@ -336,6 +336,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             int errorCode = location.getLocType();
 
             Log.e("shenhe 定位結果", "onLocationChanged: " + latitude + "," + longitude);
+            ToastUtil.show("onLocationChanged: " + latitude + "," + longitude);
             SharedPrefUtils.saveString("locationLatLng", latitude + "," + longitude);
         }
     }
@@ -545,73 +546,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mlocationClient.disableLocInForeground(true);
             mlocationClient.start();
         }
-    }
-
-    public Notification buildNotification() {
-
-//        Notification.Builder builder = null;
-//        Notification notification = null;
-//        if(android.os.Build.VERSION.SDK_INT >= 26) {
-//            //Android O上对Notification进行了修改，如果设置的targetSDKVersion>=26建议使用此种方式创建通知栏
-//            if (null == notificationManager) {
-//                notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//            }
-//            String channelId = getPackageName();
-//            if(!isCreateChannel) {
-//                NotificationChannel notificationChannel = new NotificationChannel(channelId,
-//                        NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-//                notificationChannel.enableLights(true);//是否在桌面icon右上角展示小圆点
-//                notificationChannel.setLightColor(Color.BLUE); //小圆点颜色
-//                notificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
-//                notificationChannel.setSound(null, null);
-//                notificationManager.createNotificationChannel(notificationChannel);
-//                isCreateChannel = true;
-//            }
-//            builder = new Notification.Builder(getApplicationContext(), channelId);
-//        } else {
-//            builder = new Notification.Builder(getApplicationContext());
-//            builder.setSound(null);
-//        }
-//        builder.setSmallIcon(R.mipmap.ic_logo)
-//                .setContentTitle("云物流")
-//                .setContentText("正在后台运行")
-//                .setWhen(System.currentTimeMillis());
-//
-//        if (android.os.Build.VERSION.SDK_INT >= 16) {
-//            notification = builder.build();
-//        } else {
-//            return builder.getNotification();
-//        }
-//        return notification;
-
-        Notification notification = null;
-        //设置后台定位
-        //android8.0及以上使用NotificationUtils
-        if (Build.VERSION.SDK_INT >= 26) {
-            NotificationUtils notificationUtils = new NotificationUtils(this);
-            Notification.Builder builder = notificationUtils.getAndroidChannelNotification
-                    ("云物流", "正在后台定位");
-            notification = builder.build();
-        } else {
-            //获取一个Notification构造器
-            Notification.Builder builder = new Notification.Builder(MainActivity.this);
-            Intent nfIntent = new Intent(MainActivity.this, MainActivity.class);
-
-            builder.setContentIntent(PendingIntent.
-                            getActivity(MainActivity.this, 0, nfIntent, 0)) // 设置PendingIntent
-                    .setContentTitle("云物流") // 设置下拉列表里的标题
-                    .setSmallIcon(R.mipmap.ic_logo) // 设置状态栏内的小图标
-                    .setContentText("正在后台定位") // 设置上下文内容
-                    .setWhen(System.currentTimeMillis()); // 设置该通知发生的时间
-
-            notification = builder.build(); // 获取构建好的Notification
-        }
-        notification.defaults = Notification.DEFAULT_SOUND; //设置为默认的声音
-
-        // 将定位SDK的SERVICE设置成为前台服务, 提高定位进程存活率
-        mlocationClient.enableLocInForeground(1, notification);
-
-        return notification;
     }
 
     @Override

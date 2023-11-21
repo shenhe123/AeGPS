@@ -61,7 +61,7 @@ public class LocationService extends NotificationService {
                 //可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
                 locationOption.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
                 //可选，默认gcj02，设置返回的定位结果坐标系，如果配合百度地图使用，建议设置为bd09ll;
-                locationOption.setCoorType("gcj02");
+                locationOption.setCoorType("bd09ll");
                 //可选，默认0，即仅定位一次，设置发起连续定位请求的间隔需要大于等于1000ms才是有效的
                 locationOption.setScanSpan(5000);
                 //可选，设置是否需要地址信息，默认不需要
