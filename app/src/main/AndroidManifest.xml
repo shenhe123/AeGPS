@@ -5,6 +5,9 @@
 
     <!-- Normal Permissions 不需要运行时注册 -->
     <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -62,16 +65,6 @@
         android:theme="@style/Activity.Theme"
         android:usesCleartextTraffic="true">
 
-        <!--高德地图定位-->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="1bc795354b8d507bcaf76d1100305075" />
-
-        <!-- 定位需要的服务 适配Android Q需要加上android:foregroundServiceType="location"-->
-        <service
-            android:name="com.amap.api.location.APSService"
-            android:foregroundServiceType="location" />
-
         <activity android:name=".SplashActivity"
             android:screenOrientation="portrait"
             android:exported="true">
@@ -115,6 +108,16 @@
                 <action android:name="com.aegps.location.locationservice.LocationHelperService" />
             </intent-filter>
         </service>
+
+        <!-- 百度地图定位 开始 -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="95sjgRUal5lSH5pPXLGiXqSZ8GelqGOf" />
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" />
 
         <activity android:name=".EasyCaptureActivity"
             android:screenOrientation="portrait"/>

@@ -2,6 +2,7 @@ package com.aegps.location.base;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,6 +15,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.widget.TextView;
+
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.fragment.app.FragmentActivity;
 
 import com.aegps.location.R;
@@ -25,11 +29,22 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import kotlin.Unit;
+import se.warting.permissionsui.backgroundlocation.PermissionsUiContracts;
+
 /**
  * 基类
  */
 
 public abstract class BaseActivity extends FragmentActivity {
+
+    @SuppressLint("SetTextI18n")
+    ActivityResultLauncher<Unit> mGetContent = registerForActivityResult(
+            new PermissionsUiContracts.RequestBackgroundLocation(),
+            success -> {
+                this.initView();
+                this.initData();
+            });
 
     public Context mContext;
     private int count;//记录开启进度条的情况 只能开一个
@@ -288,8 +303,7 @@ public abstract class BaseActivity extends FragmentActivity {
                 showMissingPermissionDialog();
                 isNeedCheck = false;
             } else {
-                this.initView();
-                this.initData();
+                mGetContent.launch(null);
             }
         }
     }

@@ -13,6 +13,7 @@ import com.aegps.location.greendb.gen.DaoSession;
 import com.aegps.location.locationservice.LocationChangBroadcastReceiver;
 import com.aegps.location.utils.LogUtil;
 import com.aegps.location.utils.SharedPrefUtils;
+import com.baidu.location.LocationClient;
 import com.bumptech.glide.Glide;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -45,6 +46,12 @@ public class AeApplication extends BaseApplication {
         SharedPrefUtils.init(this);
 
         locationChangBroadcastReceiver = new LocationChangBroadcastReceiver();
+
+        //setAgreePrivacy接口需要在LocationClient实例化之前调用
+        //如果setAgreePrivacy接口参数设置为了false，则定位功能不会实现
+        //true，表示用户同意隐私合规政策
+        //false，表示用户不同意隐私合规政策
+        LocationClient.setAgreePrivacy(true);
 
         loginDB();
 

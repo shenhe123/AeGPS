@@ -18,7 +18,7 @@ public class NotificationService extends Service {
     /**
      * startForeground的 noti_id
      */
-    public static int NOTI_ID = 123321;
+    public static int NOTI_ID = 1;
 
     private Utils.CloseServiceReceiver mCloseReceiver;
 

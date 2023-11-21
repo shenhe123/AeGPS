@@ -2,7 +2,7 @@ package com.aegps.location.locationservice;
 
 import android.content.Context;
 
-import com.amap.api.location.AMapLocation;
+import com.baidu.location.BDLocation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +35,7 @@ public class WifiAutoCloseDelegate implements IWifiAutoCloseDelegate {
     @Override
     public void onLocateFail(Context context, int errorCode, boolean isScreenOn, boolean isWifiable) {
         //如果屏幕点亮情况下，因为断网失败，则表示不是屏幕点亮造成的断网失败，并修改参照值
-        if (isScreenOn && errorCode == AMapLocation.ERROR_CODE_FAILURE_CONNECTION && !isWifiable) {
+        if (isScreenOn && errorCode == BDLocation.TypeNetWorkException && !isWifiable) {
             LocationStatusManager.getInstance().resetToInit(context);
             return;
         }

@@ -3,7 +3,7 @@ package com.aegps.location.locationservice;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.amap.api.location.AMapLocation;
+import com.baidu.location.BDLocation;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -62,7 +62,7 @@ public class LocationStatusManager {
     }
 
     public boolean isFailOnScreenOff(Context context, int errorCode, boolean isScreenOn, boolean isWifiable) {
-        return !isWifiable && errorCode == AMapLocation.ERROR_CODE_FAILURE_CONNECTION && (mPriorSuccLocated && mPirorLocatableOnScreen) && !isScreenOn;
+        return !isWifiable && errorCode == BDLocation.TypeNetWorkException && (mPriorSuccLocated && mPirorLocatableOnScreen) && !isScreenOn;
     }
 
     /**

@@ -6,6 +6,7 @@ package com.aegps.location.locationservice;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -24,8 +25,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.aegps.location.AeApplication;
+import com.aegps.location.MainActivity;
 import com.aegps.location.R;
-import com.amap.api.location.AMapLocation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,55 +42,6 @@ public class Utils {
 	private static SimpleDateFormat sdf = null;
     private static NotificationManager mNotificationManager;
     private final static String PRIMARY_CHANNEL = "com.aegps.location";
-
-	public synchronized static String getLocationStr(AMapLocation location) {
-		if (null == location) {
-			return null;
-		}
-		StringBuffer sb = new StringBuffer();
-		//errCode等于0代表定位成功，其他的为定位失败
-		if (location.getErrorCode() == 0) {
-			sb.append("定位成功" + "\n");
-			sb.append("定位类型: " + location.getLocationType() + "\n");
-			sb.append("经    度    : " + location.getLongitude() + "\n");
-			sb.append("纬    度    : " + location.getLatitude() + "\n");
-			sb.append("精    度    : " + location.getAccuracy() + "米" + "\n");
-			sb.append("提供者    : " + location.getProvider() + "\n");
-
-			sb.append("海    拔    : " + location.getAltitude() + "米" + "\n");
-			sb.append("速    度    : " + location.getSpeed() + "米/秒" + "\n");
-			sb.append("角    度    : " + location.getBearing() + "\n");
-			if (location.getProvider().equalsIgnoreCase(
-					android.location.LocationManager.GPS_PROVIDER)) {
-				// 以下信息只有提供者是GPS时才会有
-				// 获取当前提供定位服务的卫星个数
-				sb.append("星    数    : "
-						+ location.getSatellites() + "\n");
-			}
-
-			//逆地理信息
-			sb.append("国    家    : " + location.getCountry() + "\n");
-			sb.append("省            : " + location.getProvince() + "\n");
-			sb.append("市            : " + location.getCity() + "\n");
-			sb.append("城市编码 : " + location.getCityCode() + "\n");
-			sb.append("区            : " + location.getDistrict() + "\n");
-			sb.append("区域 码   : " + location.getAdCode() + "\n");
-			sb.append("地    址    : " + location.getAddress() + "\n");
-			sb.append("兴趣点    : " + location.getPoiName() + "\n");
-			//定位完成的时间
-			sb.append("定位时间: " + formatUTC(location.getTime(), "yyyy-MM-dd HH:mm:ss") + "\n");
-
-		} else {
-			//定位失败
-			sb.append("定位失败" + "\n");
-			sb.append("错误码:" + location.getErrorCode() + "\n");
-			sb.append("错误信息:" + location.getErrorInfo() + "\n");
-			sb.append("错误描述:" + location.getLocationDetail() + "\n");
-		}
-		//定位之后的回调时间
-		sb.append("回调时间: " + formatUTC(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss") + "\n");
-		return sb.toString();
-	}
 
 	/**
 	 * 检测当的网络（WLAN、3G/2G）状态
@@ -200,31 +152,29 @@ public class Utils {
 
 
 	public static Notification buildNotification(Context context) {
-        Notification notification = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(PRIMARY_CHANNEL,
-                    "位置上传中", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setLightColor(Color.GREEN);
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-			channel.setSound(null,null);
-            getNotificationManager(context).createNotificationChannel(channel);
-            Notification.Builder builder = new Notification.Builder(context,
-                    PRIMARY_CHANNEL)
-					.setContentTitle("云物流")
-                    .setContentText("位置上传中...")
-                    .setSmallIcon(R.mipmap.ic_logo)
-                    .setAutoCancel(true);
-            notification = builder.build();
-        } else {
-            Notification.Builder builder = new Notification.Builder(context);
-            builder.setSmallIcon(R.mipmap.ic_logo);
-            builder .setContentTitle("云物流")
-					.setContentText("位置上传中..." )
-					.setSound(null)
-                    .setWhen(System.currentTimeMillis());
-            notification = builder.build();
-        }
+		Notification notification = null;
+		//设置后台定位
+		//android8.0及以上使用NotificationUtils
+		if (Build.VERSION.SDK_INT >= 26) {
+			NotificationUtils notificationUtils = new NotificationUtils(context);
+			Notification.Builder builder = notificationUtils.getAndroidChannelNotification
+					("云物流", "正在后台定位");
+			notification = builder.build();
+		} else {
+			//获取一个Notification构造器
+			Notification.Builder builder = new Notification.Builder(context);
+			Intent nfIntent = new Intent(context, MainActivity.class);
 
+			builder.setContentIntent(PendingIntent.
+							getActivity(context, 0, nfIntent, 0)) // 设置PendingIntent
+					.setContentTitle("云物流") // 设置下拉列表里的标题
+					.setSmallIcon(R.mipmap.ic_logo) // 设置状态栏内的小图标
+					.setContentText("正在后台定位") // 设置上下文内容
+					.setWhen(System.currentTimeMillis()); // 设置该通知发生的时间
+
+			notification = builder.build(); // 获取构建好的Notification
+		}
+		notification.defaults = Notification.DEFAULT_SOUND; //设置为默认的声音
 		return notification;
 	}
 

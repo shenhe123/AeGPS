@@ -1,22 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao' // apply plugin
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlinx-serialization'
-apply plugin: 'kotlin-parcelize'
 
 android {
     compileSdk 33
     defaultConfig {
         applicationId "com.aegps.location"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode 1
         versionName "1.0.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-
-        ndk {
-            abiFilters 'armeabi'
-        }
 
         buildConfigField "boolean", "isOpenLogReport", "true"
     }
@@ -42,7 +35,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             ndk {
-                abiFilters 'armeabi', 'arm64-v8a'
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             }
         }
         release {
@@ -54,7 +47,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             ndk {
-                abiFilters 'armeabi'
+                abiFilters 'armeabi-v7a','arm64-v8a'
             }
 
             // 批量打包
@@ -95,10 +88,6 @@ dependencies {
 
     //libs
     implementation files('libs/ksoap2-android-assembly-3.6.3-jar-with-dependencies.jar')
-    //高德地图定位
-    implementation files('libs/AMap_Location_V4.3.0_20181016.jar')
-    implementation files('libs/AMap_Search_V6.5.0_20180930.jar')
-    implementation files('libs/Android_Map3D_SDK_V6.5.0_20180930.jar')
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
@@ -122,14 +111,12 @@ dependencies {
     implementation 'com.tencent.bugly:crashreport:4.1.9.3'
     implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
-
-    //Kotlin
     def core_version = "1.6.0"
     implementation "androidx.core:core-ktx:$core_version"
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version") {
-        exclude group: 'com.android.dataBinding', module: 'compiler'
-    }
 
-    implementation "androidx.activity:activity-ktx:1.3.1"
+    //百度地图定位
+    implementation 'com.baidu.lbsyun:BaiduMapSDK_Location_All:9.3.7'
+
+    //后台定位权限请求
+    implementation 'se.warting.permissionsui:permissionsui:0.1.16'
 }
