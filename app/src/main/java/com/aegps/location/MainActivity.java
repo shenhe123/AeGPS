@@ -336,7 +336,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             int errorCode = location.getLocType();
 
             Log.e("shenhe 定位結果", "onLocationChanged: " + latitude + "," + longitude);
-            ToastUtil.show("onLocationChanged: " + latitude + "," + longitude);
             SharedPrefUtils.saveString("locationLatLng", latitude + "," + longitude);
         }
     }
