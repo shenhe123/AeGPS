@@ -1,21 +1,16 @@
 package com.aegps.location;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
-import com.aegps.location.bean.event.CommonEvent;
 import com.aegps.location.utils.ApplicationUtil;
 import com.aegps.location.utils.Contants;
 import com.aegps.location.utils.SharedPrefUtils;
 import com.aegps.location.utils.ThreadManager;
 import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.zxing.CaptureActivity;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class EasyCaptureActivity extends CaptureActivity {
 
@@ -27,13 +22,6 @@ public class EasyCaptureActivity extends CaptureActivity {
 
     private String title = "二维码扫描";
     private int code = -1;
-
-    public static void launch(Context context, String title, int requstCode) {
-        Intent intent = new Intent(context, EasyCaptureActivity.class);
-        intent.putExtra(EXTRA_TITLE, title);
-        intent.putExtra(EXTRA_CODE, requstCode);
-        context.startActivity(intent);
-    }
 
     @Override
     public int getLayoutId() {
@@ -58,7 +46,8 @@ public class EasyCaptureActivity extends CaptureActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivLeft:
-                onBackPressed();
+//                onBackPressed();
+                setResult(EXTRA_LOAD_BEGIN_CODE);
                 break;
         }
     }
@@ -87,7 +76,7 @@ public class EasyCaptureActivity extends CaptureActivity {
                     @Override
                     public void onResponse(boolean success, String data) {
                         if (success) {
-                            EventBus.getDefault().post(new CommonEvent(EXTRA_LOAD_BEGIN_CODE, ""));
+                            setResult(EXTRA_LOAD_BEGIN_CODE);
                         } else {
                             SoapUtil.onFailure(data);
                         }
@@ -109,7 +98,7 @@ public class EasyCaptureActivity extends CaptureActivity {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
-                    EventBus.getDefault().post(new CommonEvent(EXTRA_UNLOAD_RECEIPT_CODE, ""));
+                    setResult(EXTRA_UNLOAD_RECEIPT_CODE);
                 } else {
                     SoapUtil.onFailure(data);
                 }
@@ -132,7 +121,7 @@ public class EasyCaptureActivity extends CaptureActivity {
                     @Override
                     public void onResponse(boolean success, String data) {
                         if (success) {
-                            EventBus.getDefault().post(new CommonEvent(EXTRA_TRANSPORT_CHANGE_CODE, ""));
+                            setResult(EXTRA_TRANSPORT_CHANGE_CODE);
                         } else {
                             SoapUtil.onFailure(data);
                         }

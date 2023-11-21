@@ -15,18 +15,13 @@
  */
 package com.aegps.location.zxing;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
-import com.aegps.location.EasyCaptureActivity;
 import com.aegps.location.R;
 import com.aegps.location.base.BaseActivity;
 import com.aegps.location.utils.LogUtil;
-import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.zxing.camera.CameraManager;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 
 public class CaptureActivity extends BaseActivity implements OnCaptureCallback{

@@ -1,5 +1,6 @@
 package com.aegps.location;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -21,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,12 +31,10 @@ import com.aegps.location.adapter.RefreshMonitorAdapter;
 import com.aegps.location.api.network.Callback;
 import com.aegps.location.api.tool.SoapUtil;
 import com.aegps.location.base.BaseActivity;
-import com.aegps.location.bean.event.CommonEvent;
 import com.aegps.location.bean.net.RefreshMonitor;
 import com.aegps.location.locationservice.LocationChangBroadcastReceiver;
 import com.aegps.location.locationservice.LocationService;
 import com.aegps.location.locationservice.LocationStatusManager;
-import com.aegps.location.locationservice.NotificationUtils;
 import com.aegps.location.locationservice.Utils;
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.ApplicationUtil;
@@ -48,10 +49,6 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +66,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final String MESSAGE_RECEIVED_ACTION = "com.aegps.location.ui.MESSAGE_RECEIVED_ACTION";
     public static final int SPAN = 1000 * 60 * SharedPrefUtils.getInt(Contants.SP_UPLOAD_INTERVAL_DURATION, 2);
     private static final long TIME_INTERVAL = 60 * 1000;
+
+    @SuppressLint("SetTextI18n")
+    ActivityResultLauncher<Intent> launcherEasyCapture = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        // 返回处理
+        if (result.getResultCode() == EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE) {
+            ToastUtil.show("启动成功");
+            startLocationService();
+            LocationStatusManager.getInstance().resetToInit(getApplicationContext());
+            startRunTimer();
+            refreshMonitor();
+        } else if (result.getResultCode() == EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE){
+            ToastUtil.show("卸货成功");
+            stopLocationService();
+            LocationStatusManager.getInstance().resetToInit(getApplicationContext());
+            stopRunTimer();
+            refreshMonitor();
+        } else if (result.getResultCode() == EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE) {
+            ToastUtil.show("变更运输成功");
+            refreshMonitor();
+        }
+    });
+
     /**
      * 装载启动
      */
@@ -127,6 +146,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<RefreshMonitor.MonitorEntryTableBean> monitorEntryTable = new ArrayList<>();
     private MyLocationListener myLocationListener;
     private Notification mNotification;
+    private Intent input;
 
 
     @Override
@@ -201,7 +221,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initView() {
-        EventBus.getDefault().register(this);
 
         initAlarm();
 
@@ -297,9 +316,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 //可选，默认false，设置定位时是否需要海拔信息，默认不需要，除基础定位版本都可用
                 locationOption.setIsNeedAltitude(false);
                 //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者，该模式下开发者无需再关心定位间隔是多少，定位SDK本身发现位置变化就会及时回调给开发者
-                locationOption.setOpenAutoNotifyMode();
+//                locationOption.setOpenAutoNotifyMode();
                 //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者
-                locationOption.setOpenAutoNotifyMode(3000, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT);
+//                locationOption.setOpenAutoNotifyMode(3000, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT);
                 //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
                 mlocationClient.setLocOption(locationOption);
                 //开始定位
@@ -388,31 +407,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mIvRefresh.clearAnimation();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(CommonEvent event) {
-        int code = event.getCode();
-        switch (code) {
-            default:
-                break;
-            case EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE:
-                ToastUtil.show("启动成功");
-                startLocationService();
-                LocationStatusManager.getInstance().resetToInit(getApplicationContext());
-                startRunTimer();
-                break;
-            case EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE:
-                ToastUtil.show("卸货成功");
-                stopLocationService();
-                LocationStatusManager.getInstance().resetToInit(getApplicationContext());
-                stopRunTimer();
-                break;
-            case EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE:
-                ToastUtil.show("变更运输成功");
-                break;
-        }
-        refreshMonitor();
-    }
-
     private void startLocationService() {
         if (Utils.getInternet()) {//判断当然是否有网络
             Intent intent = new Intent(MainActivity.this, LocationService.class);
@@ -430,7 +424,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //                    alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, alarmPi);
 //                } else {
-                    alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 2 * 1000, TIME_INTERVAL, alarmPi);
+                    alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 5 * 1000, TIME_INTERVAL, alarmPi);
 //                }
 
             }
@@ -550,7 +544,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
         if (mlocationClient != null) {
             // 关闭前台定位服务
             mlocationClient.disableLocInForeground(true);
@@ -580,13 +573,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             default:
                 break;
             case R.id.layout_loading_begin:
-                EasyCaptureActivity.launch(this, getString(R.string.main_start_load), EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
+                input = new Intent(this, EasyCaptureActivity.class);
+                input.putExtra(EasyCaptureActivity.EXTRA_TITLE, getString(R.string.main_start_load));
+                input.putExtra(EasyCaptureActivity.EXTRA_CODE, EasyCaptureActivity.EXTRA_LOAD_BEGIN_CODE);
+                launcherEasyCapture.launch(input);
                 break;
             case R.id.layout_unload_receipt:
-                EasyCaptureActivity.launch(this, getString(R.string.main_unload_receipt), EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE);
+                input = new Intent(this, EasyCaptureActivity.class);
+                input.putExtra(EasyCaptureActivity.EXTRA_TITLE, getString(R.string.main_unload_receipt));
+                input.putExtra(EasyCaptureActivity.EXTRA_CODE, EasyCaptureActivity.EXTRA_UNLOAD_RECEIPT_CODE);
+                launcherEasyCapture.launch(input);
                 break;
             case R.id.layout_transport_change:
-                EasyCaptureActivity.launch(this, getString(R.string.main_transport_change), EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
+                input = new Intent(this, EasyCaptureActivity.class);
+                input.putExtra(EasyCaptureActivity.EXTRA_TITLE, getString(R.string.main_transport_change));
+                input.putExtra(EasyCaptureActivity.EXTRA_CODE, EasyCaptureActivity.EXTRA_TRANSPORT_CHANGE_CODE);
+                launcherEasyCapture.launch(input);
                 break;
             case R.id.iv_refresh:
                 startAnimRotate();
