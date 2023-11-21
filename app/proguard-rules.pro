@@ -27,7 +27,7 @@
 -optimizationpasses 5
 
 #混淆时不使用大小写混合，混淆后类名为小写
--dontusemixedcaseclassname
+#-dontusemixedcaseclassname
 
 #指定不去忽略非公共的类的库
 -dontskipnonpubliclibraryclasses

@@ -14,12 +14,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.aegps.location.R;
 import com.aegps.location.utils.AppManager;
 import com.aegps.location.utils.StatusBarUtil;
-import com.aegps.location.utils.toast.ToastUtil;
 import com.aegps.location.widget.LoadingProgressDialog;
 
 import java.lang.reflect.Method;

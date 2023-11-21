@@ -21,7 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.Camera;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
