@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void refreshMonitor() {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().refreshMonitor(ApplicationUtil.getDeviceId(this), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
@@ -602,7 +602,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             String locationLatLng = SharedPrefUtils.getString("locationLatLng");
             if (TextUtils.isEmpty(locationLatLng)) return;
             String[] split = locationLatLng.split(",");
-            SoapUtil.getInstance().locationTargeting(ApplicationUtil.getIMEI(),
+            SoapUtil.getInstance().locationTargeting(ApplicationUtil.getDeviceId(this),
                     SharedPrefUtils.getString("sp_database_name"),
                     split[1] + "",
                     split[0] + "",

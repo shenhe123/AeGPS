@@ -46,8 +46,7 @@ public class EasyCaptureActivity extends CaptureActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivLeft:
-//                onBackPressed();
-                setResult(EXTRA_LOAD_BEGIN_CODE);
+                onBackPressed();
                 break;
         }
     }
@@ -71,12 +70,13 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void loadBegin(String trafficBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().loadBegin(ApplicationUtil.getDeviceId(this), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
                     public void onResponse(boolean success, String data) {
                         if (success) {
                             setResult(EXTRA_LOAD_BEGIN_CODE);
+                            finish();
                         } else {
                             SoapUtil.onFailure(data);
                         }
@@ -94,11 +94,12 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void unLoadReceipt(String shipmentBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().unloadReceipt(ApplicationUtil.getDeviceId(this), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), shipmentBarCode, new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
                     setResult(EXTRA_UNLOAD_RECEIPT_CODE);
+                    finish();
                 } else {
                     SoapUtil.onFailure(data);
                 }
@@ -116,12 +117,13 @@ public class EasyCaptureActivity extends CaptureActivity {
     }
 
     private void transportChange(String trafficBarCode) {
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage(ApplicationUtil.getIMEI(), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().changeCarriage(ApplicationUtil.getDeviceId(this), SharedPrefUtils.getString(Contants.SP_DATABASE_NAME), trafficBarCode,
                 new Callback() {
                     @Override
                     public void onResponse(boolean success, String data) {
                         if (success) {
                             setResult(EXTRA_TRANSPORT_CHANGE_CODE);
+                            finish();
                         } else {
                             SoapUtil.onFailure(data);
                         }

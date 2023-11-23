@@ -70,7 +70,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             ToastUtil.show("账套错误");
             return;
         }
-        login(ApplicationUtil.getIMEI(), mEtCarId.getText().toString(), mDatabaseName);
+        login(ApplicationUtil.getDeviceId(this), mEtCarId.getText().toString(), mDatabaseName);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      */
     private void getPhoneRelateCarIdData() {
         startProgressDialog();
-        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getMobileVehicle(mDatabaseName, ApplicationUtil.getIMEI(), new Callback() {
+        ThreadManager.getThreadPollProxy().execute(() -> SoapUtil.getInstance().getMobileVehicle(mDatabaseName, ApplicationUtil.getDeviceId(this), new Callback() {
             @Override
             public void onResponse(boolean success, String data) {
                 if (success) {
